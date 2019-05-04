@@ -1,19 +1,95 @@
+@import url(https://fonts.googleapis.com/css?family=Oswald:400|Open+Sans:700);
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+
 html, body {
     width: 100%;
     height: 100%;
     margin: 0;
+    color: #121212;
+    background: #F2E2C4;
 }
 
 #wB_container {
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    top: 20%;
+    z-index: 1000;
+    border: dashed #8C4C27 1px;
 }
 
 .wB_field {
     float: left;
-    height: 19.8%;
-    width: 19.8%;
-    border: solid white 1px;
-    background: green;
+    height: calc(20% - 2px);
+    width: calc(20% - 2px);
+    border: dashed #8C4C27 1px;
+}
+
+/*  ======================== 
+    Headline
+    ======================== */ 
+
+/* fontawesome */
+[class*="fontawesome-"]:before {
+  font-family: 'FontAwesome', sans-serif;
+}
+
+section.text {
+  width: 100%;
+  text-align: center;
+  height: 20%;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+h1, h3 {
+  transform: matrix(1, -0.10, 0, 1, 0, 0);
+  -ms-transform: matrix(1, -0.10, 0, 1, 0, 0);
+  -webkit-transform: matrix(1, -0.10, 0, 1, 0, 0);
+}
+
+h1 {
+  font-family: "Oswald", Sans-serif;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 70px;
+  text-shadow: 4px 5px #F2E2C4, 6px 7px #D96248;
+  margin: -20px;
+}
+
+h1 span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+span.star {
+  font-size: 20px;
+}
+
+h3 {
+  font-family: "Open Sans", Sans-serif;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;  
+  position: relative;
+}
+
+h3:before, h3:after {
+  content: " ";
+  position: absolute;
+  width: 100px;
+  height: 4px;
+  border-top: 2px solid #121212;
+  border-bottom: 2px solid #121212;
+}
+
+h3:before {
+  margin: 5px 0 0 -110px;
+}
+
+h3:after {
+  margin: 5px 0 0 10px;
 }

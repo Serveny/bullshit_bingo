@@ -10,7 +10,7 @@ class WinklerBingo {
         
         for (let i = 1; i < 6; i++) {
             for (let u = 1; u < 6; u++) {
-                fieldsHTML += '<div id="wB-' + i + '-' + u + '" class="wB_field"></div>';        
+                fieldsHTML += '<div id="wB_' + i + '-' + u + '" class="wB_field"></div>';        
             }
         }
 
