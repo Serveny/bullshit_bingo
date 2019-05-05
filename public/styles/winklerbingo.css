@@ -1,5 +1,9 @@
-@import url(https://fonts.googleapis.com/css?family=Oswald:400|Open+Sans:700);
-@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+@font-face {
+    font-family: 'Oswald';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Oswald'), local('Oswald-Regular'), url(fonts/Oswald-Regular.ttf) format('truetype');
+}
 
 html, body {
     width: 100%;
@@ -7,6 +11,7 @@ html, body {
     margin: 0;
     color: #121212;
     background: #F2E2C4;
+    overflow: hidden;
 }
 
 #wB_container {
@@ -17,6 +22,7 @@ html, body {
     top: 20%;
     z-index: 1000;
     border: dashed #8C4C27 1px;
+    font-family: "Oswald", Sans-serif;
 }
 
 .wB_field {
@@ -24,6 +30,47 @@ html, body {
     height: calc(20% - 2px);
     width: calc(20% - 2px);
     border: dashed #8C4C27 1px;
+    transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+    background: #F2E2C4;
+    text-align: center;
+    display: flex;
+    font-size: 2vw;
+    cursor: pointer;
+}
+
+.wB_field:hover {
+    transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+    -webkit-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+    -moz-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+    box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+}
+
+.wB_field_focus {
+    transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+    -webkit-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+    -moz-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+    box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+}
+
+.wB_field span {
+    margin: auto;
+}
+
+#wB_fieldTextArea {
+    height: 100%;
+    width: 100%;
+    resize: none;
+    background: none;
+    border: none;
+    padding: 5%;
+    font-family: "Oswald", Sans-serif;
+    font-size: 2vw;
 }
 
 /*  ======================== 
@@ -53,9 +100,10 @@ h1 {
   font-family: "Oswald", Sans-serif;
   text-transform: uppercase;
   font-weight: 400;
-  font-size: 70px;
+  font-size: 6vh;
   text-shadow: 4px 5px #F2E2C4, 6px 7px #D96248;
   margin: -20px;
+  overflow: hidden;
 }
 
 h1 span {
@@ -64,14 +112,14 @@ h1 span {
 }
 
 span.star {
-  font-size: 20px;
+  font-size: 3vh;
 }
 
 h3 {
   font-family: "Open Sans", Sans-serif;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 3vh;
   letter-spacing: 0.1em;
   margin-bottom: 10px;  
   position: relative;
@@ -81,9 +129,8 @@ h3:before, h3:after {
   content: " ";
   position: absolute;
   width: 100px;
-  height: 4px;
-  border-top: 2px solid #121212;
-  border-bottom: 2px solid #121212;
+  height: 0.75vh;
+  border-bottom: 0.75vh solid #121212;
 }
 
 h3:before {
