@@ -12,6 +12,20 @@ html, body {
     color: #121212;
     background: #F2E2C4;
     overflow: hidden;
+    z-index: -1;
+}
+
+body::after {
+  content: "";
+  background: url('../img/noise-texture-overlay_1.png');
+  background-size: auto;
+  opacity: 0.1;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: 0; 
 }
 
 #wB_container {
@@ -31,27 +45,23 @@ html, body {
     width: calc(20% - 2px);
     border: dashed #8C4C27 1px;
     transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-    background: #F2E2C4;
+    background: #F2E2C4 url('../img/cardBG.png');
+    background-size: auto;
     text-align: center;
     display: flex;
-    font-size: 2vw;
+    font-size: calc(14px + 2vw);
     cursor: pointer;
 }
 
 .wB_field:hover {
-    transform: scale(1.2);
-    -ms-transform: scale(1.2);
-    -webkit-transform: scale(1.2);
-    transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-    -webkit-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
-    -moz-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
-    box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out;
 }
 
 .wB_field_focus {
-    transform: scale(1.2);
-    -ms-transform: scale(1.2);
-    -webkit-transform: scale(1.2);
+    transform: scale(1.2) !important;
+    -ms-transform: scale(1.2) !important;
+    -webkit-transform: scale(1.2) !important;
     transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
     -webkit-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
     -moz-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
@@ -60,6 +70,9 @@ html, body {
 
 .wB_field span {
     margin: auto;
+    padding: 5px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 #wB_fieldTextArea {
@@ -70,7 +83,7 @@ html, body {
     border: none;
     padding: 5%;
     font-family: "Oswald", Sans-serif;
-    font-size: 2vw;
+    font-size: calc(14px + 2vw);
 }
 
 /*  ======================== 
