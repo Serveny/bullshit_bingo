@@ -5,6 +5,18 @@
     src: local('Oswald'), local('Oswald-Regular'), url(fonts/Oswald-Regular.ttf) format('truetype');
 }
 
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(fonts/MaterialIcons-Regular.woff2) format('woff2'),
+    url(fonts/MaterialIcons-Regular.woff) format('woff'),
+    url(fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
 html, body {
     width: 100%;
     height: 100%;
@@ -28,6 +40,15 @@ body::after {
   z-index: 0; 
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/*  ======================== 
+    Bingo Field
+    ======================== */ 
+
 #wB_container {
     position: absolute;
     bottom: 20px;
@@ -50,6 +71,7 @@ body::after {
     text-align: center;
     display: flex;
     font-size: calc(14px + 2vw);
+    font-style: italic;
     cursor: pointer;
 }
 
@@ -60,11 +82,7 @@ body::after {
 
 .wB_field_focus {
     transform: scale(1.2) !important;
-    -ms-transform: scale(1.2) !important;
-    -webkit-transform: scale(1.2) !important;
     transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-    -webkit-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
-    -moz-box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
     box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
 }
 
@@ -73,27 +91,60 @@ body::after {
     padding: 5px;
     max-width: 100%;
     overflow: hidden;
+    line-height: 4.5vh;
+    background: none;
 }
 
 #wB_fieldTextArea {
-    height: 100%;
-    width: 100%;
+    width: 90%;
     resize: none;
     background: none;
     border: none;
     padding: 5%;
     font-family: "Oswald", Sans-serif;
     font-size: calc(14px + 2vw);
+    align-items: stretch;
+    display: flex;
+}
+
+/*  ======================== 
+    Head Bar
+    ======================== */ 
+
+.headbar {
+  position: absolute;
+  font-size: 40px;
+  font-weight: 400;
+  width: auto;
+  height: auto;
+  z-index: 1000;
+  background: none;
+  bottom: 80%;
+}
+
+.headbarBtn {
+  border: none;
+  background: none;
+  transition: color 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.headbarBtn:hover {
+  color: #E88154;
+  transition: color 0.3s ease-in-out;
+}
+
+#headbar_right {
+  right: 20px;
+}
+
+#headbar_left {
+  left: 20px;
 }
 
 /*  ======================== 
     Headline
     ======================== */ 
-
-/* fontawesome */
-[class*="fontawesome-"]:before {
-  font-family: 'FontAwesome', sans-serif;
-}
 
 section.text {
   width: 100%;
@@ -105,8 +156,6 @@ section.text {
 
 h1, h3 {
   transform: matrix(1, -0.10, 0, 1, 0, 0);
-  -ms-transform: matrix(1, -0.10, 0, 1, 0, 0);
-  -webkit-transform: matrix(1, -0.10, 0, 1, 0, 0);
 }
 
 h1 {
@@ -114,9 +163,10 @@ h1 {
   text-transform: uppercase;
   font-weight: 400;
   font-size: 6vh;
-  text-shadow: 4px 5px #F2E2C4, 6px 7px #D96248;
+  text-shadow: 4px 5px #FFAC69, 6px 7px #D96248;
   margin: -20px;
   overflow: hidden;
+  z-index: 500;
 }
 
 h1 span {
@@ -136,6 +186,9 @@ h3 {
   letter-spacing: 0.1em;
   margin-bottom: 10px;  
   position: relative;
+  z-index: 501;
+  transition: transform 0.3s ease-in-out;
+  width: auto;
 }
 
 h3:before, h3:after {
@@ -152,4 +205,46 @@ h3:before {
 
 h3:after {
   margin: 5px 0 0 10px;
+}
+
+h3:hover {
+  transform: matrix(1, -0.05, 0, 1, 0, 0) scale(1.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+/*  ======================== 
+    Material Icons
+    ======================== */ 
+
+.mi {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+/*  ======================== 
+    Dark Mode
+    ======================== */
+
+.dark {
+  background-color: #222222 !important;
+  color: #eeeeee !important;
 }
