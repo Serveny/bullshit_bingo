@@ -14,6 +14,11 @@ class WinklerBingo {
         // Hadde Arbeit
         this.buildHTML();
         this.registerEvents();
+
+        // Dark Mode
+        if (this.getDarkModeSetting() === true) {
+            this.toggleDarkMode();
+        }
     }
     
     // HTML-Code positionieren
@@ -106,10 +111,11 @@ class WinklerBingo {
     addTextArea(element) {
         this.fieldChange = element;
         let text = element.find('span').text();
+        let dark = this.isDarkMode === true ? 'dark' : '';
 
         element
             .addClass('wB_field_focus')
-            .html('<textarea id="wB_fieldTextArea" class="wB_field_text"></textarea>');
+            .html('<textarea id="wB_fieldTextArea" class="wB_field_text ' + dark + '"></textarea>');
         
         $('#wB_fieldTextArea').focus().val(text);
     }
@@ -121,16 +127,32 @@ class WinklerBingo {
         this.fieldChange = null;
     }
 
-    toggleDarkMode(e) {
+    toggleDarkMode() {
         this.isDarkMode = !this.isDarkMode;
 
         if (this.isDarkMode === true) {
+            this.setDarkModeSetting(true);
             $('body').addClass('dark');
             $('.wB_field').addClass('dark');
         } else {
+            this.setDarkModeSetting(false);
             $('body').removeClass('dark');
             $('.wB_field').removeClass('dark');
         }
+    }
+
+    getDarkModeSetting() {
+        let isDark = localStorage.getItem('isDarkMode');
+
+        if (isDark == 'true') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    setDarkModeSetting(value) {
+        localStorage.setItem('isDarkMode', value);
     }
 }
 
