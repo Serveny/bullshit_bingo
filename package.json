@@ -1,0 +1,19 @@
+{
+    "name": "drachenlord-bullshit-bingo",
+    "description": "Meddl Loide",
+    "version": "0.0.1",
+    "main": "index.js",
+    "author": "Serveny",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Serveny/drachenlord_bullshit_bingo"
+    },
+    "license": "MIT",
+    "scripts": {
+        "start": "node app.js",
+        "kill-win": "taskkill /im node.exe",
+        "kill-lin": "killall node",
+        "restart": "npm run kill-win && npm run start"
+    },
+    "devDependencies": {}
+}

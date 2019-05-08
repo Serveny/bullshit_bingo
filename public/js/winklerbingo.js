@@ -62,7 +62,7 @@ class WinklerBingo {
             _self.addTextArea($(this));
         });
 
-        $(document).on('keydown',function(e) {
+        $(document).on('keydown', function(e) {
             let keyCode = e.keyCode || e.which;
 
             // Key: Tab
@@ -153,6 +153,14 @@ class WinklerBingo {
 
     setDarkModeSetting(value) {
         localStorage.setItem('isDarkMode', value);
+    }
+
+    checkInput() {
+
+    }
+
+    checkDouble() {
+
     }
 }
 
