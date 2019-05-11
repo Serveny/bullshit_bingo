@@ -2,7 +2,7 @@
     "name": "drachenlord-bullshit-bingo",
     "description": "Meddl Loide",
     "version": "0.0.1",
-    "main": "index.js",
+    "main": "app.js",
     "author": "Serveny",
     "repository": {
         "type": "git",
@@ -11,6 +11,7 @@
     "license": "MIT",
     "scripts": {
         "start": "node app.js",
+        "start-forever": "forever start app.js",
         "kill-win": "taskkill /im node.exe",
         "kill-lin": "killall node",
         "restart": "npm run kill-win && npm run start"
