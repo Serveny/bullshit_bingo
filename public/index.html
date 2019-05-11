@@ -12,13 +12,16 @@
         <script src="js/winklerbingo.js"></script>
     </head>
     <body>
-        <div id="headbar_left" class="headbar" title="Start Game">
-            <span class="headbarBtn" >
+        <div id="headbar_left" class="headbar">
+            <span class="btn" title="Start Game">
                 <i class="mi">play_circle_outline</i>
             </span>
         </div>
-        <div id="headbar_right" class="headbar" title="Dark Mode">
-            <span id="toggleDarkBtn" class="headbarBtn">
+        <div id="headbar_right" class="headbar">
+            <span class="btn toggleInfoBtn" title="Info">
+                <i class="mi">info</i>
+            </span>
+            <span id="toggleDarkBtn" class="btn" title="Dark Mode">
                 <i class="mi">brightness_3</i>
             </span>
         </div>
@@ -36,6 +39,96 @@
                 </span>
             </h1>
         </section>
-        <div id="wB_container"></div>
+        <div id="wB_container">
+            <noscript>
+                <p id="noScriptHint">Ohne JavaScript geht's leider nicht, sry :/</p>
+            </noscript>
+        </div>
+        <div id="wB_info">
+            <h1>Info</h1>
+            <span id="wB_infoCloseBtn" class="btn toggleInfoBtn" title="Start Game">
+                <i class="mi">cancel</i>
+            </span>
+            <p>
+                Meddl Loide! Der Wingl-Stream könnte eintöniger nicht sein. Aber weil
+                man dennoch wissen will, was der langweilige Luanlover als nächstes
+                für einen Unsinn anstellt und redet, schaut man immer wieder rein.
+                <br/><br/>
+                Aus diesem Grund gibt es das Drachenlord Bullshit Bingo. 
+                <br/>
+                Hier ist momentan noch alles im Aufbau, Spielregeln und Code können und werden sich noch ändern.
+            </p>
+            <hr>
+
+            <h3>Spielregeln</h3>
+            <p>Das Spiel ist unterteilt in 3 Phasen:</p>
+            <ul>
+                <li>
+                    <h4><i class="mi">build</i>&nbsp;Werkel-Phase</h4>
+                    <p>
+                        Die Spieler können entweder eigene Wörter in die Felder eintragen, oder welche aus einer Liste 
+                        auswählen. Fallen einem Spieler keine 25 Begriffe ein, kann dieser die restlichen Felder auch
+                        automatisch auffüllen lassen.
+                    </p>
+                </li>
+                <li>
+                    <h4><i class="mi">shuffle</i>&nbsp;Wusel-Phase</h4>
+                    <p>
+                        Nachdem alle Spieler eine Auswahl von 25 begriffen getroffen haben, geht es in die Wusel-Phase
+                        Die Spieler können sich die Spielfelder ihrer Gegner anschauen und diese bis zu 3 mal zufällig 
+                        durchmischen, um so die Chanchen der Gegner auf 5 Worte in einer Reihe zu verschlechtern.
+                    </p>
+                </li>
+                <li>
+                    <h4><i class="mi">games</i>&nbsp;Bingo-Phase</h4>
+                    <p>
+                        Hier beginnt das eigentliche Spiel. Drache streamt und jedes Mal wenn ein Wort, das der Spieler vorher
+                        bei sich eingetragen hat, fällt, klickt der Spieler auf das jeweilige Feld und es wird als gesagt markiert.
+                        <br/><br/>
+                        Wer zuerst 5 in einer Reihe hat, gewinnt.
+                    </p>
+                </li>
+            </ul>
+
+            <p>
+                Dabei läuft das Spiel momentan viel auf Vertrauensbasis ab, also sucht euch gude Gumbls zum Zoggne. Solange es noch keine KI 
+                gibt, die den Bullshit, den Rainer jeden Tag verzapft, auch verstehen kann, geht das leider nicht anders. Ich werde nach und 
+                nach weitere Tools schreiben, die einem dabei ein wenig unter die Arme greifen. Muss ich aber etzala erst mal schauen, wie 
+                ich des hinkrich.
+            </p>
+            <hr>
+
+            <h3>Steuerung</h3>
+            <table>
+                <tr>
+                    <td class="glass">Klick auf Feld</td>
+                    <td>
+                        Wergel-Phase: Feld bearbeiten <br/> 
+                        Bingo-Phase: Feld markieren
+                    </td>
+                </tr>
+                <tr>
+                    <td class="glass">Enter</td>
+                    <td>Speichern</td>
+                </tr>
+                <tr>
+                    <td class="glass">Tab</td>
+                    <td>Speichern & ein Feld weiter</td>
+                </tr>
+                <tr>
+                    <td class="glass">Shift + Tab</td>
+                    <td>Speichern & ein Feld zurück</td>
+                </tr>
+                <tr>
+                    <td class="glass">Esc</td>
+                    <td>Bearbeitung schließen</td>
+                </tr>
+            </table>
+            <hr>
+
+            <p>Falls es Bugmeldungen, Anregungen, Vorschläge, etc. gibt, schreibt mir gerne auf 
+                <a href="https://twitter.com/dj_serveny" target="_blank"><i class="mi">link</i>Twitter</a>.
+            </p>
+        </div>
     </body>
 </html>

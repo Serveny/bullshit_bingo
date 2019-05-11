@@ -11,6 +11,7 @@
     "license": "MIT",
     "scripts": {
         "start": "node app.js",
+        "start-dev": "nodemon app.js",
         "start-forever": "forever start app.js",
         "kill-win": "taskkill /im node.exe",
         "kill-lin": "killall node",

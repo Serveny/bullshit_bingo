@@ -45,6 +45,19 @@ a {
   color: inherit;
 }
 
+.btn {
+  border: none;
+  background: none;
+  transition: color 0.3s ease-in-out;
+  cursor: pointer;
+  font-size: 40px;
+}
+
+.btn:hover {
+  color: #E88154;
+  transition: color 0.3s ease-in-out;
+}
+
 /*  ======================== 
     Bingo Field
     ======================== */ 
@@ -113,25 +126,12 @@ a {
 
 .headbar {
   position: absolute;
-  font-size: 40px;
   font-weight: 400;
   width: auto;
   height: auto;
   z-index: 1000;
   background: none;
   bottom: 80%;
-}
-
-.headbarBtn {
-  border: none;
-  background: none;
-  transition: color 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-.headbarBtn:hover {
-  color: #E88154;
-  transition: color 0.3s ease-in-out;
 }
 
 #headbar_right {
@@ -154,11 +154,11 @@ section.text {
   overflow: hidden;
 }
 
-h1, h3 {
+section > h1, section > h3 {
   transform: matrix(1, -0.10, 0, 1, 0, 0);
 }
 
-h1 {
+section > h1 {
   font-family: "Oswald", Sans-serif;
   text-transform: uppercase;
   font-weight: 400;
@@ -178,7 +178,7 @@ span.star {
   font-size: 3vh;
 }
 
-h3 {
+section > h3 {
   font-family: "Open Sans", Sans-serif;
   text-transform: uppercase;
   font-weight: 700;
@@ -191,7 +191,7 @@ h3 {
   width: auto;
 }
 
-h3:before, h3:after {
+section > h3:before, section > h3:after {
   content: " ";
   position: absolute;
   width: 100px;
@@ -199,15 +199,15 @@ h3:before, h3:after {
   border-bottom: 0.75vh solid #121212;
 }
 
-h3:before {
+section > h3:before {
   margin: 5px 0 0 -110px;
 }
 
-h3:after {
+section > h3:after {
   margin: 5px 0 0 10px;
 }
 
-h3:hover {
+section > h3:hover {
   transform: matrix(1, -0.05, 0, 1, 0, 0) scale(1.1);
   transition: transform 0.3s ease-in-out;
 }
@@ -276,4 +276,56 @@ h3:hover {
   40%, 60% {
     transform: translate3d(4px, 0, 0);
   }
+}
+
+#noScriptHint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: calc(14px + 4vw);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  margin: 0;
+}
+
+/*  ======================== 
+    Info
+    ======================== */
+
+#wB_info {
+  display: none;
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  bottom: 10%;
+  right: 10%;
+  background-color: rgba(242, 226, 196, 0.8);
+  overflow: hidden;
+  z-index: 1000;
+  border: 1px solid #B64926;
+  font-family: "Oswald", Sans-serif;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#wB_info > div {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+#wB_infoCloseBtn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.glass {
+  opacity: 0.8;
+}
+
+#wB_info table tr td {
+  padding-right: 5px;
+  border: solid 1px #468966;
 }

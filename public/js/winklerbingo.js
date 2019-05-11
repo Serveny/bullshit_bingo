@@ -10,6 +10,7 @@ class WinklerBingo {
         this.Container = container;
         this.fieldChange = null;
         this.isDarkMode = false;
+        this.isInfoOpen = false;
         this.cards = {};
         
         // Hadde Arbeit
@@ -22,7 +23,7 @@ class WinklerBingo {
         }
     }
     
-    // HTML-Code positionieren
+    // HTML-Code positionieren, so a richtig geilen DOM
     buildHTML() {
         let fieldsHTML = '';
         let count = 0;
@@ -51,6 +52,10 @@ class WinklerBingo {
 
         $('#toggleDarkBtn').click(function(e) {
             _self.toggleDarkMode(e);    
+        });
+
+        $('.toggleInfoBtn').click(function() {
+            _self.toggleInfo();    
         });
     }
 
@@ -111,6 +116,9 @@ class WinklerBingo {
                     e.preventDefault();
                     _self.revertCard(_self.fieldChange);
                 }
+                if (_self.isInfoOpen === true) {
+                    _self.toggleInfo();
+                }
             }
         });
 
@@ -120,7 +128,7 @@ class WinklerBingo {
                 if (target.hasClass('wB_field') === true || target.hasClass('wB_field_text') === true) {
                     return;
                 } else {
-                    _self.setTextToField(_self.fieldChange);
+                    _self.setNewTextToCard(_self.fieldChange);
                 }
             }
         });
@@ -133,7 +141,7 @@ class WinklerBingo {
 
         element
             .addClass('wB_field_focus')
-            .html('<textarea id="wB_fieldTextArea" class="wB_field_text ' + dark + '"></textarea>');
+            .html('<textarea id="wB_fieldTextArea" class="wB_field_text ' + dark + '" maxlength="32"></textarea>');
         
         $('#wB_fieldTextArea').focus().val(text);
     }
@@ -170,10 +178,12 @@ class WinklerBingo {
             this.setDarkModeSetting(true);
             $('body').addClass('dark');
             $('.wB_field').addClass('dark');
+            $('#wB_info').addClass('dark');
         } else {
             this.setDarkModeSetting(false);
             $('body').removeClass('dark');
             $('.wB_field').removeClass('dark');
+            $('#wB_info').removeClass('dark');
         }
     }
 
@@ -219,6 +229,11 @@ class WinklerBingo {
                 .removeClass('shake_short')
                 .addClass('wB_field_focus');
         }, 820);
+    }
+
+    toggleInfo() {
+        this.isInfoOpen = !this.isInfoOpen;
+        $('#wB_info').toggle(200);
     }
 }
 
