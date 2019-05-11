@@ -1,5 +1,5 @@
-// Diejenichen, die den Code schreiben:
-// Serveny & MaikMitAi
+// Derjeniche, der bis dato den Code schreibt:
+// Serveny
 
 class WinklerBingo {
 
@@ -10,6 +10,7 @@ class WinklerBingo {
         this.Container = container;
         this.fieldChange = null;
         this.isDarkMode = false;
+        this.cards = {};
         
         // Hadde Arbeit
         this.buildHTML();
@@ -28,7 +29,12 @@ class WinklerBingo {
         
         for (let i = 1; i < 6; i++) {
             for (let u = 1; u < 6; u++) {
-                fieldsHTML += '<div id="wB_' + ++count + '" class="wB_field" data-x="' + i + '" data-y="' + u + '" data-count="' + count + '">' +
+                this.cards[++count] = {
+                    text: '',
+                    x: i,
+                    y: u
+                };
+                fieldsHTML += '<div id="wB_' + count + '" class="wB_field" data-x="' + i + '" data-y="' + u + '" data-count="' + count + '">' +
                 '<span class="wB_field_text"></span>' +
                 '</div>';
             }
@@ -41,14 +47,14 @@ class WinklerBingo {
     registerEvents() {
         const _self = this;
 
-        this.addTextFieldEvents();
+        this.addCardEvents();
 
         $('#toggleDarkBtn').click(function(e) {
             _self.toggleDarkMode(e);    
         });
     }
 
-    addTextFieldEvents() {
+    addCardEvents() {
         const _self = this;
 
         $('.wB_field').click(function() {
@@ -56,7 +62,9 @@ class WinklerBingo {
                 if ($(this).attr('id') == _self.fieldChange.attr('id')) {
                     return;
                 } else {
-                    _self.setTextToField(_self.fieldChange);
+                    if(_self.setNewTextToCard(_self.fieldChange) === false) {
+                        return;
+                    };
                 }
             }
             _self.addTextArea($(this));
@@ -66,11 +74,13 @@ class WinklerBingo {
             let keyCode = e.keyCode || e.which;
 
             // Key: Tab
-            if (keyCode == 9) { 
-                e.preventDefault();
-                if (_self.fieldChange != null) { 
+            if (keyCode == 9) {
+                if (_self.fieldChange != null) {
+                    e.preventDefault();
                     let number = _self.fieldChange.attr('data-count');
-                    _self.setTextToField(_self.fieldChange);
+                    if(_self.setNewTextToCard(_self.fieldChange) === false) {
+                        return;
+                    };
                     
                     if(e.shiftKey) {
                         number--;
@@ -89,9 +99,17 @@ class WinklerBingo {
             
             // Key: Enter
             if(e.which == 13) {
-                e.preventDefault();
                 if (_self.fieldChange != null) {
-                    _self.setTextToField(_self.fieldChange);
+                    e.preventDefault();
+                    _self.setNewTextToCard(_self.fieldChange);
+                }
+            }
+
+            // Key: Esc
+            if (e.which == 27) {
+                if (_self.fieldChange != null) {
+                    e.preventDefault();
+                    _self.revertCard(_self.fieldChange);
                 }
             }
         });
@@ -120,11 +138,29 @@ class WinklerBingo {
         $('#wB_fieldTextArea').focus().val(text);
     }
 
-    setTextToField(element) {
+    setNewTextToCard(element) {
         let text = element.find('textarea').val().trim();
-        element.removeClass('wB_field_focus');
-        element.html('<span class="wB_field_text">' + text + '</span>');
-        this.fieldChange = null;
+        return this.setTextToField(element, text);
+    }
+
+    revertCard(element) {
+        let text = this.cards[element.attr('data-count')].text;
+        return this.setTextToField(element, text);
+    }
+
+    setTextToField(element, text) {
+        text = text.trim();
+
+        if (this.doesCardTextExist(text) === false) {
+            element.removeClass('wB_field_focus');
+            element.html('<span class="wB_field_text">' + text + '</span>');
+            this.fieldChange = null;
+            this.cards[element.attr('data-count')].text = text;
+            return true;
+        } else {
+            this.shakeAndStay(element);
+            return false;
+        }
     }
 
     toggleDarkMode() {
@@ -159,8 +195,30 @@ class WinklerBingo {
 
     }
 
-    checkDouble() {
+    doesCardTextExist(text) {
+        if(text == null || text === '') {
+            return false;
+        }
 
+        for(let id in this.cards) {
+            if (this.cards[id].text === text) {
+                return true;
+            }
+        }   
+        return false;
+    }
+
+    async shakeAndStay(element) {
+        element.find('textarea').focus();
+        element
+            .removeClass('wB_field_focus')
+            .addClass('shake_short');
+
+        setTimeout(function() {
+            element
+                .removeClass('shake_short')
+                .addClass('wB_field_focus');
+        }, 820);
     }
 }
 

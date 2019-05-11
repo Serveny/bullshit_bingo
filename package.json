@@ -15,5 +15,9 @@
         "kill-lin": "killall node",
         "restart": "npm run kill-win && npm run start"
     },
-    "devDependencies": {}
+    "devDependencies": {},
+    "dependencies": {
+        "express": "^4.16.4",
+        "serve-favicon": "^2.5.0"
+    }
 }
