@@ -5,14 +5,27 @@ class WinklerBingo {
 
     // A bisl wergeln & rumwuseln
     constructor (container) {
+        this.container = container;
+        this.socket = io.connect(window.location.host);
+        this.roomId = null;
+        this.socketAddEvents();
 
+        // Dark Mode
+        if (this.getDarkModeSetting() === true) {
+            this.toggleDarkMode();
+        }
+
+        this.addEvents();
+    }
+
+    start() {
         // Brobbaties
-        this.Container = container;
         this.fieldChange = null;
         this.isDarkMode = false;
         this.isInfoOpen = false;
         this.cards = {};
-        
+        this.phase = 0;
+
         // Hadde Arbeit
         this.buildHTML();
         this.registerEvents();
@@ -21,6 +34,21 @@ class WinklerBingo {
         if (this.getDarkModeSetting() === true) {
             this.toggleDarkMode();
         }
+
+        this.addCardEvents();
+        this.container.show();
+    }
+
+    socketAddEvents() {
+        const _self = this;
+
+        this.socket.on('roomJoined', function (room) {
+            console.log('roomJoined', room);
+            location.hash = room.roomId;
+
+            $('#wB_createRoomBtn').hide();
+            $('#wB_lobbyContainer').show();
+        });
     }
     
     // HTML-Code positionieren, so a richtig geilen DOM
@@ -45,13 +73,15 @@ class WinklerBingo {
     }
 
     // 20.08 Schanzenfest
-    registerEvents() {
+    addEvents() {
         const _self = this;
 
-        this.addCardEvents();
+        $('#wB_createRoomBtn').click(function() {
+            _self.socket.emit('joinRoom'); 
+        });
 
-        $('#toggleDarkBtn').click(function(e) {
-            _self.toggleDarkMode(e);    
+        $('#toggleDarkBtn').click(function() {
+            _self.toggleDarkMode();    
         });
 
         $('.toggleInfoBtn').click(function() {
@@ -238,5 +268,5 @@ class WinklerBingo {
 }
 
 $(document).ready(function() {
-    winklerBingo = new WinklerBingo($('#wB_container'));
+    winklerBingo = new WinklerBingo($('wB_cardsContainer'));
 });
