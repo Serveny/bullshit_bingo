@@ -89,6 +89,12 @@ class WinklerBingo {
         });
     }
 
+    setUserPicWidthToHeight() {
+        $('.wB_userPic').each(function() {
+            $(this).css({'width': $(this).css('height')});
+        });
+    }
+
     addCardEvents() {
         const _self = this;
 
