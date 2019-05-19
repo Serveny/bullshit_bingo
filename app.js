@@ -4,7 +4,8 @@ const
   favicon = require('serve-favicon'),
   path = require('path'),
   socket = require('socket.io'),
-  uniqid = require('uniqid');
+  room = require('./scripts/room'),
+  var_dump = require('var_dump');
 
 app = express();
 app.set('port', /*process.env.PORT || */1510);
@@ -20,9 +21,14 @@ const io = socket(server);
 
 io.on('connection', function (socket) {
   socket.on('joinRoom', function (data) {
-    console.log('joinRoom', data);
-    const roomId = uniqid();
-    socket.join(roomId);
-    socket.emit('roomJoined', { roomId: roomId });
+    socket.emit('roomJoined', room.joinRoom(data.roomId, socket));
+    console.log('joinRoom - List: ');
+    var_dump(global.roomList);
   });
+  socket.on('disconnect', function() {
+    console.log(socket.id + ' disconnected!');
+    room.removePlayer(socket.id);
+    console.log('disconnect - List: ');
+    var_dump(global.roomList);
+ });
 });

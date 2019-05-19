@@ -1,4 +1,4 @@
-// Derjeniche, der bis dato den Code schreibt:
+// Derjeniche, der den Code schreibt:
 // Serveny
 
 class WinklerBingo {
@@ -7,7 +7,7 @@ class WinklerBingo {
     constructor (container) {
         this.container = container;
         this.socket = io.connect(window.location.host);
-        this.roomId = null;
+        this.roomId = this.getUrlParam('r');
         this.socketAddEvents();
 
         // Dark Mode
@@ -16,6 +16,10 @@ class WinklerBingo {
         }
 
         this.addEvents();
+
+        if (this.roomId != null) {
+            this.socket.emit('joinRoom', { roomId: this.roomId });
+        }
     }
 
     start() {
@@ -39,18 +43,36 @@ class WinklerBingo {
         this.container.show();
     }
 
+    getThisUserInRoom(players) {
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].id == this.socket.id) {
+                return players[i];
+            }
+        }
+        return null;
+    }
+
     socketAddEvents() {
         const _self = this;
 
-        this.socket.on('roomJoined', function (room) {
-            console.log('roomJoined', room);
-            location.hash = room.roomId;
-
-            $('#wB_createRoomBtn').hide();
-            $('#wB_lobbyContainer').show();
+        this.socket.on('roomJoined', function (roomData) {
+            const urlWithoutParams =  location.protocol + '//' + location.host;
+            if (roomData == null) {
+                history.pushState(null, '', urlWithoutParams);
+            } else {
+                console.log('roomJoined', roomData);
+                history.pushState(null, '', urlWithoutParams + '?r=' + roomData.roomId);
+    
+                $('#wB_createRoomBtn').hide();
+                $('#wB_lobbyContainer').show();
+    
+                const thisUser = _self.getThisUserInRoom(roomData.players);
+                $('#wB_thisUserPic').attr({ "src": thisUser.urlPic });
+                $('#wB_thisUserInput').val(thisUser.name);
+            }
         });
     }
-    
+
     // HTML-Code positionieren, so a richtig geilen DOM
     buildHTML() {
         let fieldsHTML = '';
@@ -77,7 +99,7 @@ class WinklerBingo {
         const _self = this;
 
         $('#wB_createRoomBtn').click(function() {
-            _self.socket.emit('joinRoom'); 
+            _self.socket.emit('joinRoom', { roomId: null }); 
         });
 
         $('#toggleDarkBtn').click(function() {
@@ -271,6 +293,20 @@ class WinklerBingo {
         this.isInfoOpen = !this.isInfoOpen;
         $('#wB_info').toggle(200);
     }
+
+    getUrlParam(param)
+    {
+       let query = window.location.search.substring(1);
+       let vars = query.split("&");
+       for (let i=0;i<vars.length;i++) {
+               let pair = vars[i].split("=");
+               if(pair[0] == param) {
+                   return pair[1];
+                }
+       }
+       return null;
+    }
+    
 }
 
 $(document).ready(function() {
