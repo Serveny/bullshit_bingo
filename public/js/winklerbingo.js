@@ -31,7 +31,7 @@ class WinklerBingo {
         this.phase = 0;
 
         // Hadde Arbeit
-        this.buildHTML();
+        this.buildCardsHTML();
         this.registerEvents();
 
         // Dark Mode
@@ -55,7 +55,7 @@ class WinklerBingo {
     socketAddEvents() {
         const _self = this;
 
-        this.socket.on('roomJoined', function (roomData) {
+        _self.socket.on('roomJoined', function (roomData) {
             const urlWithoutParams =  location.protocol + '//' + location.host;
             if (roomData == null) {
                 history.pushState(null, '', urlWithoutParams);
@@ -69,12 +69,19 @@ class WinklerBingo {
                 const thisUser = _self.getThisUserInRoom(roomData.players);
                 $('#wB_thisUserPic').attr({ "src": thisUser.urlPic });
                 $('#wB_thisUserInput').val(thisUser.name);
+
+                _self.roomAddOtherPlayer(roomData.players);
             }
+        });
+
+        _self.socket.on('playerJoined', function (newPlayer) {
+            console.log('playerJoined', newPlayer);
+            _self.roomAddPlayerHTML(newPlayer);
         });
     }
 
     // HTML-Code positionieren, so a richtig geilen DOM
-    buildHTML() {
+    buildCardsHTML() {
         let fieldsHTML = '';
         let count = 0;
         
@@ -306,7 +313,25 @@ class WinklerBingo {
        }
        return null;
     }
+
+    roomAddOtherPlayer(players) {
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].id !== this.socket.id) {
+                this.roomAddPlayerHTML(players[i]);
+            }
+        }
+    }
     
+    roomAddPlayerHTML(player) {
+        $('#wB_lobbyContainer')
+            .append('<div class="wB_userField" data-id="' + player.id + '">' + 
+            '<img src="' + player.urlPic + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
+            '<div class="wB_userName">' + player.name + '</div></div>');
+    }
+
+    roomRemovePlayerHTML(playerId) {
+        $('div[data-item-id=' + playerId + ']').remove();
+    }
 }
 
 $(document).ready(function() {

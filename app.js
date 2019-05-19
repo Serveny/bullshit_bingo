@@ -21,7 +21,13 @@ const io = socket(server);
 
 io.on('connection', function (socket) {
   socket.on('joinRoom', function (data) {
-    socket.emit('roomJoined', room.joinRoom(data.roomId, socket));
+    const thisRoom = room.joinRoom(data.roomId, socket);
+    socket.emit('roomJoined', thisRoom);
+    
+    if (thisRoom != null) {
+      socket.to(thisRoom.roomId).emit('playerJoined', thisRoom.players[thisRoom.players.length - 1]);
+    }
+    
     console.log('joinRoom - List: ');
     var_dump(global.roomList);
   });

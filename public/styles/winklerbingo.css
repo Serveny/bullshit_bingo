@@ -452,6 +452,7 @@ path.two {
   z-index: 500;
   font-family: "Oswald", Sans-serif;
   color: #382F59;
+  margin: 5px;
 }
 
 .wB_userField input {
@@ -479,4 +480,5 @@ path.two {
 .wB_userName {
   width: inherit;
   padding: 10px;
+  font-size: calc(14px + 4vw);
 }
