@@ -14,12 +14,12 @@ Das Spiel ist unterteilt in 3 Phasen:
     auswählen. Fallen einem Spieler keine 25 Begriffe ein, kann dieser die restlichen Felder auch
     automatisch auffüllen lassen.
 
- - Wusel-Phase
+ - Wusel-Phase: 
     Nachdem alle Spieler eine Auswahl von 25 begriffen getroffen haben, geht es in die Wusel-Phase
     Die Spieler können sich die Spielfelder ihrer Gegner anschauen und diese bis zu 3 mal zufällig 
     durchmischen, um so die Chanchen der Gegner auf 5 Worte in einer Reihe zu verschlechtern.
 
- - Bingo-Phase
+ - Bingo-Phase:
     Hier beginnt das eigentliche Spiel. Drache streamt und jedes Mal wenn ein Wort, das der Spieler vorher
     bei sich eingetragen hat, fällt, klickt der Spieler auf das jeweilige Feld und es wird als gesagt markiert.
     Wer zuerst 5 in einer Reihe hat, gewinnt.
