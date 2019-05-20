@@ -53,6 +53,7 @@ let getRoomIndex = function(roomId) {
     return -1;
 }
 
+// Returns room
 let removePlayerAndCloseRoomIfEmpty = function(id) {
     for (let i = 0; i < roomList.length; i++) {
         for (let u = 0; u < roomList[i].players.length; u++) {
@@ -60,12 +61,13 @@ let removePlayerAndCloseRoomIfEmpty = function(id) {
                 // Remove room if empty
                 if (roomList[i].players.length <= 1) {
                     roomList.splice(i);
+                    return null;
                 } 
                 // Remove player out of room only
                 else {
                     roomList[i].players.splice(u);
+                    return roomList[i];
                 }
-                return;
             }
         }
     }   

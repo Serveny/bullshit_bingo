@@ -20,6 +20,7 @@ const server = http.createServer(app).listen(app.get('port'), () => {
 const io = socket(server);
 
 io.on('connection', function (socket) {
+  
   socket.on('joinRoom', function (data) {
     const thisRoom = room.joinRoom(data.roomId, socket);
     socket.emit('roomJoined', thisRoom);
@@ -31,10 +32,15 @@ io.on('connection', function (socket) {
     console.log('joinRoom - List: ');
     var_dump(global.roomList);
   });
+
   socket.on('disconnect', function() {
     console.log(socket.id + ' disconnected!');
-    room.removePlayer(socket.id);
+    const thisRoom = room.removePlayer(socket.id);
+
+    if (thisRoom != null) {
+      socket.to(thisRoom.roomId).emit('playerDisconnected', socket.id);
+    }
     console.log('disconnect - List: ');
     var_dump(global.roomList);
- });
+  });
 });

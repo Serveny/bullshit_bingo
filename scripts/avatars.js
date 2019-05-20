@@ -7,7 +7,7 @@ const avatars = [
     'Erdbeerchen',
     'Ey Malla',
     'Gummibeerchen',
-    'Leiffels',
+    'Leiffelsbursche',
     'Nachber',
     'Reiner',
     'Ramoner',

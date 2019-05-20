@@ -4,8 +4,7 @@
 class WinklerBingo {
 
     // A bisl wergeln & rumwuseln
-    constructor (container) {
-        this.container = container;
+    constructor () {
         this.socket = io.connect(window.location.host);
         this.roomId = this.getUrlParam('r');
         this.socketAddEvents();
@@ -22,17 +21,30 @@ class WinklerBingo {
         }
     }
 
-    start() {
+    startWergelPhase(roomData) {
         // Brobbaties
+        const urlWithoutParams =  location.protocol + '//' + location.host;
         this.fieldChange = null;
         this.isDarkMode = false;
         this.isInfoOpen = false;
         this.cards = {};
         this.phase = 0;
 
+        // Lobby
+        console.log('roomJoined', roomData);
+        history.pushState(null, '', urlWithoutParams + '?r=' + roomData.roomId);
+
+        $('#wB_createRoomBtn').hide();
+        $('#wB_lobbyContainer').show();
+
+        const thisUser = this.getThisUserInRoom(roomData.players);
+        $('#wB_thisUserPic').attr({ "src": thisUser.urlPic });
+        $('#wB_thisUserInput').val(thisUser.name);
+
+        this.roomAddOtherPlayer(roomData.players);
+
         // Hadde Arbeit
         this.buildCardsHTML();
-        this.registerEvents();
 
         // Dark Mode
         if (this.getDarkModeSetting() === true) {
@@ -40,7 +52,7 @@ class WinklerBingo {
         }
 
         this.addCardEvents();
-        this.container.show();
+        $('#wB_cardsContainer').show();
     }
 
     getThisUserInRoom(players) {
@@ -56,21 +68,10 @@ class WinklerBingo {
         const _self = this;
 
         _self.socket.on('roomJoined', function (roomData) {
-            const urlWithoutParams =  location.protocol + '//' + location.host;
             if (roomData == null) {
-                history.pushState(null, '', urlWithoutParams);
+                history.pushState(null, '', location.protocol + '//' + location.host);
             } else {
-                console.log('roomJoined', roomData);
-                history.pushState(null, '', urlWithoutParams + '?r=' + roomData.roomId);
-    
-                $('#wB_createRoomBtn').hide();
-                $('#wB_lobbyContainer').show();
-    
-                const thisUser = _self.getThisUserInRoom(roomData.players);
-                $('#wB_thisUserPic').attr({ "src": thisUser.urlPic });
-                $('#wB_thisUserInput').val(thisUser.name);
-
-                _self.roomAddOtherPlayer(roomData.players);
+                _self.startWergelPhase(roomData);
             }
         });
 
@@ -78,6 +79,11 @@ class WinklerBingo {
             console.log('playerJoined', newPlayer);
             _self.roomAddPlayerHTML(newPlayer);
         });
+
+        _self.socket.on('playerDisconnected', function (playerId) {
+            console.log('playerDisconnected', playerId);
+            _self.roomRemovePlayerHTML(playerId);
+        })
     }
 
     // HTML-Code positionieren, so a richtig geilen DOM
@@ -98,7 +104,7 @@ class WinklerBingo {
             }
         }
 
-        this.Container.html(fieldsHTML);
+        $('#wB_cardsContainer').html(fieldsHTML);
     }
 
     // 20.08 Schanzenfest
@@ -330,10 +336,10 @@ class WinklerBingo {
     }
 
     roomRemovePlayerHTML(playerId) {
-        $('div[data-item-id=' + playerId + ']').remove();
+        $('div[data-id=' + playerId + ']').remove();
     }
 }
 
 $(document).ready(function() {
-    winklerBingo = new WinklerBingo($('wB_cardsContainer'));
+    winklerBingo = new WinklerBingo();
 });
