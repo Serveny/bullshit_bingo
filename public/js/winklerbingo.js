@@ -83,6 +83,11 @@ class WinklerBingo {
         _self.socket.on('playerDisconnected', function (playerId) {
             console.log('playerDisconnected', playerId);
             _self.roomRemovePlayerHTML(playerId);
+        });
+
+        _self.socket.on('nameChanged', function (data) {
+            console.log('nameChanged', data);
+            _self.roomPlayerChangeName(data.playerId, data.name);
         })
     }
 
@@ -121,6 +126,10 @@ class WinklerBingo {
 
         $('.toggleInfoBtn').click(function() {
             _self.toggleInfo();    
+        });
+
+        $('#wB_thisUserInput').change(function() {
+            _self.socket.emit('customName', $(this).val()); 
         });
     }
 
@@ -329,14 +338,20 @@ class WinklerBingo {
     }
     
     roomAddPlayerHTML(player) {
+        const name = player.customName != null ? player.customName : player.name;
         $('#wB_lobbyContainer')
             .append('<div class="wB_userField" data-id="' + player.id + '">' + 
             '<img src="' + player.urlPic + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
-            '<div class="wB_userName">' + player.name + '</div></div>');
+            '<div class="wB_userName">' + name + '</div></div>');
     }
 
     roomRemovePlayerHTML(playerId) {
         $('div[data-id=' + playerId + ']').remove();
+    }
+
+    roomPlayerChangeName(playerId, name) {
+        console.log($('div[data-id=' + playerId + '] > wB_userName'));
+        $('div[data-id=' + playerId + ']').find('.wB_userName').text(name);
     }
 }
 

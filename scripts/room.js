@@ -55,23 +55,45 @@ let getRoomIndex = function(roomId) {
 
 // Returns room
 let removePlayerAndCloseRoomIfEmpty = function(id) {
+    let roPlIndex = getRoomAndPlayerById(id);
+
+    if(roPlIndex != null) {
+        // Remove room if empty
+        if (roomList[roPlIndex.roomIndex].players.length <= 1) {
+            roomList.splice(roPlIndex.roomIndex);
+            return null;
+        } 
+        // Remove player out of room only
+        else {
+            roomList[roPlIndex.roomIndex].players.splice(roPlIndex.playerIndex);
+            return roomList[roPlIndex.roomIndex];
+        }
+    }
+}
+
+let getRoomAndPlayerById = function(id) {
     for (let i = 0; i < roomList.length; i++) {
         for (let u = 0; u < roomList[i].players.length; u++) {
             if (roomList[i].players[u].id == id) {
-                // Remove room if empty
-                if (roomList[i].players.length <= 1) {
-                    roomList.splice(i);
-                    return null;
-                } 
-                // Remove player out of room only
-                else {
-                    roomList[i].players.splice(u);
-                    return roomList[i];
-                }
+                return { 
+                    roomIndex: i,
+                    playerIndex: u
+                };
             }
         }
-    }   
+    }
+    return null;
+}
+
+let setCustomName = function(id, name) {
+    let roPlIndex = getRoomAndPlayerById(id);
+
+    if(roPlIndex != null) {
+        roomList[roPlIndex.roomIndex].players[roPlIndex.playerIndex].customName = name;
+        return roomList[roPlIndex.roomIndex];
+    }
 }
 
 exports.joinRoom = joinRoom;
 exports.removePlayer = removePlayerAndCloseRoomIfEmpty;
+exports.setCustomName = setCustomName;

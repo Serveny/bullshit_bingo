@@ -30,7 +30,7 @@ io.on('connection', function (socket) {
     }
     
     console.log('joinRoom - List: ');
-    var_dump(global.roomList);
+    //var_dump(global.roomList);
   });
 
   socket.on('disconnect', function() {
@@ -41,6 +41,11 @@ io.on('connection', function (socket) {
       socket.to(thisRoom.roomId).emit('playerDisconnected', socket.id);
     }
     console.log('disconnect - List: ');
-    var_dump(global.roomList);
+    //var_dump(global.roomList);
+  });
+
+  socket.on('customName', function (name) {
+    const thisRoom = room.setCustomName(socket.id, name);
+    socket.to(thisRoom.roomId).emit('nameChanged', { playerId: socket.id, name: name});
   });
 });
