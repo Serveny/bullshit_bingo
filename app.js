@@ -28,9 +28,7 @@ io.on('connection', function (socket) {
     if (thisRoom != null) {
       socket.to(thisRoom.roomId).emit('playerJoined', thisRoom.players[thisRoom.players.length - 1]);
     }
-    
-    console.log('joinRoom - List: ');
-    //var_dump(global.roomList);
+    console.log('joinRoom');
   });
 
   socket.on('disconnect', function() {
@@ -40,12 +38,19 @@ io.on('connection', function (socket) {
     if (thisRoom != null) {
       socket.to(thisRoom.roomId).emit('playerDisconnected', socket.id);
     }
-    console.log('disconnect - List: ');
-    //var_dump(global.roomList);
+    console.log('disconnect');
   });
 
   socket.on('customName', function (name) {
     const thisRoom = room.setCustomName(socket.id, name);
     socket.to(thisRoom.roomId).emit('nameChanged', { playerId: socket.id, name: name});
+  });
+
+  socket.on('toggleReady', function() {
+    const roomAndIsReady = room.togglePlayerReadyStatus(socket.id);
+    
+    if (roomAndIsReady != null) {
+      io.in(roomAndIsReady.room.roomId).emit('playerReadyStatusChanged', { playerId: socket.id, isReady: roomAndIsReady.isReady });
+    } 
   });
 });

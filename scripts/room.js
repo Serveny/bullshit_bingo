@@ -41,6 +41,7 @@ let createUser = function(players, socket) {
     let user = avatars.getRandomAvatar(players);
     user.id = socket.id;
     user.customName = null;
+    user.isReady = false;
     return user;
 };
 
@@ -94,6 +95,19 @@ let setCustomName = function(id, name) {
     }
 }
 
+let togglePlayerReadyStatus = function(id) {
+    let roPlIndex = getRoomAndPlayerById(id);
+
+    if (roPlIndex != null) {
+        const newStatus = !roomList[roPlIndex.roomIndex].players[roPlIndex.playerIndex].isReady;
+        roomList[roPlIndex.roomIndex].players[roPlIndex.playerIndex].isReady = newStatus;
+        return { room: roomList[roPlIndex.roomIndex], isReady: newStatus};
+    } else {
+        return null;
+    }
+}
+
 exports.joinRoom = joinRoom;
 exports.removePlayer = removePlayerAndCloseRoomIfEmpty;
 exports.setCustomName = setCustomName;
+exports.togglePlayerReadyStatus = togglePlayerReadyStatus;

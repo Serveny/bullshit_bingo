@@ -86,9 +86,12 @@ class WinklerBingo {
         });
 
         _self.socket.on('nameChanged', function (data) {
-            console.log('nameChanged', data);
             _self.roomPlayerChangeName(data.playerId, data.name);
-        })
+        });
+
+        _self.socket.on('playerReadyStatusChanged', function (data) {
+            _self.roomSetPlayerReady(data.playerId, data.isReady);
+        });
     }
 
     // HTML-Code positionieren, so a richtig geilen DOM
@@ -130,6 +133,10 @@ class WinklerBingo {
 
         $('#wB_thisUserInput').change(function() {
             _self.socket.emit('customName', $(this).val()); 
+        });
+
+        $('#wB_thisUserReady').click(function() {
+            _self.socket.emit('toggleReady'); 
         });
     }
 
@@ -340,7 +347,7 @@ class WinklerBingo {
     roomAddPlayerHTML(player) {
         const name = player.customName != null ? player.customName : player.name;
         $('#wB_lobbyContainer')
-            .append('<div class="wB_userField" data-id="' + player.id + '">' + 
+            .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady">done</i>' + 
             '<img src="' + player.urlPic + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
             '<div class="wB_userName">' + name + '</div></div>');
     }
@@ -350,8 +357,26 @@ class WinklerBingo {
     }
 
     roomPlayerChangeName(playerId, name) {
-        console.log($('div[data-id=' + playerId + '] > wB_userName'));
         $('div[data-id=' + playerId + ']').find('.wB_userName').text(name);
+    }
+
+    roomSetPlayerReady(playerId, isReady) {
+        if (playerId === this.socket.id) {
+            if (isReady === true) {
+                $('#wB_thisUserReady').css({'color': 'green'});
+            } else {
+                $('#wB_thisUserReady').css({'color': 'gray'});
+            }
+        } else {
+            let player = $('div[data-id=' + playerId + ']');
+            if (player != null) {
+                if (isReady === true) {
+                    player.find('.wB_userReady').show();
+                } else {
+                    player.find('.wB_userReady').hide();
+                }
+            }
+        }
     }
 }
 

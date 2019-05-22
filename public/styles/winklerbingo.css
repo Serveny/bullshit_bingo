@@ -497,7 +497,18 @@ path.two {
 
 .wB_userReady {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 10px;
+  right: 10px;
+  left: 10px;
+  text-align: center;
+  font-size: 10vh;
   color: green;
+  background: none;
+  z-index: 502;
+  display: none;
+}
+
+#wB_thisUserReady {
+  color: gray;
+  display: block;
 }
