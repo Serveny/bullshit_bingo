@@ -140,12 +140,6 @@ class WinklerBingo {
         });
     }
 
-    setUserPicWidthToHeight() {
-        $('.wB_userPic').each(function() {
-            $(this).css({'width': $(this).css('height')});
-        });
-    }
-
     addCardEvents() {
         const _self = this;
 
@@ -245,12 +239,12 @@ class WinklerBingo {
 
     setTextToField(element, text) {
         text = text.trim();
-
-        if (this.doesCardTextExist(text) === false) {
+        if (this.cardsDoesTextExist(text) === false) {
             element.removeClass('wB_field_focus');
             element.html('<span class="wB_field_text">' + text + '</span>');
             this.fieldChange = null;
             this.cards[element.attr('data-count')].text = text;
+            this.cardsCheckAllFilled();
             return true;
         } else {
             this.shakeAndStay(element);
@@ -288,21 +282,36 @@ class WinklerBingo {
         localStorage.setItem('isDarkMode', value);
     }
 
-    checkInput() {
-
-    }
-
-    doesCardTextExist(text) {
+    cardsDoesTextExist(text) {
         if(text == null || text === '') {
             return false;
         }
+        
+        let doesTextAlreadyExist = false;
 
         for(let id in this.cards) {
+            
             if (this.cards[id].text === text) {
-                return true;
+                doesTextAlreadyExist = true;
             }
-        }   
-        return false;
+        }
+        
+
+        return doesTextAlreadyExist;
+    }
+
+    cardsCheckAllFilled() {
+        let areAllCardsFilled = true;
+
+        for(let id in this.cards) { 
+            if (this.cards[id].text === '') {
+                areAllCardsFilled = false;
+                break;
+            }
+        }
+
+        this.readyBtnVisible(areAllCardsFilled);
+        console.log('areAllCardsFilled', areAllCardsFilled);
     }
 
     async shakeAndStay(element) {
@@ -376,6 +385,14 @@ class WinklerBingo {
                     player.find('.wB_userReady').hide();
                 }
             }
+        }
+    }
+
+    readyBtnVisible(isVisible) {
+        if (isVisible === true) {
+            $('#wB_thisUserReady').show();
+        } else {
+            $('#wB_thisUserReady').hide();
         }
     }
 }

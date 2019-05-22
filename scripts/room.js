@@ -61,6 +61,7 @@ let removePlayerAndCloseRoomIfEmpty = function(id) {
     if(roPlIndex != null) {
         // Remove room if empty
         if (roomList[roPlIndex.roomIndex].players.length <= 1) {
+            console.log('Close Room - ', roPlIndex.roomIndex);
             roomList.splice(roPlIndex.roomIndex);
             return null;
         } 
