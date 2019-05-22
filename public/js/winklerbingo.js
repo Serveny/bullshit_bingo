@@ -64,6 +64,7 @@ class WinklerBingo {
         return null;
     }
 
+    // Wie wohl Wingls Socken riechen?
     socketAddEvents() {
         const _self = this;
 
@@ -140,6 +141,7 @@ class WinklerBingo {
         });
     }
 
+    // Ferdammt, wie gonndest du mich bedrügen?
     addCardEvents() {
         const _self = this;
 
@@ -215,6 +217,7 @@ class WinklerBingo {
         });
     }
 
+    // Neuer Blockeindrag wird gerendert
     addTextArea(element) {
         this.fieldChange = element;
         let text = element.find('span').text();
@@ -296,7 +299,6 @@ class WinklerBingo {
             }
         }
         
-
         return doesTextAlreadyExist;
     }
 
@@ -311,7 +313,6 @@ class WinklerBingo {
         }
 
         this.readyBtnVisible(areAllCardsFilled);
-        console.log('areAllCardsFilled', areAllCardsFilled);
     }
 
     async shakeAndStay(element) {
