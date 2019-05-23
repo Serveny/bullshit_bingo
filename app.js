@@ -5,7 +5,8 @@ const
   path = require('path'),
   socket = require('socket.io'),
   room = require('./scripts/room'),
-  var_dump = require('var_dump');
+  var_dump = require('var_dump'),
+  autofill = require('./scripts/autofill');
 
 app = express();
 app.set('port', /*process.env.PORT || */1510);
@@ -51,6 +52,10 @@ io.on('connection', function (socket) {
     
     if (roomAndIsReady != null) {
       io.in(roomAndIsReady.room.roomId).emit('playerReadyStatusChanged', { playerId: socket.id, isReady: roomAndIsReady.isReady });
-    } 
+    }
+  });
+
+  socket.on('needAutofill', function (taken) {
+    socket.emit('autofillResult', autofill.getUntakenWords(taken));
   });
 });

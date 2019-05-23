@@ -54,6 +54,7 @@ class WinklerBingo {
         this.addCardEvents();
         $('#wB_cardsContainer').fadeIn(800);
         $('#wB_leaveRoomBtn').fadeIn(1600);
+        $('#wB_autofillBtn').fadeIn(1600);
     }
 
     getThisUserInRoom(players) {
@@ -93,6 +94,10 @@ class WinklerBingo {
 
         _self.socket.on('playerReadyStatusChanged', function (data) {
             _self.roomSetPlayerReady(data.playerId, data.isReady);
+        });
+
+        _self.socket.on('autofillResult', function (data) {
+            _self.cardsAutofill(data);
         });
     }
 
@@ -145,6 +150,10 @@ class WinklerBingo {
             _self.socket.disconnect();
             location.reload();
         });
+
+        $('#wB_autofillBtn').click(function() {
+            _self.socket.emit('needAutofill', _self.cards); 
+        });
     }
 
     // Ferdammt, wie gonndest du mich bedrügen?
@@ -156,12 +165,12 @@ class WinklerBingo {
                 if ($(this).attr('id') == _self.fieldChange.attr('id')) {
                     return;
                 } else {
-                    if(_self.setNewTextToCard(_self.fieldChange) === false) {
+                    if(_self.cardsSetNewTextToCard(_self.fieldChange) === false) {
                         return;
                     };
                 }
             }
-            _self.addTextArea($(this));
+            _self.cardsAddTextArea($(this));
         });
 
         $(document).on('keydown', function(e) {
@@ -172,7 +181,7 @@ class WinklerBingo {
                 if (_self.fieldChange != null) {
                     e.preventDefault();
                     let number = _self.fieldChange.attr('data-count');
-                    if(_self.setNewTextToCard(_self.fieldChange) === false) {
+                    if(_self.cardsSetNewTextToCard(_self.fieldChange) === false) {
                         return;
                     };
                     
@@ -184,7 +193,7 @@ class WinklerBingo {
 
                     let nextEl = $('#wB_' + number);
                     if (nextEl.length >= 1) {
-                        _self.addTextArea(nextEl);
+                        _self.cardsAddTextArea(nextEl);
                     } else {
                         this.fieldChange = null;
                     }
@@ -195,7 +204,7 @@ class WinklerBingo {
             if(e.which == 13) {
                 if (_self.fieldChange != null) {
                     e.preventDefault();
-                    _self.setNewTextToCard(_self.fieldChange);
+                    _self.cardsSetNewTextToCard(_self.fieldChange);
                 }
             }
 
@@ -217,48 +226,10 @@ class WinklerBingo {
                 if (target.hasClass('wB_field') === true || target.hasClass('wB_field_text') === true) {
                     return;
                 } else {
-                    _self.setNewTextToCard(_self.fieldChange);
+                    _self.cardsSetNewTextToCard(_self.fieldChange);
                 }
             }
         });
-    }
-
-    // Neuer Blockeindrag wird gerendert
-    addTextArea(element) {
-        this.fieldChange = element;
-        let text = element.find('span').text();
-        let dark = this.isDarkMode === true ? 'dark' : '';
-
-        element
-            .addClass('wB_field_focus')
-            .html('<textarea id="wB_fieldTextArea" class="wB_field_text ' + dark + '" maxlength="32"></textarea>');
-        
-        $('#wB_fieldTextArea').focus().val(text);
-    }
-
-    setNewTextToCard(element) {
-        let text = element.find('textarea').val().trim();
-        return this.setTextToField(element, text);
-    }
-
-    revertCard(element) {
-        let text = this.cards[element.attr('data-count')].text;
-        return this.setTextToField(element, text);
-    }
-
-    setTextToField(element, text) {
-        text = text.trim();
-        if (this.cardsDoesTextExist(text) === false) {
-            element.removeClass('wB_field_focus');
-            element.html('<span class="wB_field_text">' + text + '</span>');
-            this.fieldChange = null;
-            this.cards[element.attr('data-count')].text = text;
-            this.cardsCheckAllFilled();
-            return true;
-        } else {
-            this.shakeAndStay(element);
-            return false;
-        }
     }
 
     toggleDarkMode() {
@@ -289,6 +260,48 @@ class WinklerBingo {
 
     setDarkModeSetting(value) {
         localStorage.setItem('isDarkMode', value);
+    }
+
+    /* --------------------- 
+    *  Cards Functions
+       --------------------- */
+
+    // Neuer Blockeindrag wird gerendert
+    cardsAddTextArea(element) {
+        this.fieldChange = element;
+        let text = element.find('span').text();
+        let dark = this.isDarkMode === true ? 'dark' : '';
+
+        element
+            .addClass('wB_field_focus')
+            .html('<textarea id="wB_fieldTextArea" class="wB_field_text ' + dark + '" maxlength="32"></textarea>');
+        
+        $('#wB_fieldTextArea').focus().val(text);
+    }
+
+    cardsSetNewTextToCard(element) {
+        let text = element.find('textarea').val().trim();
+        return this.cardsSetTextToField(element, text);
+    }
+
+    cardsRevertCard(element) {
+        let text = this.cards[element.attr('data-count')].text;
+        return this.cardsSetTextToField(element, text);
+    }
+
+    cardsSetTextToField(element, text) {
+        text = text.trim();
+        if (this.cardsDoesTextExist(text) === false) {
+            element.removeClass('wB_field_focus');
+            element.html('<span class="wB_field_text">' + text + '</span>');
+            this.fieldChange = null;
+            this.cards[element.attr('data-count')].text = text;
+            this.cardsCheckAllFilled();
+            return true;
+        } else {
+            this.shakeAndStay(element);
+            return false;
+        }
     }
 
     cardsDoesTextExist(text) {
@@ -332,6 +345,13 @@ class WinklerBingo {
                 .removeClass('shake_short')
                 .addClass('wB_field_focus');
         }, 820);
+    }
+
+    cardsAutofill(data) {
+        
+        for(var i = 0; i < this.cards; i++) {
+            this.cardsSetTextToField(element, text)
+        }
     }
 
     toggleInfo() {

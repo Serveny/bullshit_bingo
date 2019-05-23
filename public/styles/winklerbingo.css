@@ -512,6 +512,6 @@ path.two {
   color: gray;
 }
 
-#wB_leaveRoomBtn {
+#wB_leaveRoomBtn, #wB_autofillBtn {
   display: none;
 }
