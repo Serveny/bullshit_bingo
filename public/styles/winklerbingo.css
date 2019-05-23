@@ -511,3 +511,7 @@ path.two {
 #wB_thisUserReady {
   color: gray;
 }
+
+#wB_leaveRoomBtn {
+  display: none;
+}

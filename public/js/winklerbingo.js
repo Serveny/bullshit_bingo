@@ -34,8 +34,8 @@ class WinklerBingo {
         console.log('roomJoined', roomData);
         history.pushState(null, '', urlWithoutParams + '?r=' + roomData.roomId);
 
-        $('#wB_createRoomBtn').hide();
-        $('#wB_lobbyContainer').show();
+        $('#wB_createRoomBtn').fadeOut(100);
+        $('#wB_lobbyContainer').fadeIn(1600);
 
         const thisUser = this.getThisUserInRoom(roomData.players);
         $('#wB_thisUserPic').attr({ "src": thisUser.urlPic });
@@ -52,7 +52,8 @@ class WinklerBingo {
         }
 
         this.addCardEvents();
-        $('#wB_cardsContainer').show();
+        $('#wB_cardsContainer').fadeIn(800);
+        $('#wB_leaveRoomBtn').fadeIn(1600);
     }
 
     getThisUserInRoom(players) {
@@ -138,6 +139,11 @@ class WinklerBingo {
 
         $('#wB_thisUserReady').click(function() {
             _self.socket.emit('toggleReady'); 
+        });
+
+        $('#wB_leaveRoomBtn').click(function() {
+            _self.socket.disconnect();
+            location.reload();
         });
     }
 
@@ -330,7 +336,7 @@ class WinklerBingo {
 
     toggleInfo() {
         this.isInfoOpen = !this.isInfoOpen;
-        $('#wB_info').toggle(200);
+        $('#wB_info').fadeToggle(400);
     }
 
     getUrlParam(param)
