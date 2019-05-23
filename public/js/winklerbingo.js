@@ -97,6 +97,7 @@ class WinklerBingo {
         });
 
         _self.socket.on('autofillResult', function (data) {
+            console.log('autofillResult', data);
             _self.cardsAutofill(data);
         });
     }
@@ -152,7 +153,8 @@ class WinklerBingo {
         });
 
         $('#wB_autofillBtn').click(function() {
-            _self.socket.emit('needAutofill', _self.cards); 
+            // TODO
+            _self.socket.emit('needAutofill', []); 
         });
     }
 
@@ -348,7 +350,7 @@ class WinklerBingo {
     }
 
     cardsAutofill(data) {
-        
+
         for(var i = 0; i < this.cards; i++) {
             this.cardsSetTextToField(element, text)
         }

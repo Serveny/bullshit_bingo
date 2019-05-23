@@ -1,4 +1,5 @@
 const getUntakenWords = function (taken) {
+    taken = Array.isArray(taken) === true ? taken : [];
     let needCount = 25 - taken.length;
     let usedCount = 0;
     let wordsCount = words.length;
@@ -7,8 +8,9 @@ const getUntakenWords = function (taken) {
     do {
         let newWord = words[getRandomBetween(0, words.length - 1)];
 
-        if (isTaken(newWord) === false) {
+        if (isTaken(newWord, taken) === false) {
             newWords.push(newWord);
+            needCount--;
         }
 
         usedCount++;
@@ -22,7 +24,7 @@ const getUntakenWords = function (taken) {
     return newWords;
 }
 
-const isTaken = function(word) {
+const isTaken = function(word, taken) {
     for (let i = 0; i < taken.length; i++) {
         if(similarity(word, taken[i]) >= 0.8) {
             return true;
@@ -43,7 +45,6 @@ const similarity = function(s1, s2) {
       return 1.0;
     }
     const val = (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
-    console.log(s1, s2, val);
     return val;
 }
 
