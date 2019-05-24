@@ -27,7 +27,7 @@ class WinklerBingo {
         this.fieldChange = null;
         this.isDarkMode = false;
         this.isInfoOpen = false;
-        this.cards = {};
+        this.cards = [];
         this.phase = 0;
 
         // Lobby
@@ -97,7 +97,6 @@ class WinklerBingo {
         });
 
         _self.socket.on('autofillResult', function (data) {
-            console.log('autofillResult', data);
             _self.cardsAutofill(data);
         });
     }
@@ -114,7 +113,7 @@ class WinklerBingo {
                     x: i,
                     y: u
                 };
-                fieldsHTML += '<div id="wB_' + count + '" class="wB_field" data-x="' + i + '" data-y="' + u + '" data-count="' + count + '">' +
+                fieldsHTML += '<div id="wB_card_' + count + '" class="wB_field" data-x="' + i + '" data-y="' + u + '" data-count="' + count + '">' +
                 '<span class="wB_field_text"></span>' +
                 '</div>';
             }
@@ -153,8 +152,13 @@ class WinklerBingo {
         });
 
         $('#wB_autofillBtn').click(function() {
-            // TODO
-            _self.socket.emit('needAutofill', []); 
+            let words = [];
+            for (let i = 0; i < _self.cards.length; i++) {
+                if(_self.cards[i] != null && _self.cards[i].text != '') {
+                    words.push(_self.cards[i].text);
+                }
+            }
+            _self.socket.emit('needAutofill', words);
         });
     }
 
@@ -350,10 +354,14 @@ class WinklerBingo {
     }
 
     cardsAutofill(data) {
-
-        for(var i = 0; i < this.cards; i++) {
-            this.cardsSetTextToField(element, text)
+        let usedCounter = 0;
+        for(var i = 0; i < this.cards.length; i++) {
+            if (this.cards[i] != null && this.cards[i].text === '') {
+                this.cards[i].text = data[usedCounter++];
+                $('#wB_card_' + i).find('.wB_field_text').text(this.cards[i].text);
+            }
         }
+        this.readyBtnVisible(true);
     }
 
     toggleInfo() {
