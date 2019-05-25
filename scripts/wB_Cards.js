@@ -1,3 +1,4 @@
+"use strict";
 const getUntakenWords = function (taken) {
     taken = Array.isArray(taken) === true ? taken : [];
     let needCount = 25 - taken.length;
@@ -19,8 +20,7 @@ const getUntakenWords = function (taken) {
         if (usedCount >= wordsCount) {
             return newWords; 
         }
-    }
-    while (needCount > 0);
+    } while (needCount > 0);
     return newWords;
 }
 
@@ -77,6 +77,16 @@ const editDistance = function(s1, s2) {
 
 const getRandomBetween = function(min, max) {
     return Math.floor(Math.random() * max) + min;  
+}
+
+const areCardsFilledAndValid = function(cards) {
+    let words = [];
+    for (let i = 0; i < _self.cards.length; i++) {
+        if(_self.cards[i] != null && _self.cards[i].text != '') {
+            words.push(_self.cards[i].text);
+        }
+    }
+    return words;
 }
 
 exports.getUntakenWords = getUntakenWords;

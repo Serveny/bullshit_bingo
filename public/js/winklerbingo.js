@@ -130,11 +130,11 @@ class WinklerBingo {
             _self.socket.emit('joinRoom', { roomId: null }); 
         });
 
-        $('#toggleDarkBtn').click(function() {
+        $('#wB_toggleDarkBtn').click(function() {
             _self.toggleDarkMode();    
         });
 
-        $('.toggleInfoBtn').click(function() {
+        $('.wB_toggleInfoBtn').click(function() {
             _self.toggleInfo();    
         });
 
@@ -152,13 +152,7 @@ class WinklerBingo {
         });
 
         $('#wB_autofillBtn').click(function() {
-            let words = [];
-            for (let i = 0; i < _self.cards.length; i++) {
-                if(_self.cards[i] != null && _self.cards[i].text != '') {
-                    words.push(_self.cards[i].text);
-                }
-            }
-            _self.socket.emit('needAutofill', words);
+            _self.socket.emit('needAutofill', _self.cardsGetTextArr());
         });
     }
 
@@ -332,12 +326,31 @@ class WinklerBingo {
 
         for(let id in this.cards) { 
             if (this.cards[id].text === '') {
+                this.revertReady();
                 areAllCardsFilled = false;
                 break;
             }
         }
 
         this.readyBtnVisible(areAllCardsFilled);
+    }
+
+    cardsGetTextArr() {
+        let words = [];
+        for (let i = 0; i < this.cards.length; i++) {
+            if(this.cards[i] != null && this.cards[i].text != '') {
+                words.push(this.cards[i].text);
+            }
+        }
+        return words;
+    }
+
+    revertReady() {
+        if (this.isReady === true) {
+            this.socket.emit('toggleReady');
+            $('wB_thisUserReady').hide();
+        }
+        this.isReady = false;
     }
 
     async shakeAndStay(element) {

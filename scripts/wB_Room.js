@@ -1,7 +1,8 @@
+"use strict";
 const 
     uniqid = require('uniqid'),
-    avatars = require('./avatars'),
-    var_dump = require('var_dump');
+    avatars = require('./wB_Avatars');
+    // var_dump = require('var_dump');
 
 let roomList = global.roomList = [];
 

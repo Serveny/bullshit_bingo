@@ -1,3 +1,5 @@
+"use strict";
+
 const avatars = [
     'Baby Chrizzy',
     'Biancer',
