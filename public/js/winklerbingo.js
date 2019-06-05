@@ -32,16 +32,16 @@ class WinklerBingo {
 
         // Lobby
         console.log('roomJoined', roomData);
-        history.pushState(null, '', urlWithoutParams + '?r=' + roomData.roomId);
+        history.pushState(null, '', urlWithoutParams + '?r=' + roomData.id);
 
         $('#wB_createRoomBtn').fadeOut(100);
         $('#wB_lobbyContainer').fadeIn(1600);
 
-        const thisUser = this.getThisUserInRoom(roomData.players);
-        $('#wB_thisUserPic').attr({ "src": thisUser.urlPic });
-        $('#wB_thisUserInput').val(thisUser.name);
+        const thisUser = this.getThisUserInRoom(roomData.playerList);
+        $('#wB_thisUserPic').attr({ "src": thisUser.avatar.picUrl });
+        $('#wB_thisUserInput').val(thisUser.avatar.name);
 
-        this.roomAddOtherPlayer(roomData.players);
+        this.roomAddOtherPlayer(roomData.playerList);
 
         // Hadde Arbeit
         this.buildCardsHTML();
@@ -57,10 +57,10 @@ class WinklerBingo {
         $('#wB_autofillBtn').fadeIn(1600);
     }
 
-    getThisUserInRoom(players) {
-        for (let i = 0; i < players.length; i++) {
-            if (players[i].id == this.socket.id) {
-                return players[i];
+    getThisUserInRoom(playerList) {
+        for (let i = 0; i < playerList.length; i++) {
+            if (playerList[i].id == this.socket.id) {
+                return playerList[i];
             }
         }
         return null;

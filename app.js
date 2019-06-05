@@ -9,7 +9,6 @@ const
     // wB scripts
     wB_Socket = require('./scripts/wB_Socket'),
 
-    
     app = express();
 
 app.set('port', /*process.env.PORT || */1510);
@@ -24,5 +23,5 @@ const server = http.createServer(app).listen(app.get('port'), () => {
 const io = socket(server);
 
 io.on('connection', function (socket) {
-    wB_Socket.addEvents(socket); 
+    wB_Socket.addEvents(socket, io); 
 });

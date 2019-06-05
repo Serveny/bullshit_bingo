@@ -1,13 +1,61 @@
 "use strict";
-const getUntakenWords = function (taken) {
+const db = require('./wB_DB');
+
+let wordCache = new Map();
+let lastActualized = new Date('August 2, 1989 15:10:00');
+
+class Card {
+    constructor(id, text, posX, posY, meta) {
+        this.id = id;
+        this.text = text;
+        this.posX = posX;
+        this.posY = posY;
+        this.meta = meta;
+    }
+}
+
+class WordMetaData {
+    constructor(id, countGuessed, countUsed, createdAt, changedAt) {
+        this.id = id;
+        this.countGuessed = countGuessed;
+        this.countUsed = countUsed;
+        this.createdAt = createdAt;
+        this.changedAt = changedAt;
+    }
+}
+
+const actualizeWordCache = async () => {
+    console.debug('[wB_Cards] Actualize Word Cache');
+    db.word.getRowsByValue([['changedAt', '>', lastActualized]]).then((res) => {
+        for(const word of res) {
+            const meta = new WordMetaData(
+                word.wordId,
+                word.wordCountGuessed,
+                word.wordCountUsed,
+                word.createdAt,
+                word.changedAt,
+            );
+            let thisWord = wordCache.get(word);
+
+            if (thisWord == null) {
+                wordCache.set(word.wordText, meta);
+            } else {
+                thisWord = meta;
+            }
+        }
+    });
+    lastActualized = new Date();
+} 
+
+const getUntakenWords = (taken) => {
     taken = Array.isArray(taken) === true ? taken : [];
     let needCount = 25 - taken.length;
     let usedCount = 0;
-    let wordsCount = words.length;
+    let wordsCount = wordCache.size;
     let newWords = [];
     
     do {
-        let newWord = words[getRandomBetween(0, words.length - 1)];
+        let newWord = getRandomKey(wordCache);
 
         if (isTaken(newWord, taken) === false) {
             newWords.push(newWord);
@@ -24,7 +72,7 @@ const getUntakenWords = function (taken) {
     return newWords;
 }
 
-const isTaken = function(word, taken) {
+const isTaken = (word, taken) => {
     for (let i = 0; i < taken.length; i++) {
         if(similarity(word, taken[i]) >= 0.8) {
             return true;
@@ -33,7 +81,7 @@ const isTaken = function(word, taken) {
     return false;
 }
 
-const similarity = function(s1, s2) {
+const similarity = (s1, s2) => {
     let longer = s1;
     let shorter = s2;
     if (s1.length < s2.length) {
@@ -48,7 +96,7 @@ const similarity = function(s1, s2) {
     return val;
 }
 
-const editDistance = function(s1, s2) {
+const editDistance = (s1, s2) => {
     s1 = s1.toLowerCase();
     s2 = s2.toLowerCase();
 
@@ -75,86 +123,35 @@ const editDistance = function(s1, s2) {
     return costs[s2.length];
 }
 
-const getRandomBetween = function(min, max) {
-    return Math.floor(Math.random() * max) + min;  
+const getRandomKey = (map) => {
+    let keys = Array.from(map.keys());
+    return keys[Math.floor(Math.random() * keys.length)];
 }
 
-const areCardsFilledAndValid = function(cards) {
+// 
+const areCardsFilledAndValid = (cards) => {
     let words = [];
-    for (let i = 0; i < _self.cards.length; i++) {
-        if(_self.cards[i] != null && _self.cards[i].text != '') {
-            words.push(_self.cards[i].text);
+
+    try {
+        for (let i = 0; i < cards.length; i++) {
+            if(cards[i] != null && cards[i].text != '') {
+                words.push(cards[i].text);
+            }
         }
-    }
-    return words;
+        return words;
+    } catch (err) { throw err; }
 }
 
 exports.getUntakenWords = getUntakenWords;
+exports.areCardsFilledAndValid = areCardsFilledAndValid;
 
-const words = [
-    'Hä?',
-    'Meddl',
-    'Ich bin nicht derjeniche',
-    'Was?',
-    'Häider',
-    'Du Wahnsinnicher',
-    'Haut der wieder voll raus',
-    'assi',
-    'Ledsblay',
-    'ey',
-    'Ich bin ein Mensch, der..',
-    'Juhtub',
-    'Junau',
-    'Stream',
-    'schneiden',
-    'rendern',
-    'hochladen',
-    'Barren',
-    'Likes',
-    'Abonnentne',
-    'Willkommen bei den Drachis',
-    'Deutschland',
-    'Scheiße bauen',
-    'BLM',
-    'Nadsi',
-    'alder',
-    'dumm',
-    'Ich mach nur mei Zeuch',
-    'Mobbing',
-    'Wichser',
-    'So',
-    'Arsch aufreißne',
-    'Wadd de Hell',
-    'Ohne Scheiß',
-    'Glasfaser',
-    'Und des Geilste is..',
-    'Schanze',
-    'Ihr seid die Assis hier',
-    'Abo-Tschädd',
-    'Erdbeerchen',
-    'ferddich machne',
-    'Vollidiodne',
-    'Hass',
-    'Emotion',
-    'Mett',
-    'Zedla',
-    'dumm',
-    'meine Gehirnzellen schmelzne',
-    'Opfer',
-    'Grundstück',
-    'Radeln',
-    '4 Drachne und der Meddl',
-    'Brovogation',
-    'Allegser',
-    'Zeig mir die Einfahrt',
-    'fotzn',
-    'Brügel',
-    'geblockt',
-    'müde',
-    '*gähnt*',
-    'Arschloch',
-    'im Gegensatz zu dir..',
-    '*Song gegen Mobbing*',
-    '*Lesbenschlager*',
-    'Gesichtskrappfne'
-];
+exports.Card = Card;
+exports.WordMetaData = WordMetaData;
+
+// Start
+actualizeWordCache();
+
+// just here to remember
+// const getRandomBetween = (min, max) => {
+//     return Math.floor(Math.random() * max) + min;  
+// }

@@ -1,6 +1,14 @@
 "use strict";
 
-const avatars = [
+class Avatar {
+    constructor(id, name, picUrl) {
+        this.id = id;
+        this.name = name;
+        this.picUrl = picUrl;
+    }
+}
+
+const avatarList = [
     'Baby Chrizzy',
     'Biancer',
     'Der böse Wolf',
@@ -19,20 +27,16 @@ const avatars = [
     'Zoomulle',
 ];
 
-const getRandomAvatar = function(players) {
-    let avatar = {};
+const getRandomAvatar = (players) => {
+    let i = 0;
     do {
-        const i = Math.floor(Math.random() * (avatars.length - 1));
-        avatar = { 
-            name: avatars[i], 
-            urlPic: './img/user/user_' + i + '.png' 
-        }
-    } while (isAvatarAlreadyUsed(avatar.name, players) === true);
+        i = Math.floor(Math.random() * (avatarList.length - 1));
+    } while (isAvatarAlreadyUsed(i, players) === true);
 
-    return avatar;
+    return new Avatar(i, avatarList[i], `./img/user/user_${i}.png`);
 };
 
-const isAvatarAlreadyUsed = function(name, players) {
+const isAvatarAlreadyUsed = (id, players) => {
     if (players == null) {
         return false;
     }
