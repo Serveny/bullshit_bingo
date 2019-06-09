@@ -61,33 +61,36 @@ const mapEx = (objToCopy) => {
     if (objToCopy == null) {
       return null;
     }
+
     let obj = Object.assign( Object.create( Object.getPrototypeOf(objToCopy)), objToCopy);
-  
     if (obj == null) {
       return null;
-    } else {
-      for (const prop of Object.keys(obj)) {
-        if (obj[prop] instanceof Map) {
-          obj[prop] = mapToArr(obj[prop]);
-        } else if (typeof(prop) === 'object') {
-          prop = mapEx(prop);
-        }
+    }
+
+    for (const prop of Object.keys(obj)) {
+      if (obj[prop] instanceof Map) {
+        obj[prop] = mapToArr(obj[prop]);
+      } else if (typeof(prop) === 'object') {
+        prop = mapEx(prop);
       }
     }
+
     return obj;
   };
   
 const mapToArr = (map) => {
-    let arr = [];
-    map.forEach((item, key) => {
-        if (typeof(item) === 'object') {
-        item = mapEx(item);
-        }
-        arr.push([key, item]);
-    });
-    return arr;
+  let arr = [];
+  for(const key of map.keys()) {
+    let item = map.get(key);
+    if (typeof(item) === 'object') {
+      item = mapEx(item);
+    }
+    arr.push([key, item]);
+  }
+  return arr;
 }
 
 exports.mapEx = mapEx;
+exports.mapToArr = mapToArr;
 //#endregion
 //#endregion

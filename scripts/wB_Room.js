@@ -114,11 +114,14 @@ exports.autofill = (socket) => {
     }
     
     const cardMap = room.playerMap.get(socket.id).cardMap;
-    const newWords = wB_cards.getUntakenWords(wB_cards.getTakenWordsArrFromMap(cardMap));
+    const newWordsMap = wB_cards.getUntakenWordsMap(wB_cards.getTakenWordsMap(cardMap));
     let changedMap = null;
 
-    if (newWords.length > 0) {
-        changedMap = wB_cards.fillEmptyWordsCardMap(cardMap, newWords);
+    debug('newWordsMap', newWordsMap);
+    debug('+++++++++++++++++++++++++++++++++++++++++++++');
+    if (newWordsMap.size > 0) {
+        changedMap = wB_cards.fillEmptyWordsCardMap(cardMap, newWordsMap);
+        debug('changedMap', changedMap);
     }
     
     out.emitAutofillResult(socket, changedMap);

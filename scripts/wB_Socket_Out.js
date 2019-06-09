@@ -28,9 +28,9 @@ exports.emitPlayerIsReadyChange = (socket, thisRoom, isReady) => {
     debug(`Player ${socket.id} toggled isReady to ${isReady}`);
 };
 
-exports.emitAutofillResult = (socket, cardMapChanged) => {
-    socket.emit('autofillResult', helper.mapEx(cardMapChanged));
-    debug(`emitAutofillResult. Changed: ${ cardMapChanged == null ? 0 : cardMapChanged.size }`);
+exports.emitAutofillResult = (socket, changedCardMap) => {
+    socket.emit('autofillResult', helper.mapToArr(changedCardMap));
+    debug(`emitAutofillResult. Changed: ${ changedCardMap == null ? 0 : changedCardMap.size }`);
 };
 
 exports.emitSetCardResult = (socket, card) => {

@@ -44,33 +44,34 @@ exports.areCardsFilledAndValid = (cardMap) => {
     }
 }
 
-exports.getTakenWordsArrFromMap = (cardMap) => {
-    let takenArr = [];
+exports.getTakenWordsMap = (cardMap) => {
+    let takenMap = new Map();
     for (const card of cardMap.values()) {
         if (card.word != null) {
-            takenArr.push(card.word.text);
+            takenMap.set(card.word.text, card.word);
         }
     }
-    debug('getTakenWordsFromMap: ', takenArr);
-    return takenArr;
+    debug('getTakenWordsMap: ', takenMap);
+    return takenMap;
 };
 
-exports.getUntakenWords = (takenArr) => {
-    let needCount = 25 - takenArr.length;
+exports.getUntakenWordsMap = (takenMap) => {
+    let needCount = 25 - takenMap.size;
     let usedCount = 0;
     let wordsCount = wordCache.size;
     let newWordMap = new Map();
     
     do {
-        let newWordStr = getRandomKey(wordCache);
+        let newWordItem = getRandomMapItem(wordCache);
+        debug('newWordItem', newWordItem);
 
-        if (isTaken(newWord, takenArr) === false) {
-            newWordMap.set(newWord.text, newWord);
+        if (isTaken(newWordItem, takenMap) === false) {
+            newWordMap.set(newWordItem.text, newWordItem);
             needCount--;
         }
 
         usedCount++;
-        takenArr.push(newWordStr);
+        takenMap.set(newWordItem.text, newWordItem);
 
         if (usedCount >= wordsCount) {
             return newWordMap; 
@@ -80,20 +81,22 @@ exports.getUntakenWords = (takenArr) => {
     return newWordMap;
 };
 
-exports.fillEmptyWordsCardMap = (cardMap, newWords) => {
+exports.fillEmptyWordsCardMap = (cardMap, newWordsMap) => {
+    const newWordsMapIterator = newWordsMap.values();
     const changedMap = new Map();
-    const countMax = newWords.length;
+    const countMax = newWordsMap.size;
     let countUsed = 0;
     
-    for (const card of cardMap) {
-        if (card.word.text === '') {
-            card.word.text = newWords[countUsed++];
+    for (const card of cardMap.values()) {
+        if (card.word == null) {
+            card.word = newWordsMapIterator.next().value;
             changedMap.set(card.id, card);
         }
         if (countUsed >= countMax) {
             break;
         }
     }
+    
     return changedMap;
 };
 
@@ -136,22 +139,23 @@ const actualizeWordCache = async () => {
     lastActualized = new Date();
 };
 
-const isTaken = (word, taken) => {
-    for (const takenWord of taken) {
-        if (helper.similarity(word, takenWord) >= 0.8) {
+const isTaken = (wordItem, takenMap) => {
+    debug('takenMap', takenMap);
+    debug('wordItem', wordItem);
+    // TODO Mit befüllter takenMap testen
+    for (const takenWord of takenMap.keys()) {
+        debug('----------------------');
+        debug(wordItem.text, takenWord);
+        debug('----------------------');
+        if (helper.similarity(wordItem.text, takenWord) >= 0.8) {
             return true;
         }
     }
-    // for (let i = 0; i < taken.length; i++) {
-    //     if(similarity(word, taken[i]) >= 0.8) {
-    //         return true;
-    //     }
-    // }
     return false;
 };
 //#endregion
-const getRandomMapItem = () => {
-    
+const getRandomMapItem = (map) => {
+    return map.get(getRandomKey(map));
 }
 
 const getRandomKey = (map) => {

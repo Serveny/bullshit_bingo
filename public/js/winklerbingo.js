@@ -174,8 +174,8 @@ class WinklerBingo {
             _self.roomSetPlayerReady(data.playerId, data.isReady);
         });
 
-        _self.socket.on('autofillResult', function (data) {
-            _self.cardsAutofill(data);
+        _self.socket.on('autofillResult', function (changedCardsArr) {
+            _self.cardsAutofill(_self.arrToCardMap(changedCardsArr));
         });
 
         _self.socket.on('cardValidationResult', function (card) {
@@ -429,14 +429,15 @@ class WinklerBingo {
         }, 820);
     }
 
-    cardsAutofill(newWordMap) {
-        let usedCounter = 0;
-        for(var i = 0; i < this.cards.length; i++) {
-            if (this.cards[i] != null) {
-                this.cards[i].word = newWordMap.get(usedCounter++);
-                $('#wB_card_' + i).find('.wB_field_text').text(this.cards[i].text);
-            }
+    cardsAutofill(changedCardMap) {
+        const cardMap = this.room.playerMap.get(this.socket.id).cardMap;
+        console.log('changedCardMap: ', changedCardMap);
+        for (const cardItem of changedCardMap) {
+            console.log('cardItem: ', cardItem.id, cardItem);
+            cardMap.set(cardItem.id, cardItem);
+            this.cardsSetTextHTML($('#card_' + cardItem.id), cardItem.text);
         }
+        
         this.readyBtnVisible(true);
     }
 
@@ -508,6 +509,15 @@ class WinklerBingo {
         } else {
             $('#wB_thisUserReady').hide();
         }
+    }
+
+    arrToCardMap(cardArr) {
+        console.log('cardArr: ', cardArr);
+        const cardMap = new Map();
+        for (let i = 0; i < cardArr.length; i++) {
+            cardMap.set(cardArr[i][0], new Card(cardArr[i][1]));
+        }
+        return cardMap;
     }
 }
 
