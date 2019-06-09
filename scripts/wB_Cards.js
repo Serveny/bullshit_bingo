@@ -51,7 +51,6 @@ exports.getTakenWordsMap = (cardMap) => {
             takenMap.set(card.word.text, card.word);
         }
     }
-    debug('getTakenWordsMap: ', takenMap);
     return takenMap;
 };
 
@@ -63,7 +62,6 @@ exports.getUntakenWordsMap = (takenMap) => {
     
     do {
         let newWordItem = getRandomMapItem(wordCache);
-        debug('newWordItem', newWordItem);
 
         if (isTaken(newWordItem, takenMap) === false) {
             newWordMap.set(newWordItem.text, newWordItem);
@@ -77,7 +75,7 @@ exports.getUntakenWordsMap = (takenMap) => {
             return newWordMap; 
         }
     } while (needCount > 0);
-    debug('getUntakenWords: ', newWordMap);
+
     return newWordMap;
 };
 
@@ -140,13 +138,8 @@ const actualizeWordCache = async () => {
 };
 
 const isTaken = (wordItem, takenMap) => {
-    debug('takenMap', takenMap);
-    debug('wordItem', wordItem);
     // TODO Mit befüllter takenMap testen
     for (const takenWord of takenMap.keys()) {
-        debug('----------------------');
-        debug(wordItem.text, takenWord);
-        debug('----------------------');
         if (helper.similarity(wordItem.text, takenWord) >= 0.8) {
             return true;
         }

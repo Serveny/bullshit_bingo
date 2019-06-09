@@ -83,7 +83,6 @@ class WinklerBingo {
         this.phase = 0;
 
         // Lobby
-        console.log('roomJoined2', this.room);
         history.pushState(null, '', urlWithoutParams + '?r=' + this.room.id);
 
         $('#wB_createRoomBtn').fadeOut(100);
@@ -292,11 +291,13 @@ class WinklerBingo {
             $('body').addClass('dark');
             $('.wB_field').addClass('dark');
             $('#wB_info').addClass('dark');
+            $('#bodyOverlay').css('opacity', 0.6);
         } else {
             this.setDarkModeSetting(false);
             $('body').removeClass('dark');
             $('.wB_field').removeClass('dark');
             $('#wB_info').removeClass('dark');
+            $('#bodyOverlay').css('opacity', 0.1);
         }
     }
 
@@ -431,11 +432,10 @@ class WinklerBingo {
 
     cardsAutofill(changedCardMap) {
         const cardMap = this.room.playerMap.get(this.socket.id).cardMap;
-        console.log('changedCardMap: ', changedCardMap);
-        for (const cardItem of changedCardMap) {
-            console.log('cardItem: ', cardItem.id, cardItem);
+
+        for (const cardItem of changedCardMap.values()) {
             cardMap.set(cardItem.id, cardItem);
-            this.cardsSetTextHTML($('#card_' + cardItem.id), cardItem.text);
+            this.cardsSetTextHTML($('#wB_card_' + cardItem.id), cardItem.word.text);
         }
         
         this.readyBtnVisible(true);
@@ -512,7 +512,6 @@ class WinklerBingo {
     }
 
     arrToCardMap(cardArr) {
-        console.log('cardArr: ', cardArr);
         const cardMap = new Map();
         for (let i = 0; i < cardArr.length; i++) {
             cardMap.set(cardArr[i][0], new Card(cardArr[i][1]));

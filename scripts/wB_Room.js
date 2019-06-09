@@ -117,11 +117,8 @@ exports.autofill = (socket) => {
     const newWordsMap = wB_cards.getUntakenWordsMap(wB_cards.getTakenWordsMap(cardMap));
     let changedMap = null;
 
-    debug('newWordsMap', newWordsMap);
-    debug('+++++++++++++++++++++++++++++++++++++++++++++');
     if (newWordsMap.size > 0) {
         changedMap = wB_cards.fillEmptyWordsCardMap(cardMap, newWordsMap);
-        debug('changedMap', changedMap);
     }
     
     out.emitAutofillResult(socket, changedMap);
