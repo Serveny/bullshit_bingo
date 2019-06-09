@@ -1,12 +1,59 @@
 // Derjeniche, der den Code schreibt:
 // Serveny
 
+class Room {
+    constructor(room) {
+        this.id = room.id;
+        this.playerMap = new Map();
+
+        const _self = this;
+        room.playerMap.forEach(function(player) {
+            _self.playerMap.set(player[0], new Player(player[1]));
+        });            
+    }
+}
+
+class Player {
+    constructor(player) {
+        this.id = player.id;
+        this.avatar = player.avatar;
+        this.isReady = player.isReady;
+        this.cardMap = new Map();
+
+        const _self = this;
+        player.cardMap.forEach(function(card) {
+            _self.cardMap.set(card[0], new Card(card[1]));
+        });
+    }
+}
+
+class Card {
+    constructor(card) {
+        this.id = card.id;
+        this.word = card.word;
+        this.posX = card.posX;
+        this.posY = card.posY;
+    }
+}
+
+class Word {
+    constructor(word) {
+        this.id = word.id;
+        this.text = word.text;
+        this.countGuessed = word.countGuessed;
+        this.countUsed = word.countUsed;
+        this.createdAt = word.createdAt;
+        this.changedAt = word.changedAt;
+    }
+}
+
 class WinklerBingo {
 
     // A bisl wergeln & rumwuseln
     constructor () {
         this.socket = io.connect(window.location.host);
         this.roomId = this.getUrlParam('r');
+        this.room = {};
         this.socketAddEvents();
 
         // Dark Mode
@@ -17,11 +64,16 @@ class WinklerBingo {
         this.addEvents();
 
         if (this.roomId != null) {
-            this.socket.emit('joinRoom', { roomId: this.roomId });
+            this.socket.emit('joinRoom', this.roomId);
+        } else {
+            $('#wB_createRoomBtn').show();
         }
     }
 
-    startWergelPhase(roomData) {
+    startWergelPhase(room) {
+        this.room = new Room(room);
+        console.log('RoomJoinedCache: ', this.room);
+
         // Brobbaties
         const urlWithoutParams =  location.protocol + '//' + location.host;
         this.fieldChange = null;
@@ -31,17 +83,17 @@ class WinklerBingo {
         this.phase = 0;
 
         // Lobby
-        console.log('roomJoined', roomData);
-        history.pushState(null, '', urlWithoutParams + '?r=' + roomData.id);
+        console.log('roomJoined2', this.room);
+        history.pushState(null, '', urlWithoutParams + '?r=' + this.room.id);
 
         $('#wB_createRoomBtn').fadeOut(100);
         $('#wB_lobbyContainer').fadeIn(1600);
 
-        const thisUser = this.getThisUserInRoom(roomData.playerList);
+        const thisUser = this.room.playerMap.get(this.socket.id);
         $('#wB_thisUserPic').attr({ "src": thisUser.avatar.picUrl });
         $('#wB_thisUserInput').val(thisUser.avatar.name);
 
-        this.roomAddOtherPlayer(roomData.playerList);
+        this.roomAddOtherPlayer(this.room.playerMap);
 
         // Hadde Arbeit
         this.buildCardsHTML();
@@ -57,77 +109,12 @@ class WinklerBingo {
         $('#wB_autofillBtn').fadeIn(1600);
     }
 
-    getThisUserInRoom(playerList) {
-        for (let i = 0; i < playerList.length; i++) {
-            if (playerList[i].id == this.socket.id) {
-                return playerList[i];
-            }
-        }
-        return null;
-    }
-
-    // Wie wohl Wingls Socken riechen?
-    socketAddEvents() {
-        const _self = this;
-
-        _self.socket.on('roomJoined', function (roomData) {
-            if (roomData == null) {
-                history.pushState(null, '', location.protocol + '//' + location.host);
-            } else {
-                _self.startWergelPhase(roomData);
-            }
-        });
-
-        _self.socket.on('playerJoined', function (newPlayer) {
-            console.log('playerJoined', newPlayer);
-            _self.roomAddPlayerHTML(newPlayer);
-        });
-
-        _self.socket.on('playerDisconnected', function (playerId) {
-            console.log('playerDisconnected', playerId);
-            _self.roomRemovePlayerHTML(playerId);
-        });
-
-        _self.socket.on('nameChanged', function (data) {
-            _self.roomPlayerChangeName(data.playerId, data.name);
-        });
-
-        _self.socket.on('playerReadyStatusChanged', function (data) {
-            _self.roomSetPlayerReady(data.playerId, data.isReady);
-        });
-
-        _self.socket.on('autofillResult', function (data) {
-            _self.cardsAutofill(data);
-        });
-    }
-
-    // HTML-Code positionieren, so a richtig geilen DOM
-    buildCardsHTML() {
-        let fieldsHTML = '';
-        let count = 0;
-        
-        for (let i = 1; i < 6; i++) {
-            for (let u = 1; u < 6; u++) {
-                this.cards[++count] = {
-                    text: '',
-                    x: i,
-                    y: u
-                };
-                fieldsHTML += '<div id="wB_card_' + count + '" class="wB_field" data-x="' + i + '" data-y="' + u + '" data-count="' + count + '">' +
-                '<span class="wB_field_text"></span>' +
-                '</div>';
-            }
-        }
-
-        $('#wB_cardsContainer').html(fieldsHTML);
-    }
-
     // 20.08 Schanzenfest
     addEvents() {
         const _self = this;
 
         $('#wB_createRoomBtn').click(function() {
-            _self.socket.emit('joinRoom', { roomId: null }); 
+            _self.socket.emit('joinRoom', null);
         });
 
         $('#wB_toggleDarkBtn').click(function() {
@@ -139,7 +126,7 @@ class WinklerBingo {
         });
 
         $('#wB_thisUserInput').change(function() {
-            _self.socket.emit('customName', $(this).val()); 
+            _self.socket.emit('changeName', $(this).val()); 
         });
 
         $('#wB_thisUserReady').click(function() {
@@ -148,6 +135,7 @@ class WinklerBingo {
 
         $('#wB_leaveRoomBtn').click(function() {
             _self.socket.disconnect();
+            history.pushState(null, '', location.protocol + '//' + location.host);
             location.reload();
         });
 
@@ -155,6 +143,49 @@ class WinklerBingo {
             _self.socket.emit('needAutofill', _self.cardsGetTextArr());
         });
     }
+
+    socketAddEvents() {
+        const _self = this;
+
+        _self.socket.on('roomJoined', function (roomData) {
+            if (roomData == null) {
+                history.pushState(null, '', location.protocol + '//' + location.host);
+                $('#wB_createRoomBtn').show();
+            } else {
+                _self.startWergelPhase(roomData);
+            }
+        });
+
+        _self.socket.on('playerJoined', function (newPlayer) {
+            newPlayer = new Player(newPlayer);
+            _self.room.playerMap.set(newPlayer.id, newPlayer);
+            _self.roomAddPlayerHTML(newPlayer);
+        });
+
+        _self.socket.on('playerDisconnected', function (playerId) {
+            _self.roomRemovePlayerHTML(playerId);
+        });
+
+        _self.socket.on('nameChanged', function (data) {
+            _self.roomPlayerChangeName(data.playerId, data.name);
+        });
+
+        _self.socket.on('playerIsReadyChanged', function (data) {
+            _self.roomSetPlayerReady(data.playerId, data.isReady);
+        });
+
+        _self.socket.on('autofillResult', function (data) {
+            _self.cardsAutofill(data);
+        });
+
+        _self.socket.on('cardValidationResult', function (card) {
+            if (card != null) {
+                _self.cardsSetCard(new Card(card));
+            } else {
+                _self.shakeAndStay($('#card_' + card.id));
+            }
+        });
+    }    
 
     // Ferdammt, wie gonndest du mich bedrügen?
     addCardEvents() {
@@ -180,7 +211,7 @@ class WinklerBingo {
             if (keyCode == 9) {
                 if (_self.fieldChange != null) {
                     e.preventDefault();
-                    let number = _self.fieldChange.attr('data-count');
+                    let number = _self.fieldChange.attr('data-id');
                     if(_self.cardsSetNewTextToCard(_self.fieldChange) === false) {
                         return;
                     };
@@ -232,6 +263,27 @@ class WinklerBingo {
         });
     }
 
+    // HTML-Code positionieren, so a richtig geilen DOM
+    buildCardsHTML() {
+        let fieldsHTML = '';
+        let count = 0;
+        
+        for (let i = 1; i < 6; i++) {
+            for (let u = 1; u < 6; u++) {
+                this.cards[++count] = {
+                    text: '',
+                    x: i,
+                    y: u
+                };
+                fieldsHTML += '<div id="wB_card_' + count + '" class="wB_field" data-x="' + i + '" data-y="' + u + '" data-id="' + count + '">' +
+                '<span class="wB_field_text"></span>' +
+                '</div>';
+            }
+        }
+
+        $('#wB_cardsContainer').html(fieldsHTML);
+    }
+
     toggleDarkMode() {
         this.isDarkMode = !this.isDarkMode;
 
@@ -266,7 +318,7 @@ class WinklerBingo {
     *  Cards Functions
        --------------------- */
 
-    // Neuer Blockeindrag wird gerendert
+    // Neuer Blockeindrag wird gerendert etzadla
     cardsAddTextArea(element) {
         this.fieldChange = element;
         let text = element.find('span').text();
@@ -281,27 +333,38 @@ class WinklerBingo {
 
     cardsSetNewTextToCard(element) {
         let text = element.find('textarea').val().trim();
-        return this.cardsSetTextToField(element, text);
+        return this.validateCard(element, text);
     }
 
     cardsRevertCard(element) {
-        let text = this.cards[element.attr('data-count')].text;
-        return this.cardsSetTextToField(element, text);
+        let text = this.cards[element.attr('data-id')].text;
+        return this.validateCard(element, text);
     }
 
-    cardsSetTextToField(element, text) {
+    validateCard(element, text) {
         text = text.trim();
         if (this.cardsDoesTextExist(text) === false) {
-            element.removeClass('wB_field_focus');
-            element.html('<span class="wB_field_text">' + text + '</span>');
-            this.fieldChange = null;
-            this.cards[element.attr('data-count')].text = text;
-            this.cardsCheckAllFilled();
+            this.socket.emit('setCard', {
+                cardId: element.attr('data-id'),
+                cardText: text
+            });
             return true;
         } else {
             this.shakeAndStay(element);
             return false;
         }
+    }
+
+    cardsSetCard(card) {
+        this.room.playerMap.get(this.socket.id).cardMap.set(card.id, card);
+        this.cardsSetTextHTML($('#card_' + card.id), card.text);
+    }
+
+    cardsSetTextHTML(element, text) {
+        element.removeClass('wB_field_focus');
+        element.html('<span class="wB_field_text">' + text + '</span>');
+        this.fieldChange = null;
+        this.cardsCheckAllFilled();
     }
 
     cardsDoesTextExist(text) {
@@ -310,7 +373,6 @@ class WinklerBingo {
         }
         
         let doesTextAlreadyExist = false;
-
         for(let id in this.cards) {
             
             if (this.cards[id].text === text) {
@@ -323,9 +385,10 @@ class WinklerBingo {
 
     cardsCheckAllFilled() {
         let areAllCardsFilled = true;
+        const cardMap = this.room.playerMap.get(this.socket.id).cardMap;
 
-        for(let id in this.cards) { 
-            if (this.cards[id].text === '') {
+        for(let word of cardMap.values()) { 
+            if (word.text === '') {
                 this.revertReady();
                 areAllCardsFilled = false;
                 break;
@@ -366,11 +429,11 @@ class WinklerBingo {
         }, 820);
     }
 
-    cardsAutofill(data) {
+    cardsAutofill(newWordMap) {
         let usedCounter = 0;
         for(var i = 0; i < this.cards.length; i++) {
-            if (this.cards[i] != null && this.cards[i].text === '') {
-                this.cards[i].text = data[usedCounter++];
+            if (this.cards[i] != null) {
+                this.cards[i].word = newWordMap.get(usedCounter++);
                 $('#wB_card_' + i).find('.wB_field_text').text(this.cards[i].text);
             }
         }
@@ -395,20 +458,21 @@ class WinklerBingo {
        return null;
     }
 
-    roomAddOtherPlayer(players) {
-        for (let i = 0; i < players.length; i++) {
-            if (players[i].id !== this.socket.id) {
-                this.roomAddPlayerHTML(players[i]);
+    roomAddOtherPlayer(playerMap) {
+        const _self = this;
+        playerMap.forEach(function(player) {
+            if (player.id !== _self.socket.id) {
+                _self.roomAddPlayerHTML(player);
             }
-        }
+        });
     }
     
     roomAddPlayerHTML(player) {
-        const name = player.customName != null ? player.customName : player.name;
+        console.log('Add new player: ', player);
         $('#wB_lobbyContainer')
             .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady">done</i>' + 
-            '<img src="' + player.urlPic + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
-            '<div class="wB_userName">' + name + '</div></div>');
+            '<img src="' + player.avatar.picUrl + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
+            '<div class="wB_userName">' + player.avatar.name + '</div></div>');
     }
 
     roomRemovePlayerHTML(playerId) {

@@ -11,7 +11,7 @@
     "license": "MIT",
     "scripts": {
         "start": "node app.js",
-        "start-dev": "nodemon app.js",
+        "start-dev": "@powershell -Command $env:DEBUG='wb';nodemon app.js",
         "start-forever": "forever start app.js",
         "kill-win": "taskkill /im node.exe",
         "kill-lin": "killall node",
@@ -23,10 +23,11 @@
     },
     "dependencies": {
         "config": "^3.1.0",
+        "debug": "^4.1.1",
         "express": "^4.16.4",
         "mysql2": "^1.6.5",
         "serve-favicon": "^2.5.0",
-        "socket.io": "^2.2.0",
-        "uniqid": "^5.0.3"
+        "shortid": "^2.2.14",
+        "socket.io": "^2.2.0"
     }
 }

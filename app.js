@@ -1,4 +1,12 @@
 'use strict';
+
+// Winklerbingo namespace
+global.wb = {
+    io: null,
+    roomMap: null,
+    wordMap: null
+};
+
 const 
     express = require('express'),
     http = require('http'),
@@ -7,7 +15,7 @@ const
     socket = require('socket.io'),
 
     // wB scripts
-    wB_Socket = require('./scripts/wB_Socket'),
+    wB_Socket_In = require('./scripts/wB_Socket_In'),
 
     app = express();
 
@@ -20,8 +28,7 @@ const server = http.createServer(app).listen(app.get('port'), () => {
     console.log('Meddl Loide! Port: ' + app.get('port'));
 });
 
-const io = socket(server);
-
-io.on('connection', function (socket) {
-    wB_Socket.addEvents(socket, io); 
+global.wb.io = socket(server);
+global.wb.io.on('connection', (socket) => {
+    wB_Socket_In.addEvents(socket);
 });

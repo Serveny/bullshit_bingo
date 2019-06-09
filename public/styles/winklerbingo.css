@@ -337,14 +337,18 @@ section > h3:hover {
     Create Room Button
     ======================== */
 
+#wB_createRoomBtn {
+    display: none;
+}
+
 .wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  justify-content: center;
-  z-index: 999;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    z-index: 999;
 }
 
 .cta {

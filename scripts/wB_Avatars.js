@@ -27,25 +27,37 @@ const avatarList = [
     'Zoomulle',
 ];
 
-const getRandomAvatar = (players) => {
-    let i = 0;
+const getRandomAvatar = (playerMap) => {
+    let id = 0;
+    let usedIds = [];
+    
     do {
-        i = Math.floor(Math.random() * (avatarList.length - 1));
-    } while (isAvatarAlreadyUsed(i, players) === true);
+        id = Math.floor(Math.random() * (avatarList.length - 1));
+        
+        if(usedIds.includes(id) === false) {
+            usedIds.push(id);
+            
+            // emergency stop
+            if (usedIds.length === avatarList.length) {
+                return null;
+            }
+        }
+    } while (isAvatarAlreadyUsed(id, playerMap) === true);
 
-    return new Avatar(i, avatarList[i], `./img/user/user_${i}.png`);
+    return new Avatar(id, avatarList[id], `./img/user/user_${id}.png`);
 };
 
-const isAvatarAlreadyUsed = (id, players) => {
-    if (players == null) {
+const isAvatarAlreadyUsed = (id, playerMap) => {
+    if (playerMap == null) {
         return false;
     }
 
-    for (let i = 0; i < players.length; i++) {
-        if (name === players[i].name) {
+    for (const player of playerMap.values()) {
+        if (player.avatar.id === id) {
             return true;
         }
     }
+
     return false;
 }
 

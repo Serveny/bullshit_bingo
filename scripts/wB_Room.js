@@ -1,124 +1,152 @@
 "use strict";
-const 
-    uniqid = require('uniqid'),
+const
+    debug = require('debug')('wb'),
+    shortid = require('shortid'),
     avatars = require('./wB_Avatars'),
-    wB_cards = require('./wB_cards');
-    // var_dump = require('var_dump');
-
-let roomList = global.roomList = [];
+    wB_cards = require('./wB_cards'),
+    out = require('./wB_Socket_Out'),
+    helper = require('./wB_Helper'),
+    roomMap = global.wb.roomMap = new Map();
 
 class Room {
-    constructor(id, playerList) {  
+    constructor(id, playerMap) {  
         this.id = id; 
-        this.playerList = playerList;
+        this.playerMap = playerMap;
     }
 }
 
 class Player {
-    constructor(id, avatar, isReady, cardList) {
+    constructor(id, avatar, isReady, cardMap) {
         this.id = id;
         this.avatar = avatar;
         this.isReady = isReady;
-        this.cardList = cardList;
+        this.cardMap = cardMap;
     }
 }
 
-const joinRoom = (roomId, socket) => {
-    const roomIndex = getRoomIndex(roomId);
-
-    // Inexistent room
-    if (roomId != null && roomIndex === -1) {
-        return null;
+//#region public
+exports.joinRoom = (socket, roomId) => {
+    // Create new room
+    if (roomId == null) {
+        out.emitRoomJoined(socket, createRoom(socket));
+        return;
     }
-    console.log('roomIndex: ', roomIndex);
-    if (roomIndex >= 0) {
-        socket.join(roomId);
-        roomList[roomIndex].playerList.push(createPlayer(roomList[roomIndex].playerList, socket));
-        return roomList[roomIndex];
-    } else {
-        return createRoom(socket);
-    };
+
+    const room = roomMap.get(roomId);
+    // Inexistent room
+    if (room == null) {
+        out.emitRoomJoined(socket, null);
+        return;
+    }
+
+    const newUser = createPlayer(room.playerMap, socket);
+    // Join Room
+    socket.join(roomId);
+    room.playerMap.set(newUser.id, newUser);
+    
+    out.emitRoomJoined(socket, room);
+    return;
 };
 
-const createRoom = (socket) => {
-    const room = new Room(uniqid(), [createPlayer(null, socket)]);
+exports.removePlayerAndCloseRoomIfEmpty = (socket) => {
+    let room = getRoomByPlayerId(socket.id);
+
+    if (room == null) {
+        return;
+    }
+
+    // Remove room if empty
+    if (room.playerMap.size <= 1) {
+        debug(`Room ${room.id} closed`);
+        roomMap.delete(room.id);
+    } 
+    // Remove player out of room only
+    else {
+        room.playerMap.delete(socket.id);
+        out.emitPlayerDisconnected(socket, room);
+    }
+};
+
+exports.togglePlayerIsReady = (socket) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (room == null) {
+        return;
+    }
+        
+    const player = room.playerMap.get(socket.id);
+    if (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === false) { 
+        return;
+    }
+
+    player.isReady = !player.isReady;
+    out.emitPlayerIsReadyChange(socket, room, player.isReady);
+};
+
+exports.setCustomName = (socket, newName) => {
+    const room = getRoomByPlayerId(socket.id);
+
+    if(room != null && helper.isValidName(newName) === true) {
+        room.playerMap.get(socket.id).avatar.name = newName;
+        out.emitNameChange(socket, room, newName);
+    }
+};
+
+exports.setCard = (socket, cardId, cardText) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (room == null) { 
+        return;
+    }
     
-    socket.join(room.id);
-    roomList.push(room);
+    const cardMap = room.playerMap.get(socket.id).cardMap;
+    let card = null;
+    if (wB_cards.isValidCard(cardMap, cardId, cardText) === true) {
+        card = cardMap.get(parseInt(cardId));
+        card.text = cardText;
+    }
+
+    out.emitSetCardResult(socket, card);
+};
+
+exports.autofill = (socket) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (room == null) { 
+        return;
+    }
+    
+    const cardMap = room.playerMap.get(socket.id).cardMap;
+    const newWords = wB_cards.getUntakenWords(wB_cards.getTakenWordsArrFromMap(cardMap));
+    let changedMap = null;
+
+    if (newWords.length > 0) {
+        changedMap = wB_cards.fillEmptyWordsCardMap(cardMap, newWords);
+    }
+    
+    out.emitAutofillResult(socket, changedMap);
+};
+//#endregion
+
+//#region private
+const createRoom = (socket) => {
+    const newPlayer = createPlayer(null, socket);
+    const roomId = shortid.generate();
+    const room = new Room(roomId, new Map([[newPlayer.id, newPlayer]]));
+    
+    socket.join(roomId);
+    roomMap.set(roomId, room);
     return room;
 };
 
-const createPlayer = (playerList, socket) => {
-    let avatar = avatars.getRandomAvatar(playerList);
-    return new Player(socket.id, avatar, false, []);
+const createPlayer = (playerMap, socket) => {
+    const avatar = avatars.getRandomAvatar(playerMap);
+    return new Player(socket.id, avatar, false, wB_cards.generateEmptyCardMap());
 };
 
-const getRoomIndex = (roomId) => {
-    for (let i = 0; i < roomList.length; i++) {
-        if (roomList[i].roomId === roomId) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-// Returns room
-const removePlayerAndCloseRoomIfEmpty = function(id) {
-    let roPlIndex = getRoomAndPlayerById(id);
-
-    if(roPlIndex != null) {
-        // Remove room if empty
-        if (roomList[roPlIndex.roomIndex].playerList.length <= 1) {
-            console.log('Close Room - ', roPlIndex.roomIndex);
-            roomList.splice(roPlIndex.roomIndex);
-            return null;
-        } 
-        // Remove player out of room only
-        else {
-            roomList[roPlIndex.roomIndex].playerList.splice(roPlIndex.playerIndex);
-            return roomList[roPlIndex.roomIndex];
-        }
-    }
-}
-
-const getRoomAndPlayerById = function(id) {
-    for (let i = 0; i < roomList.length; i++) {
-        for (let u = 0; u < roomList[i].playerList.length; u++) {
-            if (roomList[i].playerList[u].id == id) {
-                return { 
-                    roomIndex: i,
-                    playerIndex: u
-                };
-            }
+const getRoomByPlayerId = (id) => {
+    for (const room of roomMap.values()) {
+        if (room.playerMap.has(id) === true) {
+            return room;
         }
     }
     return null;
 }
-
-const setCustomName = function(id, name) {
-    let roPlIndex = getRoomAndPlayerById(id);
-
-    if(roPlIndex != null) {
-        roomList[roPlIndex.roomIndex].playerList[roPlIndex.playerIndex].customName = name;
-        return roomList[roPlIndex.roomIndex];
-    }
-}
-
-const togglePlayerReadyStatus = (id, cardList) => {
-    let roPlIndex = getRoomAndPlayerById(id);
-
-    if (roPlIndex != null && wB_cards.areCardsFilledAndValid(cardList)) {
-        const newStatus = !(roomList[roPlIndex.roomIndex].playerList[roPlIndex.playerIndex].isReady);
-        roomList[roPlIndex.roomIndex].playerList[roPlIndex.playerIndex].isReady = newStatus;
-        return { room: roomList[roPlIndex.roomIndex], isReady: newStatus};
-    } else {
-        return null;
-    }
-}
-
-// TODO Overthink using Maps instead of arrays
-
-exports.joinRoom = joinRoom;
-exports.removePlayer = removePlayerAndCloseRoomIfEmpty;
-exports.setCustomName = setCustomName;
-exports.togglePlayerReadyStatus = togglePlayerReadyStatus;
+//#endregion

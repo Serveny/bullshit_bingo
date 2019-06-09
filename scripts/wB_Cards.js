@@ -1,22 +1,25 @@
 "use strict";
-const db = require('./wB_DB');
+const
+    debug = require('debug')('wb'),
+    db = require('./wB_DB'),
+    helper = require('./wB_Helper');
 
-let wordCache = new Map();
+let wordCache = global.wb.wordMap = new Map();
 let lastActualized = new Date('August 2, 1989 15:10:00');
 
 class Card {
-    constructor(id, text, posX, posY, meta) {
+    constructor(id, word, posX, posY) {
         this.id = id;
-        this.text = text;
+        this.word = word;
         this.posX = posX;
         this.posY = posY;
-        this.meta = meta;
     }
 }
 
-class WordMetaData {
-    constructor(id, countGuessed, countUsed, createdAt, changedAt) {
+class Word {
+    constructor(id, text, countGuessed, countUsed, createdAt, changedAt) {
         this.id = id;
+        this.text = text;
         this.countGuessed = countGuessed;
         this.countUsed = countUsed;
         this.createdAt = createdAt;
@@ -24,12 +27,98 @@ class WordMetaData {
     }
 }
 
+//#region public
+exports.Card = Card;
+exports.Word = Word;
+
+exports.isValidCard = (cardMap, cardId, cardText) => {
+    // TODO
+    return true;
+};
+
+exports.areCardsFilledAndValid = (cardMap) => {
+    if (cardMap.size > 25 || helper.hasDoubleValuesMap(cardMap, ['text']) === false) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+exports.getTakenWordsArrFromMap = (cardMap) => {
+    let takenArr = [];
+    for (const card of cardMap.values()) {
+        if (card.word != null) {
+            takenArr.push(card.word.text);
+        }
+    }
+    debug('getTakenWordsFromMap: ', takenArr);
+    return takenArr;
+};
+
+exports.getUntakenWords = (takenArr) => {
+    let needCount = 25 - takenArr.length;
+    let usedCount = 0;
+    let wordsCount = wordCache.size;
+    let newWordMap = new Map();
+    
+    do {
+        let newWordStr = getRandomKey(wordCache);
+
+        if (isTaken(newWord, takenArr) === false) {
+            newWordMap.set(newWord.text, newWord);
+            needCount--;
+        }
+
+        usedCount++;
+        takenArr.push(newWordStr);
+
+        if (usedCount >= wordsCount) {
+            return newWordMap; 
+        }
+    } while (needCount > 0);
+    debug('getUntakenWords: ', newWordMap);
+    return newWordMap;
+};
+
+exports.fillEmptyWordsCardMap = (cardMap, newWords) => {
+    const changedMap = new Map();
+    const countMax = newWords.length;
+    let countUsed = 0;
+    
+    for (const card of cardMap) {
+        if (card.word.text === '') {
+            card.word.text = newWords[countUsed++];
+            changedMap.set(card.id, card);
+        }
+        if (countUsed >= countMax) {
+            break;
+        }
+    }
+    return changedMap;
+};
+
+
+exports.generateEmptyCardMap = () => {
+    const cardMap = new Map();
+    let id = 0;
+    for (let x = 1; x < 6; x++) {
+        for (let y = 1; y < 6; y++) {
+            cardMap.set(++id, new Card(id, null, x, y, null));
+        }
+    }
+    return cardMap;
+};
+
+//#endregion
+
+//#region private
 const actualizeWordCache = async () => {
-    console.debug('[wB_Cards] Actualize Word Cache');
+    debug('Actualize Word Cache');
     db.word.getRowsByValue([['changedAt', '>', lastActualized]]).then((res) => {
         for(const word of res) {
-            const meta = new WordMetaData(
+            const meta = new Word(
                 word.wordId,
+                word.wordText,
                 word.wordCountGuessed,
                 word.wordCountUsed,
                 word.createdAt,
@@ -45,113 +134,30 @@ const actualizeWordCache = async () => {
         }
     });
     lastActualized = new Date();
-} 
-
-const getUntakenWords = (taken) => {
-    taken = Array.isArray(taken) === true ? taken : [];
-    let needCount = 25 - taken.length;
-    let usedCount = 0;
-    let wordsCount = wordCache.size;
-    let newWords = [];
-    
-    do {
-        let newWord = getRandomKey(wordCache);
-
-        if (isTaken(newWord, taken) === false) {
-            newWords.push(newWord);
-            needCount--;
-        }
-
-        usedCount++;
-        taken.push(newWord);
-
-        if (usedCount >= wordsCount) {
-            return newWords; 
-        }
-    } while (needCount > 0);
-    return newWords;
-}
+};
 
 const isTaken = (word, taken) => {
-    for (let i = 0; i < taken.length; i++) {
-        if(similarity(word, taken[i]) >= 0.8) {
+    for (const takenWord of taken) {
+        if (helper.similarity(word, takenWord) >= 0.8) {
             return true;
         }
     }
+    // for (let i = 0; i < taken.length; i++) {
+    //     if(similarity(word, taken[i]) >= 0.8) {
+    //         return true;
+    //     }
+    // }
     return false;
-}
-
-const similarity = (s1, s2) => {
-    let longer = s1;
-    let shorter = s2;
-    if (s1.length < s2.length) {
-      longer = s2;
-      shorter = s1;
-    }
-    let longerLength = longer.length;
-    if (longerLength == 0) {
-      return 1.0;
-    }
-    const val = (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
-    return val;
-}
-
-const editDistance = (s1, s2) => {
-    s1 = s1.toLowerCase();
-    s2 = s2.toLowerCase();
-
-    let costs = new Array();
-    for (let i = 0; i <= s1.length; i++) {
-        let lastValue = i;
-        for (let j = 0; j <= s2.length; j++) {
-        if (i == 0)
-            costs[j] = j;
-        else {
-            if (j > 0) {
-            let newValue = costs[j - 1];
-            if (s1.charAt(i - 1) != s2.charAt(j - 1))
-                newValue = Math.min(Math.min(newValue, lastValue),
-                costs[j]) + 1;
-            costs[j - 1] = lastValue;
-            lastValue = newValue;
-            }
-        }
-        }
-        if (i > 0)
-        costs[s2.length] = lastValue;
-    }
-    return costs[s2.length];
+};
+//#endregion
+const getRandomMapItem = () => {
+    
 }
 
 const getRandomKey = (map) => {
     let keys = Array.from(map.keys());
     return keys[Math.floor(Math.random() * keys.length)];
-}
+};
 
-// 
-const areCardsFilledAndValid = (cards) => {
-    let words = [];
-
-    try {
-        for (let i = 0; i < cards.length; i++) {
-            if(cards[i] != null && cards[i].text != '') {
-                words.push(cards[i].text);
-            }
-        }
-        return words;
-    } catch (err) { throw err; }
-}
-
-exports.getUntakenWords = getUntakenWords;
-exports.areCardsFilledAndValid = areCardsFilledAndValid;
-
-exports.Card = Card;
-exports.WordMetaData = WordMetaData;
-
-// Start
+// TODO Actualization-Service
 actualizeWordCache();
-
-// just here to remember
-// const getRandomBetween = (min, max) => {
-//     return Math.floor(Math.random() * max) + min;  
-// }
