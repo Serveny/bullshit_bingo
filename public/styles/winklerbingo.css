@@ -64,10 +64,10 @@ a {
 
 #wB_cardsContainer {
     position: absolute;
-    bottom: 20px;
+    bottom: 60px;
     left: 20px;
     right: 20px;
-    top: 31%;
+    top: 17%;
     z-index: 1000;
     border: dashed #8C4C27 1px;
     font-family: "Oswald", Sans-serif;
@@ -132,15 +132,15 @@ a {
   height: auto;
   z-index: 1000;
   background: none;
-  top: 0;
+  bottom: -3px;
 }
 
 #headbar_right {
-  right: 5px;
+  right: 14px;
 }
 
 #headbar_left {
-  left: 5px;
+  left: 14px;
 }
 
 /*  ======================== 
@@ -447,7 +447,7 @@ path.two {
   position: absolute;
   left: 20px;
   right: 20px;
-  top: 15%;
+  top: 1%;
   height: 15%;
   overflow-y: hidden;
   overflow-x: auto;
@@ -456,15 +456,23 @@ path.two {
 .wB_userField {
   height: 98%;
   width: inherit;
-  background: #eeeeee;
-  border: solid 1px #3B82BF;
-  z-index: 500;
+  /* background: #D9CAAD url('../img/userFieldBG.png') no-repeat center center fixed;
+  background-size: cover; */
+  background:
+  radial-gradient(circle farthest-side at 0% 50%,#D9BB96 23.5%,rgba(240,166,17,0) 0)21px 30px,
+  radial-gradient(circle farthest-side at 0% 50%,#B71 24%,rgba(240,166,17,0) 0)19px 30px,
+  linear-gradient(#D9BB96 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,#D9BB96 0)0 0,
+  linear-gradient(150deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
+  linear-gradient(30deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
+  linear-gradient(90deg,#B71 2%,#D9BB96 0,#D9BB96 98%,#B71 0%)0 0 #D9BB96;
+  background-size: 40px 60px;z-index: 500;
   font-family: "Oswald", Sans-serif;
   color: #382F59;
   margin-right: 5px;
   position: relative;
   float: left;
   overflow: hidden;
+  border: dashed #8C4C27 2px;
 }
 
 .wB_userField input {
@@ -481,7 +489,7 @@ path.two {
   height: 65%;
   grid-column: 1;
   grid-row: 1;
-  border: 4px solid #BF2C53;
+  border: 4px solid #D9665B;
   float: left;
   z-index: 501;
   margin: 10px;

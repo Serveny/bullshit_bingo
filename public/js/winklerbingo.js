@@ -364,8 +364,21 @@ class WinklerBingo {
     cardsSetTextHTML(element, text) {
         element.removeClass('wB_field_focus');
         element.html('<span class="wB_field_text">' + text + '</span>');
+        
+        this.cardsTextFadeIn();
         this.fieldChange = null;
         this.cardsCheckAllFilled();
+    }
+
+    async cardsTextFadeIn() {
+        let time = 0;
+        $('.wB_field_text').hide().each(function () {
+            let field = $(this);
+            
+            setTimeout( function (){ field.fadeIn(600); }, time);
+            time += 100;
+        });
+
     }
 
     cardsDoesTextExist(text) {

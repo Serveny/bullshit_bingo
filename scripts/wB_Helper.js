@@ -56,6 +56,10 @@ exports.hasDoubleValuesMap = (map, propsToCheck) => {
   return false;
 }
 
+exports.isValidName = (nameStr) => {
+  // TODO
+}
+
 //#region Map to Array recursive 
 const mapEx = (objToCopy) => {
     if (objToCopy == null) {
