@@ -91,18 +91,24 @@ exports.setCustomName = (socket, newName) => {
     }
 };
 
-exports.setCard = (socket, cardId, cardText) => {
+exports.setCardAsync = async (socket, cardId, newText) => {
+    cardText = helper.defuseUserInput(newText);
+
     const room = getRoomByPlayerId(socket.id);
     if (room == null) { 
         return;
     }
-    
+
     const cardMap = room.playerMap.get(socket.id).cardMap;
-    let card = null;
-    if (wB_cards.isValidCard(cardMap, cardId, cardText) === true) {
-        card = cardMap.get(parseInt(cardId));
-        card.text = cardText;
+    if (wB_cards.isValidCard(cardMap, cardText) === false) {
+        out.emitSetCardResult(socket, null);
+        return;
     }
+    
+    const newWord = await wB_cards.getWordAsync(newText);
+
+    const card = cardMap.get(parseInt(cardId));
+    card.word = newWord;
 
     out.emitSetCardResult(socket, card);
 };

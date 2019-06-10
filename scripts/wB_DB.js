@@ -1,5 +1,6 @@
 "use strict";
 const
+    debug = require('debug')('wb'),
     dbCfg = require('config').db,
     mysql = require('mysql2'),
     conDB = mysql.createConnection({
@@ -19,10 +20,12 @@ class dbTable {
 
     getRowById(rowId) {
         let _self = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
+            debug(`[getRowById] ${stmt}`);
             conDB.query(`SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${_self.idField} = ?`, rowId, (err, results) => { 
                 if (err) {
-                    reject(err.message);
+                    console.error(err);
+                    resolve([]);
                 }
                 resolve(results);
             });
@@ -32,7 +35,7 @@ class dbTable {
     // filter = [[ valueName, operator, value], ...]
     getRowsByValue(filter) {
         let _self = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             let stmt = `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE `;
             let data = [];
 
@@ -47,13 +50,15 @@ class dbTable {
                         stmt += ` ${filter[i]} `;
                     }
                 } else {
-                    throw new Error(`Field ${valName} not in database`);
+                    throw new Error(`Field ${stmtVal[i][0]} not in database`);
                 }
             }
             stmt += ';';
+            debug(`[getRowsByValue] ${stmt}`);
             conDB.query(stmt, data, (err, results) => { 
                 if (err) {
-                    reject(err.message);
+                    console.error(err);
+                    resolve([]);
                 }
                 resolve(results);
             });
@@ -63,7 +68,7 @@ class dbTable {
     // values = { valueName: value, ... }
     updateRow(id, values) {
         let _self = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             let stmt = `UPDATE ${dbCfg.database}.${_self.tableName} SET `;
 
             for (const valName in values) {
@@ -73,7 +78,7 @@ class dbTable {
                     throw new Error(`Field ${valName} not in database`);
                 }
             }
-            stmt.pop();
+            stmt = stmt.slice(0, -1);
             stmt += ` WHERE id = '?'`;
     
             let data = [];
@@ -81,49 +86,41 @@ class dbTable {
                 data.push(val);
             }
             data.push(id);
-    
+            debug(`[updateRow] ${stmt}`);
             conDB.query(stmt, data, (err, results) => {
                 if (err) {
-                    reject(err.message);
+                    console.error(err);
+                    resolve([]);
                 }
                 resolve(results);
             });
         });
     }
 
-    createRow(values) {
+    // values = { columnName: value, ... }
+    createRow(valuesObj) {
         let _self = this;
-        return new Promise((resolve, reject) => {
-            let stmt = `INSERT INTO ${dbCfg.database}.${_self.tableName}(`;
+        return new Promise((resolve) => {
+            let colNames = '';
             let questionMarks = '';
-    
-            if (_self.uuidField != null) {
-                stmt += `${_self.uuidField}`;
-                questionMarks += `unhex(replace(uuid(),'-',''))`;
-            }
-    
-            if (values != null && values.length > 0) {
-                if (_self.uuidField != null) { 
-                    stmt += `,`;
-                    questionMarks += `,`;
-                }
-    
-                for (let i = 0; i < _self.columnNames.length; i++) {
-                    stmt += _self.columnNames[i];
-                    questionMarks += `?`;
-        
-                    if( i < (_self.columnNames.length - 1)) {
-                        stmt += ',';
-                        questionMarks += ',';
-                    }
-                }
+            let valuesArr = [];
+            debug('vals: ', valuesObj);
+            for (const colName in valuesObj) {
+                debug('val: ', colName, valuesObj[colName]);
+                colNames += colName + ',';
+                questionMarks += `?,`;
+                valuesArr.push(valuesObj[colName]);
             }
             
-    
-            stmt += `) VALUES(${questionMarks});`;
-            conDB.query(stmt, values, (err, results, fields) => {
+            colNames = colNames.slice(0, -1);
+            questionMarks = questionMarks.slice(0, -1);
+            
+            let stmt = `INSERT INTO ${dbCfg.database}.${_self.tableName}(${colNames}) VALUES(${questionMarks});`;
+            debug(`[createRow] ${stmt}`);
+            conDB.query(stmt, valuesArr, (err, results, fields) => {
                 if (err) {
-                    reject(err.message);
+                    console.error(err);
+                    resolve([]);
                 }
                 resolve(results);
             });
@@ -131,20 +128,24 @@ class dbTable {
     }
 
     deleteRow(rowId) {
-        console.log('deleteRow', rowId);
-        let stmt = `DELETE FROM ${dbCfg.database}.${this.tableName} WHERE id = '?'`;
+        const _self = this;
+        return new Promise((resolve) => {
+            let stmt = `DELETE FROM ${dbCfg.database}.${_self.tableName} WHERE id = '?'`;
 
-        conDB.query(stmt, [rowId], (err, results, fields) => {
-            if (err) {
-              return console.error(err.message);
-            }
-            console.log('deleteRowById:', results, fields);
+            debug(`[deleteRow] ${stmt}`);
+            conDB.query(stmt, [rowId], (err, results, fields) => {
+                if (err) {
+                    console.error(err.message);
+                    resolve([]);
+                }
+                resolve(results);
+            });
         });
     }
 }
 
 // #region Model
-exports.word = new dbTable('word', ['wordText', 'wordCountGuessed', 'wordCountUsed', 'createdAt', 'changedAt'], 'wordId');
+exports.word = new dbTable('word', ['wordText', 'wordCountGuessed', 'wordCountUsed', 'createdAt', 'changedAt', 'wordFlagUseForAutofill'], 'wordId');
 // #endregion
 
 // #region Format-Converter

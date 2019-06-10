@@ -32,6 +32,6 @@ exports.addEvents = (socket) => {
 
     socket.on('setCard', (data) => {
       debug(`${socket.id} set card ${data.cardId} to ${data.cardText}`);
-      wB_Room.setCard(socket, data.cardId, data.cardText);
+      wB_Room.setCardAsync(socket, data.cardId, data.cardText);
     });
 }

@@ -17,13 +17,14 @@ class Card {
 }
 
 class Word {
-    constructor(id, text, countGuessed, countUsed, createdAt, changedAt) {
+    constructor(id, text, countGuessed, countUsed, createdAt, changedAt, flagUseForAutofill) {
         this.id = id;
         this.text = text;
         this.countGuessed = countGuessed;
         this.countUsed = countUsed;
         this.createdAt = createdAt;
         this.changedAt = changedAt;
+        this.flagUseForAutofill = flagUseForAutofill === 1 ? true : false;
     }
 }
 
@@ -31,17 +32,58 @@ class Word {
 exports.Card = Card;
 exports.Word = Word;
 
-exports.isValidCard = (cardMap, cardId, cardText) => {
-    // TODO
+exports.getWordAsync = async (text) => {
+    if (text == null || text === '') {
+        return null;
+    }
+    //await db.word.getRowsByValue([['wordText', '=', text]]);
+    let word = wordCache.get(text);
+
+    if (word == null) {
+        await db.word.createRow({wordText: text});
+        const res = await db.word.getRowsByValue([['wordText', '=', text]])[0];
+        word = new Word(
+            res.wordId, 
+            res.wordText,
+            res.wordCountGuessed,
+            res.wordCountUsed,
+            res.wordFlagUseForAutofill,
+            res.createdAt,
+            res.changedAt
+        );
+        wordCache.set(word.text, word);
+    }
+
+    return word;
+}
+
+exports.isValidCard = (cardMap, cardText) => {
+    debug('isValidCard', cardMap, cardText);
+    for (const card of cardMap.values()) {
+        debug('isValidCardSchleife', card.word != null ? card.word.text : null, cardText);
+        if (card.word != null && card.word.text === cardText) {
+            return false;
+        }
+    }
+
     return true;
 };
 
 exports.areCardsFilledAndValid = (cardMap) => {
-    if (cardMap.size > 25 || helper.hasDoubleValuesMap(cardMap, ['text']) === false) {
+    if (areCardsFilled(cardMap) && helper.hasDoubleValuesMap(cardMap, ['text']) === false) {
         return true;
     } else {
         return false;
     }
+}
+
+const areCardsFilled = (cardMap) => {
+    for (const card of cardMap.values()) {
+        if (card.word == null || card.word.text == null || card.word.text === '') {
+            return false;
+        }
+    }
+    return true;
 }
 
 exports.getTakenWordsMap = (cardMap) => {
@@ -113,27 +155,28 @@ exports.generateEmptyCardMap = () => {
 //#endregion
 
 //#region private
-const actualizeWordCache = async () => {
+const actualizeWordCacheAsync = async () => {
     debug('Actualize Word Cache');
-    db.word.getRowsByValue([['changedAt', '>', lastActualized]]).then((res) => {
-        for(const word of res) {
-            const meta = new Word(
-                word.wordId,
-                word.wordText,
-                word.wordCountGuessed,
-                word.wordCountUsed,
-                word.createdAt,
-                word.changedAt,
-            );
-            let thisWord = wordCache.get(word);
+    let res = await db.word.getRowsByValue([['changedAt', '>', lastActualized]]);
+    
+    for(const word of res) {
+        const meta = new Word(
+            word.wordId,
+            word.wordText,
+            word.wordCountGuessed,
+            word.wordCountUsed,
+            word.createdAt,
+            word.changedAt,
+            word.wordFlagUseForAutofill
+        );
+        let thisWord = wordCache.get(word);
 
-            if (thisWord == null) {
-                wordCache.set(word.wordText, meta);
-            } else {
-                thisWord = meta;
-            }
+        if (thisWord == null) {
+            wordCache.set(word.wordText, meta);
+        } else {
+            thisWord = meta;
         }
-    });
+    }
     lastActualized = new Date();
 };
 
@@ -152,9 +195,15 @@ const getRandomMapItem = (map) => {
 }
 
 const getRandomKey = (map) => {
-    let keys = Array.from(map.keys());
-    return keys[Math.floor(Math.random() * keys.length)];
+    const keyArr = [];
+    for (const item of map.values()) {
+        if (item.flagUseForAutofill === true) {
+            keyArr.push(item.text);
+        }
+    }
+    //let keys = Array.from(mapFiltered.keys());
+    return keyArr[Math.floor(Math.random() * keyArr.length)];
 };
 
 // TODO Actualization-Service
-actualizeWordCache();
+actualizeWordCacheAsync();

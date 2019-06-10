@@ -1,6 +1,16 @@
 "use strict";
 
 //#region public
+exports.defuseUserInput = (inputStr) => {
+  // TODO
+  return inputStr;
+}
+
+exports.isValidName = (nameStr) => {
+  // TODO
+  return true;
+}
+
 exports.similarity = (s1, s2) => {
   let longer = s1;
   let shorter = s2;
@@ -54,10 +64,6 @@ exports.hasDoubleValuesMap = (map, propsToCheck) => {
     }
   }
   return false;
-}
-
-exports.isValidName = (nameStr) => {
-  // TODO
 }
 
 //#region Map to Array recursive 
