@@ -334,7 +334,9 @@ class WinklerBingo {
     }
 
     cardsSetNewTextToCard(element) {
-        let text = element.find('textarea').val().trim();
+        console.log('cardsSetNewTextToCard', element);
+        let text = element.find('textarea').val();
+        
         return this.validateCard(element, text);
     }
 
@@ -346,7 +348,7 @@ class WinklerBingo {
 
     validateCard(element, text) {
         text = text.trim();
-
+        console.log('text', text);
         if (this.cardsDoesTextExist(text) === false) {
             this.socket.emit('setCard', {
                 cardId: element.attr('data-id'),

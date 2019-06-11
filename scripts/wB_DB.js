@@ -21,8 +21,9 @@ class dbTable {
     getRowById(rowId) {
         let _self = this;
         return new Promise(function(resolve) {
+            const stmt = `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${_self.idField} = ? LIMIT 1`;
             debug(`[getRowById] ${stmt}`);
-            conDB.query(`SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${_self.idField} = ?`, rowId, (err, results) => { 
+            conDB.query(stmt, rowId, (err, results) => { 
                 if (err) {
                     console.error(err);
                     resolve([]);
@@ -54,7 +55,7 @@ class dbTable {
                 }
             }
             stmt += ';';
-            debug(`[getRowsByValue] ${stmt}`);
+            debug(`[getRowsByValue] ${stmt}`, data);
             conDB.query(stmt, data, (err, results) => { 
                 if (err) {
                     console.error(err);
@@ -103,21 +104,21 @@ class dbTable {
         return new Promise((resolve) => {
             let colNames = '';
             let questionMarks = '';
-            let valuesArr = [];
+            let dataArr = [];
             debug('vals: ', valuesObj);
             for (const colName in valuesObj) {
                 debug('val: ', colName, valuesObj[colName]);
-                colNames += colName + ',';
+                colNames += '`' + colName + '`,';
                 questionMarks += `?,`;
-                valuesArr.push(valuesObj[colName]);
+                dataArr.push(valuesObj[colName]);
             }
             
             colNames = colNames.slice(0, -1);
             questionMarks = questionMarks.slice(0, -1);
             
             let stmt = `INSERT INTO ${dbCfg.database}.${_self.tableName}(${colNames}) VALUES(${questionMarks});`;
-            debug(`[createRow] ${stmt}`);
-            conDB.query(stmt, valuesArr, (err, results, fields) => {
+            debug(`[createRow] ${stmt}`, dataArr);
+            conDB.query(stmt, dataArr, (err, results, fields) => {
                 if (err) {
                     console.error(err);
                     resolve([]);

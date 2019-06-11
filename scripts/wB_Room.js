@@ -92,7 +92,7 @@ exports.setCustomName = (socket, newName) => {
 };
 
 exports.setCardAsync = async (socket, cardId, newText) => {
-    cardText = helper.defuseUserInput(newText);
+    newText = helper.defuseUserInput(newText);
 
     const room = getRoomByPlayerId(socket.id);
     if (room == null) { 
@@ -100,7 +100,7 @@ exports.setCardAsync = async (socket, cardId, newText) => {
     }
 
     const cardMap = room.playerMap.get(socket.id).cardMap;
-    if (wB_cards.isValidCard(cardMap, cardText) === false) {
+    if (wB_cards.isValidCard(cardMap, newText) === false) {
         out.emitSetCardResult(socket, null);
         return;
     }

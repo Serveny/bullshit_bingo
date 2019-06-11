@@ -40,8 +40,10 @@ exports.getWordAsync = async (text) => {
     let word = wordCache.get(text);
 
     if (word == null) {
-        await db.word.createRow({wordText: text});
-        const res = await db.word.getRowsByValue([['wordText', '=', text]])[0];
+        let res = await db.word.createRow({wordText: text});
+        res = await db.word.getRowById(res.insertId);
+        res = res[0];
+
         word = new Word(
             res.wordId, 
             res.wordText,
@@ -53,7 +55,7 @@ exports.getWordAsync = async (text) => {
         );
         wordCache.set(word.text, word);
     }
-
+    debug('getWordAsync: ', word);
     return word;
 }
 
