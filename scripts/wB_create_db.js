@@ -67,7 +67,7 @@ event.on('dbCreated', () => {
 event.on('tablesCreated', () => {
     let stmt = ``;
     for(let i = 0; i < startWords.length; i++) {
-        stmt += `INSERT INTO winklerbingo_db.word(wordText, wordCountGuessed, wordCountUsed, wordFlagUseForAutofill) VALUES('${startWords[i]}',0,0,1);`;
+        stmt += `INSERT INTO winklerbingo_db.word(wordText, wordCountGuessed, wordCountUsed, wordFlagUseForAutofill) VALUES('${startWords[i].toLowerCase()}',0,0,1);`;
     }
 
     conDB.query(stmt, (err) => {
@@ -125,7 +125,7 @@ const startWords = [
     'Hass',
     'Emotion',
     'Mett',
-    'Zedla',
+    'Zelad',
     'meine Gehirnzellen schmelzne',
     'Opfer',
     'Grundstück',

@@ -74,7 +74,7 @@ exports.togglePlayerIsReady = (socket) => {
     }
         
     const player = room.playerMap.get(socket.id);
-    if (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === true) {
+    if ((player.isReady === true) || (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === true)) {
         player.isReady = !player.isReady;
     }
 
@@ -91,7 +91,7 @@ exports.setCustomName = (socket, newName) => {
 };
 
 exports.setCardAsync = async (socket, cardId, newText) => {
-    newText = helper.defuseUserInput(newText);
+    newText = helper.defuseUserInput(newText).toLowerCase();
 
     const room = getRoomByPlayerId(socket.id);
     if (room == null) { 
@@ -109,13 +109,15 @@ exports.setCardAsync = async (socket, cardId, newText) => {
 
     // Check if valid
     if (wB_cards.isValidCard(cardMap, newText) === false) {
-        out.emitSetCardResult(socket, null);
+        out.emitSetCardResult(socket, card);
         return;
     }
     
     const newWord = await wB_cards.getWordAsync(newText);
-    card.word = newWord;
-
+    if(newWord != null) {
+        card.word = newWord;
+    }
+    
     out.emitSetCardResult(socket, card);
 };
 

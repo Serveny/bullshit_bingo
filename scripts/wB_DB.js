@@ -1,7 +1,6 @@
 "use strict";
 const
     debug = require('debug')('wb'),
-    error = debug('app:error'),
     dbCfg = require('config').db,
     mysql = require('mysql2'),
     conDB = mysql.createConnection({
@@ -31,7 +30,7 @@ class dbTable {
                     stmt += stmtVal[0];
                     data.push(stmtVal[1]);
                 } else {
-                    error(`Field ${columnName} not in database`);
+                    debug(`[Error] Field ${columnName} not in database`);
                 }
             } else {
                 stmt += ` ${filter[i]} `;
@@ -101,7 +100,7 @@ class dbTable {
             debug(`[getRandomRowByValue] ${stmt}`, filterData.data);
             conDB.query(stmt, filterData.data, (err, results) => { 
                 if (err) {
-                    error(err);
+                    debug('[Error]', err);
                     resolve([]);
                 }
                 resolve(results);
@@ -133,7 +132,7 @@ class dbTable {
             debug(`[updateRow] ${stmt}`);
             conDB.query(stmt, data, (err, results) => {
                 if (err) {
-                    error(err);
+                    debug('[Error]', err);
                     resolve([]);
                 }
                 resolve(results);
@@ -161,7 +160,7 @@ class dbTable {
             debug(`[createRow] ${stmt}`, dataArr);
             conDB.query(stmt, dataArr, (err, results) => {
                 if (err) {
-                    error(err);
+                    debug('[Error]', err);
                     resolve([]);
                 }
                 resolve(results);
@@ -177,7 +176,7 @@ class dbTable {
             debug(`[deleteRow] ${stmt}`);
             conDB.query(stmt, [rowId], (err, results) => {
                 if (err) {
-                    error(err.message);
+                    debug('[Error]', err);
                     resolve([]);
                 }
                 resolve(results);
@@ -199,6 +198,10 @@ const dbFormat = (filterI) => {
         // Date
         stmt = `DATE(${filterI[0]}) ${filterI[1]} ?`;
         val = dateToMysql(filterI[2]);
+    } else if (typeof filterI[2] === 'string') {
+        // String
+        stmt = `${filterI[0]} ${filterI[1]} BINARY ?`;
+        val = filterI[2];
     } else {
         // Normal
         stmt = `${filterI[0]} ${filterI[1]} ?`;

@@ -35,12 +35,18 @@ exports.getWordAsync = async (text) => {
     }
     
     let res = await db.word.getRowsByValue([['wordText', '=', text]]);
+    debug('Res: ', res);
 
     if (res.length <= 0) {
         res = await db.word.createRow({wordText: text});
         res = await db.word.getRowById(res.insertId);
-        res = res[0];
+
+        if (res.length <= 0) { 
+            debug(`[ERROR] getWordAsync: Can not find/create word in database.`);
+            return null;
+        }
     }
+    res = res[0];
 
     return new Word(
         res.wordId, 

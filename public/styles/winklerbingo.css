@@ -76,6 +76,7 @@ a {
   border: dashed #8C4C27 1px;
   font-family: "Oswald", Sans-serif;
   display: none;
+  text-transform: uppercase;
 }
 
 .wB_field {
@@ -91,6 +92,9 @@ a {
   font-size: calc(14px + 2vw);
   font-style: italic;
   cursor: pointer;
+  text-transform: inherit;
+  hyphens: auto;
+  font-size: calc(12px + 2vw);
 }
 
 .wB_field:hover {
@@ -124,6 +128,7 @@ a {
   align-items: stretch;
   display: flex;
   line-height: 100%;
+  text-transform: uppercase;
 }
 
 /*  ======================== 
@@ -450,18 +455,18 @@ path.two {
   margin: 0 auto;
   position: absolute;
   width: auto;
+  max-width: 102%;
   left: 20px;
   top: 1%;
-  height: 15%;
-  overflow-y: hidden;
+  height: 16%;
   overflow-x: auto;
+  white-space: nowrap;
 }
 
 .wB_userField {
-  height: 98%;
+  display: inline-block;
+  height: 90%;
   width: inherit;
-  /* background: #D9CAAD url('../img/userFieldBG.png') no-repeat center center fixed;
-  background-size: cover; */
   background:
   radial-gradient(circle farthest-side at 0% 50%,#D9BB96 23.5%,rgba(240,166,17,0) 0)21px 30px,
   radial-gradient(circle farthest-side at 0% 50%,#B71 24%,rgba(240,166,17,0) 0)19px 30px,
@@ -469,12 +474,10 @@ path.two {
   linear-gradient(150deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
   linear-gradient(30deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
   linear-gradient(90deg,#B71 2%,#D9BB96 0,#D9BB96 98%,#B71 0%)0 0 #D9BB96;
-  background-size: 40px 60px;z-index: 500;
+  background-size: 40px 60px;
   font-family: "Oswald", Sans-serif;
   color: #382F59;
-  margin-right: 5px;
   position: relative;
-  float: left;
   overflow: hidden;
   border: dashed #8C4C27 2px;
   z-index: 499;

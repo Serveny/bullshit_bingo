@@ -312,9 +312,7 @@ class WinklerBingo {
     *  Cards Functions
        --------------------- */
 
-    // Neuer Blockeindrag wird gerendert etzadla
     cardsAddTextArea(element) {
-        console.log('cardsAddTextArea', element);
         this.fieldChange = element;
         let text = element.find('span').text();
         let dark = this.isDarkMode === true ? 'dark' : '';
@@ -327,7 +325,6 @@ class WinklerBingo {
     }
 
     cardsSetNewTextToCard(element) {
-        console.log('cardsSetNewTextToCard', element);
         let text = element.find('textarea').val();
         return this.cardsValidateCard(element, text);
     }
@@ -378,7 +375,6 @@ class WinklerBingo {
 
     cardsFocusNext() {
         if (this.nextFocusCardId != null) {
-            console.log('Set next: ', 'wB_card_' + this.nextFocusCardId, $('#wB_card_' + this.nextFocusCardId));
             this.cardsAddTextArea($('#wB_card_' + this.nextFocusCardId));
             this.nextFocusCardId = null;
         }
@@ -454,11 +450,9 @@ class WinklerBingo {
             // Animation
             const cardSpan = cardEl.find('span');
             cardSpan.hide();
-            setTimeout( function (){ cardSpan.fadeIn(800) }, time);
-            time += 100;
+            setTimeout(function () { cardSpan.fadeIn(800) }, time);
+            time += 50;
         }
-        
-        this.readyBtnVisible(true);
     }
 
     toggleInfo() {
@@ -489,8 +483,9 @@ class WinklerBingo {
     }
     
     roomAddPlayerHTML(player) {
+        const isReadyStyle = player.isReady === true ? 'style="display: block;"' : '';
         $('#wB_lobbyContainer')
-            .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady">done</i>' + 
+            .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady" ' + isReadyStyle + '>done</i>' + 
             '<img src="' + player.avatar.picUrl + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
             '<div class="wB_userName">' + player.avatar.name + '</div></div>');
     }
@@ -504,7 +499,6 @@ class WinklerBingo {
     }
 
     roomSetPlayerReady(playerId, isReady) {
-        console.log('roomSetPlayerReady', playerId, this.socket.id, isReady);
         if (playerId === this.socket.id) {
             if (isReady === true) {
                 $('#wB_thisUserReady').css({'color': 'green'});
