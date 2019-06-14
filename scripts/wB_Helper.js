@@ -1,9 +1,22 @@
 "use strict";
 
+const htmlEscapeMap = new Map()
+  .set('&', '&amp;')
+  .set('<', '&lt;')
+  .set('>', '&gt;')
+  .set('"', '&quot;')
+  .set("'", '&#39;')
+  .set('/', '&#x2F;')
+  .set('`', '&#x60;')
+  .set('=', '&#x3D;');
+
 //#region public
+exports.getRandomBetween = (minNum, maxNum) => {
+  return Math.floor(Math.random()*(maxNum - minNum + 1) + minNum);
+}
+
 exports.defuseUserInput = (inputStr) => {
-  // TODO
-  return inputStr;
+  return String(inputStr).replace(/[&<>"'`=\/]/g, (s) => { return htmlEscapeMap.get(s); }).toString();
 }
 
 exports.isValidName = (nameStr) => {
@@ -89,6 +102,9 @@ const mapEx = (objToCopy) => {
   };
   
 const mapToArr = (map) => {
+  if (map == null) {
+    return [];
+  }
   let arr = [];
   for(const key of map.keys()) {
     let item = map.get(key);

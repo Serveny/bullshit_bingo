@@ -4,9 +4,6 @@ const
     db = require('./wB_DB'),
     helper = require('./wB_Helper');
 
-let wordCache = global.wb.wordMap = new Map();
-let lastActualized = new Date('August 2, 1989 15:10:00');
-
 class Card {
     constructor(id, word, posX, posY) {
         this.id = id;
@@ -19,7 +16,7 @@ class Card {
 class Word {
     constructor(id, text, countGuessed, countUsed, createdAt, changedAt, flagUseForAutofill) {
         this.id = id;
-        this.text = text;
+        this.text = text == null ? '' : text;
         this.countGuessed = countGuessed;
         this.countUsed = countUsed;
         this.createdAt = createdAt;
@@ -36,32 +33,33 @@ exports.getWordAsync = async (text) => {
     if (text == null || text === '') {
         return null;
     }
-    //await db.word.getRowsByValue([['wordText', '=', text]]);
-    let word = wordCache.get(text);
+    
+    let res = await db.word.getRowsByValue([['wordText', '=', text]]);
 
-    if (word == null) {
-        let res = await db.word.createRow({wordText: text});
+    if (res.length <= 0) {
+        res = await db.word.createRow({wordText: text});
         res = await db.word.getRowById(res.insertId);
         res = res[0];
-
-        word = new Word(
-            res.wordId, 
-            res.wordText,
-            res.wordCountGuessed,
-            res.wordCountUsed,
-            res.wordFlagUseForAutofill,
-            res.createdAt,
-            res.changedAt
-        );
-        wordCache.set(word.text, word);
     }
-    debug('getWordAsync: ', word);
-    return word;
+
+    return new Word(
+        res.wordId, 
+        res.wordText,
+        res.wordCountGuessed,
+        res.wordCountUsed,
+        res.wordFlagUseForAutofill,
+        res.createdAt,
+        res.changedAt
+    );
 }
 
 exports.isValidCard = (cardMap, cardText) => {
+    if (cardText == null || cardText === '') {
+        return true;
+    }
+    cardText = cardText.toLowerCase();
     for (const card of cardMap.values()) {
-        if (card.word != null && card.word.text === cardText) {
+        if (card.word != null && card.word.text.toLowerCase() === cardText) {
             return false;
         }
     }
@@ -77,48 +75,45 @@ exports.areCardsFilledAndValid = (cardMap) => {
     }
 }
 
-const areCardsFilled = (cardMap) => {
-    for (const card of cardMap.values()) {
-        if (card.word == null || card.word.text == null || card.word.text === '') {
-            return false;
-        }
-    }
-    return true;
-}
-
 exports.getTakenWordsMap = (cardMap) => {
     let takenMap = new Map();
     for (const card of cardMap.values()) {
         if (card.word != null) {
-            takenMap.set(card.word.text, card.word);
+            takenMap.set(card.word.id, card.word);
         }
     }
     return takenMap;
 };
 
-exports.getUntakenWordsMap = (takenMap) => {
-    let needCount = 25 - takenMap.size;
-    let usedCount = 0;
-    let wordsCount = wordCache.size;
-    let newWordMap = new Map();
+exports.getUntakenWordsMap = async (takenMap) => {
+    const needCount = 25 - takenMap.size;
+    const wordsMap = new Map();
+    let filterArr = [['wordFlagUseForAutofill', '=', 1]];
+
+    if (takenMap.size > 0) {
+        for (const takenWord of takenMap.values()) {
+            filterArr.push('AND');
+            filterArr.push(['wordText', '!=', takenWord.text]);
+        }
+    }
     
-    do {
-        let newWordItem = getRandomMapItem(wordCache);
-
-        if (isTaken(newWordItem, takenMap) === false) {
-            newWordMap.set(newWordItem.text, newWordItem);
-            needCount--;
+    const res = await db.word.getRandomRowsByValue(filterArr, needCount);
+    if (res.length > 0) {
+        for(let i = 0; i < res.length; i++) {
+            wordsMap.set(
+                res[i].wordId, 
+                new Word(
+                    res[i].wordId, 
+                    res[i].wordText,
+                    res[i].wordCountGuessed,
+                    res[i].wordCountUsed,
+                    res[i].wordFlagUseForAutofill,
+                    res[i].createdAt,
+                    res[i].changedAt
+            ));
         }
-
-        usedCount++;
-        takenMap.set(newWordItem.text, newWordItem);
-
-        if (usedCount >= wordsCount) {
-            return newWordMap; 
-        }
-    } while (needCount > 0);
-
-    return newWordMap;
+    }
+    return wordsMap;
 };
 
 exports.fillEmptyWordsCardMap = (cardMap, newWordsMap) => {
@@ -146,7 +141,7 @@ exports.generateEmptyCardMap = () => {
     let id = 0;
     for (let x = 1; x < 6; x++) {
         for (let y = 1; y < 6; y++) {
-            cardMap.set(++id, new Card(id, null, x, y, null));
+            cardMap.set(++id, new Card(id, null, x, y));
         }
     }
     return cardMap;
@@ -155,55 +150,12 @@ exports.generateEmptyCardMap = () => {
 //#endregion
 
 //#region private
-const actualizeWordCacheAsync = async () => {
-    debug('Actualize Word Cache');
-    let res = await db.word.getRowsByValue([['changedAt', '>', lastActualized]]);
-    
-    for(const word of res) {
-        const meta = new Word(
-            word.wordId,
-            word.wordText,
-            word.wordCountGuessed,
-            word.wordCountUsed,
-            word.createdAt,
-            word.changedAt,
-            word.wordFlagUseForAutofill
-        );
-        let thisWord = wordCache.get(word);
-
-        if (thisWord == null) {
-            wordCache.set(word.wordText, meta);
-        } else {
-            thisWord = meta;
+const areCardsFilled = (cardMap) => {
+    for (const card of cardMap.values()) {
+        if (card.word == null || card.word.text == null || card.word.text === '') {
+            return false;
         }
     }
-    lastActualized = new Date();
-};
-
-const isTaken = (wordItem, takenMap) => {
-    // TODO Mit befüllter takenMap testen
-    for (const takenWord of takenMap.keys()) {
-        if (helper.similarity(wordItem.text, takenWord) >= 0.8) {
-            return true;
-        }
-    }
-    return false;
-};
-//#endregion
-const getRandomMapItem = (map) => {
-    return map.get(getRandomKey(map));
+    return true;
 }
-
-const getRandomKey = (map) => {
-    const keyArr = [];
-    for (const item of map.values()) {
-        if (item.flagUseForAutofill === true) {
-            keyArr.push(item.text);
-        }
-    }
-    //let keys = Array.from(mapFiltered.keys());
-    return keyArr[Math.floor(Math.random() * keyArr.length)];
-};
-
-// TODO Actualization-Service
-actualizeWordCacheAsync();
+//#endregion

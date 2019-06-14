@@ -119,14 +119,14 @@ exports.setCardAsync = async (socket, cardId, newText) => {
     out.emitSetCardResult(socket, card);
 };
 
-exports.autofill = (socket) => {
+exports.autofill = async (socket) => {
     const room = getRoomByPlayerId(socket.id);
     if (room == null) { 
         return;
     }
     
     const cardMap = room.playerMap.get(socket.id).cardMap;
-    const newWordsMap = wB_cards.getUntakenWordsMap(wB_cards.getTakenWordsMap(cardMap));
+    const newWordsMap = await wB_cards.getUntakenWordsMap(wB_cards.getTakenWordsMap(cardMap));
     let changedMap = null;
 
     if (newWordsMap.size > 0) {

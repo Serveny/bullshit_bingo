@@ -448,10 +448,9 @@ path.two {
 #wB_lobbyContainer {
   display: none;
   margin: 0 auto;
-  z-index: 499;
   position: absolute;
+  width: auto;
   left: 20px;
-  right: 20px;
   top: 1%;
   height: 15%;
   overflow-y: hidden;
@@ -478,6 +477,7 @@ path.two {
   float: left;
   overflow: hidden;
   border: dashed #8C4C27 2px;
+  z-index: 499;
 }
 
 .wB_userField input {

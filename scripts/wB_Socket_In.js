@@ -11,27 +11,27 @@ exports.addEvents = (socket) => {
     });
     
     socket.on('disconnect', () => {
-      debug(`${socket.id} disconnected`);
+      debug(` --- ${socket.id} disconnected --- `);
       wB_Room.removePlayerAndCloseRoomIfEmpty(socket);
     });
     
     socket.on('changeName', (newName) => {
-      debug(`${socket.id} change name to ${newName}`);
+      debug(` --- ${socket.id} change name to ${newName} --- `);
       wB_Room.setCustomName(socket, newName);
     });
 
     socket.on('toggleReady', () => {
-      debug(`${socket.id} toggle IsReady`);
+      debug(` --- ${socket.id} toggle IsReady --- `);
       wB_Room.togglePlayerIsReady(socket);
     });
 
     socket.on('needAutofill', () => {
-      debug(`${socket.id} need autofill`);
+      debug(` --- ${socket.id} need autofill --- `);
       wB_Room.autofill(socket);
     });
 
     socket.on('setCard', (data) => {
-      debug(`${socket.id} set card ${data.cardId} to ${data.cardText}`);
+      debug(` --- ${socket.id} set card ${data.cardId} to ${data.cardText} --- `);
       wB_Room.setCardAsync(socket, data.cardId, data.cardText);
     });
 }

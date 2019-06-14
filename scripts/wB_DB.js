@@ -1,6 +1,7 @@
 "use strict";
 const
     debug = require('debug')('wb'),
+    error = debug('app:error'),
     dbCfg = require('config').db,
     mysql = require('mysql2'),
     conDB = mysql.createConnection({
@@ -18,6 +19,28 @@ class dbTable {
         this.idField = idField;
     }
 
+    createFilterStmt(filter) {
+        let stmt = '';
+        let data = [];
+        for (let i = 0; i < filter.length; i++) {
+            if (Array.isArray(filter[i])) {
+                 // Check if column exists in model
+                if (this.columnNames.find((columnName) => { return columnName === filter[i][0]; }) != null) {
+                    debug(filter[i], Array.isArray(filter[i]));
+                    const stmtVal = dbFormat(filter[i]);
+                    stmt += stmtVal[0];
+                    data.push(stmtVal[1]);
+                } else {
+                    error(`Field ${columnName} not in database`);
+                }
+            } else {
+                stmt += ` ${filter[i]} `;
+            }
+           
+        }
+        return { stmt: stmt, data: data };
+    }
+
     getRowById(rowId) {
         let _self = this;
         return new Promise(function(resolve) {
@@ -25,8 +48,8 @@ class dbTable {
             debug(`[getRowById] ${stmt}`);
             conDB.query(stmt, rowId, (err, results) => { 
                 if (err) {
-                    console.error(err);
-                    resolve([]);
+                    error(err);
+                    
                 }
                 resolve(results);
             });
@@ -37,28 +60,48 @@ class dbTable {
     getRowsByValue(filter) {
         let _self = this;
         return new Promise(function(resolve) {
-            let stmt = `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE `;
-            let data = [];
-
-            for (let i = 0; i < filter.length; i++) {
-                // Check if column exists in model
-                if (_self.columnNames.find((columnName) => { return columnName === filter[i][0]; }) != null) {
-                    if (Array.isArray(filter[i])) {
-                        const stmtVal = dbFormat(filter[i]);
-                        stmt += stmtVal[0];
-                        data.push(stmtVal[1]);
-                    } else {
-                        stmt += ` ${filter[i]} `;
-                    }
-                } else {
-                    throw new Error(`Field ${stmtVal[i][0]} not in database`);
-                }
-            }
-            stmt += ';';
-            debug(`[getRowsByValue] ${stmt}`, data);
-            conDB.query(stmt, data, (err, results) => { 
+            const filterData = _self.createFilterStmt(filter);
+            let stmt = `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${filterData.stmt};`;
+            debug(`[getRowsByValue] ${stmt}`, filterData.data);
+            conDB.query(stmt, filterData.data, (err, results) => { 
                 if (err) {
-                    console.error(err);
+                    error(err);
+                    resolve([]);
+                }
+                resolve(results);
+            });
+        });
+    }
+
+    // filter = [[ valueName, operator, value], ...]
+    countRowsByValue(filter) {
+        let _self = this;
+        return new Promise(function(resolve) {
+            const filterData = _self.createFilterStmt(filter);
+            let stmt = `SELECT COUNT(*) FROM ${dbCfg.database}.${_self.tableName} WHERE ${filterData.stmt};`;
+            debug(`[countRowsByValue] ${stmt}`, filterData.data);
+            conDB.query(stmt, filterData.data, (err, results) => { 
+                if (err) {
+                    error(err);
+                    resolve([]);
+                }
+                resolve(results[0]['COUNT(*)']);
+            });
+        });
+    }
+
+    getRandomRowsByValue(filterArr, limitNum) {
+        let _self = this;
+        return new Promise(function(resolve) {
+            const filterData = _self.createFilterStmt(filterArr);
+            let stmt = limitNum === 1 ?
+                // more efficient
+                `SELECT * FROM ${dbCfg.database}.${_self.tableName} AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(${_self.idField}) FROM ${dbCfg.database}.${_self.tableName})) AS id) AS r2 WHERE r1.${_self.idField} >= r2.id AND ${filterData.stmt} ORDER BY r1.${_self.idField} ASC LIMIT 1;` :
+                `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${filterData.stmt} ORDER BY RAND() LIMIT ${limitNum};`;
+            debug(`[getRandomRowByValue] ${stmt}`, filterData.data);
+            conDB.query(stmt, filterData.data, (err, results) => { 
+                if (err) {
+                    error(err);
                     resolve([]);
                 }
                 resolve(results);
@@ -90,7 +133,7 @@ class dbTable {
             debug(`[updateRow] ${stmt}`);
             conDB.query(stmt, data, (err, results) => {
                 if (err) {
-                    console.error(err);
+                    error(err);
                     resolve([]);
                 }
                 resolve(results);
@@ -116,9 +159,9 @@ class dbTable {
             
             let stmt = `INSERT INTO ${dbCfg.database}.${_self.tableName}(${colNames}) VALUES(${questionMarks});`;
             debug(`[createRow] ${stmt}`, dataArr);
-            conDB.query(stmt, dataArr, (err, results, fields) => {
+            conDB.query(stmt, dataArr, (err, results) => {
                 if (err) {
-                    console.error(err);
+                    error(err);
                     resolve([]);
                 }
                 resolve(results);
@@ -132,9 +175,9 @@ class dbTable {
             let stmt = `DELETE FROM ${dbCfg.database}.${_self.tableName} WHERE id = '?'`;
 
             debug(`[deleteRow] ${stmt}`);
-            conDB.query(stmt, [rowId], (err, results, fields) => {
+            conDB.query(stmt, [rowId], (err, results) => {
                 if (err) {
-                    console.error(err.message);
+                    error(err.message);
                     resolve([]);
                 }
                 resolve(results);

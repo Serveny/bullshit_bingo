@@ -79,6 +79,7 @@ class WinklerBingo {
         // Brobbaties
         const urlWithoutParams =  location.protocol + '//' + location.host;
         this.fieldChange = null;
+        this.nextFocusCardId = null;
         this.isDarkMode = false;
         this.isInfoOpen = false;
         this.cards = [];
@@ -192,19 +193,6 @@ class WinklerBingo {
     addCardEvents() {
         const _self = this;
 
-        $('.wB_field').click(function() {
-            if (_self.fieldChange != null) {
-                if ($(this).attr('id') == _self.fieldChange.attr('id')) {
-                    return;
-                } else {
-                    if(_self.cardsSetNewTextToCard(_self.fieldChange) === false) {
-                        return;
-                    };
-                }
-            }
-            _self.cardsAddTextArea($(this));
-        });
-
         $(document).on('keydown', function(e) {
             let keyCode = e.keyCode || e.which;
 
@@ -213,9 +201,6 @@ class WinklerBingo {
                 if (_self.fieldChange != null) {
                     e.preventDefault();
                     let number = _self.fieldChange.attr('data-id');
-                    if(_self.cardsSetNewTextToCard(_self.fieldChange) === false) {
-                        return;
-                    };
                     
                     if(e.shiftKey) {
                         number--;
@@ -223,12 +208,8 @@ class WinklerBingo {
                         number++;
                     }
 
-                    let nextEl = $('#wB_card_' + number);
-                    if (nextEl.length >= 1) {
-                        _self.cardsAddTextArea(nextEl);
-                    } else {
-                        this.fieldChange = null;
-                    }
+                    _self.nextFocusCardId = number;
+                    _self.cardsSetNewTextToCard(_self.fieldChange);
                 }
             } 
             
@@ -253,11 +234,21 @@ class WinklerBingo {
         });
 
         $(document).click(function(e) {
-            if (_self.fieldChange != null) {
-                let target = $(e.target);
-                if (target.hasClass('wB_field') === true || target.hasClass('wB_field_text') === true) {
-                    return;
+            let target = $(e.target);
+            target = target.hasClass('wB_field_text') === true ? target.parent() : target;
+
+            if (target.hasClass('wB_field') === true) {
+                const id = target.attr('data-id');
+                if (_self.fieldChange != null) {
+                    if (id !== _self.fieldChange.attr('data-id')) {
+                        _self.nextFocusCardId = id;
+                        _self.cardsSetNewTextToCard(_self.fieldChange);
+                    }
                 } else {
+                    _self.cardsAddTextArea(target);
+                }
+            } else {
+                if (_self.fieldChange != null) {
                     _self.cardsSetNewTextToCard(_self.fieldChange);
                 }
             }
@@ -323,6 +314,7 @@ class WinklerBingo {
 
     // Neuer Blockeindrag wird gerendert etzadla
     cardsAddTextArea(element) {
+        console.log('cardsAddTextArea', element);
         this.fieldChange = element;
         let text = element.find('span').text();
         let dark = this.isDarkMode === true ? 'dark' : '';
@@ -335,23 +327,23 @@ class WinklerBingo {
     }
 
     cardsSetNewTextToCard(element) {
+        console.log('cardsSetNewTextToCard', element);
         let text = element.find('textarea').val();
-        
-        return this.validateCard(element, text);
+        return this.cardsValidateCard(element, text);
     }
 
     cardsRevertCard(element) {
         let text = this.cards[element.attr('data-id')].text;
-        return this.validateCard(element, text);
+        return this.cardsValidateCard(element, text);
     }
 
-    validateCard(element, text) {
+    cardsValidateCard(element, text) {
         text = text.trim();
         const card = this.getThisPlayer().cardMap.get(parseInt(element.attr('data-id')));
         
         // Check if no change
-        if (card.word != null && card.word.text === text) {
-            this.cardsSetTextHTML(text);
+        if ((card.word == null && text === '') || (card.word != null && card.word.text === text)) {
+            this.cardsSetTextHTML(this.fieldChange, text);
             return true;
         }
 
@@ -370,16 +362,26 @@ class WinklerBingo {
 
     // Should only triggered after server validation
     cardsSetCard(card) {
-        this.room.playerMap.get(this.socket.id).cardMap.set(card.id, card);
-        this.cardsSetTextHTML($('#wB_card_' + card.id), card.word.text);
+        this.getThisPlayer().cardMap.set(card.id, card);
+        this.cardsSetTextHTML($('#wB_card_' + card.id), card.word != null ? card.word.text : '');
     }
 
     cardsSetTextHTML(element, text) {
         element.removeClass('wB_field_focus');
-        element.html('<span class="wB_field_text">' + text + '</span>');
+        element.html('<span class="wB_field_text"></span>');
+        element.find('.wB_field_text').text(text);
         
         this.fieldChange = null;
         this.cardsCheckAllFilled();
+        this.cardsFocusNext();
+    }
+
+    cardsFocusNext() {
+        if (this.nextFocusCardId != null) {
+            console.log('Set next: ', 'wB_card_' + this.nextFocusCardId, $('#wB_card_' + this.nextFocusCardId));
+            this.cardsAddTextArea($('#wB_card_' + this.nextFocusCardId));
+            this.nextFocusCardId = null;
+        }
     }
 
     cardsDoesTextExist(text) {
@@ -502,6 +504,7 @@ class WinklerBingo {
     }
 
     roomSetPlayerReady(playerId, isReady) {
+        console.log('roomSetPlayerReady', playerId, this.socket.id, isReady);
         if (playerId === this.socket.id) {
             if (isReady === true) {
                 $('#wB_thisUserReady').css({'color': 'green'});
