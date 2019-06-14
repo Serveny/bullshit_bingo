@@ -59,6 +59,8 @@ class WinklerBingo {
         // Dark Mode
         if (this.getDarkModeSetting() === true) {
             this.toggleDarkMode();
+        } else {
+            $('body').css({'background': '#F2E2C4'});
         }
 
         this.addEvents();
@@ -294,7 +296,7 @@ class WinklerBingo {
             $('#bodyOverlay').css('opacity', 0.6);
         } else {
             this.setDarkModeSetting(false);
-            $('body').removeClass('dark');
+            $('body').css({'background': '#F2E2C4'}).removeClass('dark');
             $('.wB_field').removeClass('dark');
             $('#wB_info').removeClass('dark');
             $('#bodyOverlay').css('opacity', 0.1);
@@ -542,4 +544,5 @@ class WinklerBingo {
 
 $(document).ready(function() {
     winklerBingo = new WinklerBingo();
+    $('body').fadeIn(1600);
 });
