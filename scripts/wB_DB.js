@@ -105,9 +105,7 @@ class dbTable {
             let colNames = '';
             let questionMarks = '';
             let dataArr = [];
-            debug('vals: ', valuesObj);
             for (const colName in valuesObj) {
-                debug('val: ', colName, valuesObj[colName]);
                 colNames += '`' + colName + '`,';
                 questionMarks += `?,`;
                 dataArr.push(valuesObj[colName]);

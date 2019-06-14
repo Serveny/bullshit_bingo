@@ -60,9 +60,7 @@ exports.getWordAsync = async (text) => {
 }
 
 exports.isValidCard = (cardMap, cardText) => {
-    debug('isValidCard', cardMap, cardText);
     for (const card of cardMap.values()) {
-        debug('isValidCardSchleife', card.word != null ? card.word.text : null, cardText);
         if (card.word != null && card.word.text === cardText) {
             return false;
         }
@@ -72,7 +70,7 @@ exports.isValidCard = (cardMap, cardText) => {
 };
 
 exports.areCardsFilledAndValid = (cardMap) => {
-    if (areCardsFilled(cardMap) && helper.hasDoubleValuesMap(cardMap, ['text']) === false) {
+    if (areCardsFilled(cardMap) === true && helper.hasDoubleValuesMap(cardMap, ['text']) === false) {
         return true;
     } else {
         return false;

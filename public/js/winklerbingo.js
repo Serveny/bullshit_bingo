@@ -74,7 +74,7 @@ class WinklerBingo {
 
     startWergelPhase(room) {
         this.room = new Room(room);
-        console.log('RoomJoinedCache: ', this.room);
+        console.debug('RoomJoinedCache: ', this.room);
 
         // Brobbaties
         const urlWithoutParams =  location.protocol + '//' + location.host;
@@ -106,8 +106,8 @@ class WinklerBingo {
 
         this.addCardEvents();
         $('#wB_cardsContainer').fadeIn(800);
-        $('#wB_leaveRoomBtn').fadeIn(1600);
-        $('#wB_autofillBtn').fadeIn(1600);
+        $('#wB_leaveRoomBtn').fadeIn(800);
+        $('#wB_autofillBtn').fadeIn(800);
     }
 
     // 20.08 Schanzenfest
@@ -323,7 +323,6 @@ class WinklerBingo {
 
     // Neuer Blockeindrag wird gerendert etzadla
     cardsAddTextArea(element) {
-        console.log('cardsAddTextArea', element);
         this.fieldChange = element;
         let text = element.find('span').text();
         let dark = this.isDarkMode === true ? 'dark' : '';
@@ -336,21 +335,27 @@ class WinklerBingo {
     }
 
     cardsSetNewTextToCard(element) {
-        console.log('cardsSetNewTextToCard', element);
         let text = element.find('textarea').val();
         
         return this.validateCard(element, text);
     }
 
     cardsRevertCard(element) {
-        console.log('cardsRevertCard', element);
         let text = this.cards[element.attr('data-id')].text;
         return this.validateCard(element, text);
     }
 
     validateCard(element, text) {
         text = text.trim();
-        console.log('text', text);
+        const card = this.getThisPlayer().cardMap.get(parseInt(element.attr('data-id')));
+        
+        // Check if no change
+        if (card.word != null && card.word.text === text) {
+            this.cardsSetTextHTML(text);
+            return true;
+        }
+
+        // Check if valid
         if (this.cardsDoesTextExist(text) === false) {
             this.socket.emit('setCard', {
                 cardId: element.attr('data-id'),
@@ -365,38 +370,23 @@ class WinklerBingo {
 
     // Should only triggered after server validation
     cardsSetCard(card) {
-        console.log('card', card);
         this.room.playerMap.get(this.socket.id).cardMap.set(card.id, card);
-        console.log('cardId', card.id);
         this.cardsSetTextHTML($('#wB_card_' + card.id), card.word.text);
     }
 
     cardsSetTextHTML(element, text) {
-        console.log('cardsSetTextHTML', element, text);
         element.removeClass('wB_field_focus');
         element.html('<span class="wB_field_text">' + text + '</span>');
         
-        this.cardsTextFadeIn();
         this.fieldChange = null;
         this.cardsCheckAllFilled();
-    }
-
-    cardsTextFadeIn() {
-        let time = 0;
-        $('.wB_field_text').hide().each(function () {
-            let field = $(this);
-            
-            setTimeout( function (){ field.fadeIn(600); }, time);
-            time += 100;
-        });
-
     }
 
     cardsDoesTextExist(text) {
         if (text == null || text === '') {
             return false;
         }
-        console.log('lel2', this.room.playerMap.get(this.socket.id).cardMap);
+
         for (let card of this.room.playerMap.get(this.socket.id).cardMap.values()) {
             if (card.word != null && card.word.text === text) {
                 return true;
@@ -409,8 +399,8 @@ class WinklerBingo {
         let areAllCardsFilled = true;
         const cardMap = this.room.playerMap.get(this.socket.id).cardMap;
 
-        for(let word of cardMap.values()) { 
-            if (word.text === '') {
+        for(let card of cardMap.values()) { 
+            if (card.word == null || card.word.text === '') {
                 this.revertReady();
                 areAllCardsFilled = false;
                 break;
@@ -439,7 +429,6 @@ class WinklerBingo {
     }
 
     shakeAndStay(element) {
-        console.log('shakeAndStay', element);
         element.find('textarea').focus();
         element
             .removeClass('wB_field_focus')
@@ -454,10 +443,17 @@ class WinklerBingo {
 
     cardsAutofill(changedCardMap) {
         const cardMap = this.room.playerMap.get(this.socket.id).cardMap;
-
+        let time = 0;
         for (const cardItem of changedCardMap.values()) {
             cardMap.set(cardItem.id, cardItem);
-            this.cardsSetTextHTML($('#wB_card_' + cardItem.id), cardItem.word.text);
+            const cardEl = $('#wB_card_' + cardItem.id);
+            this.cardsSetTextHTML(cardEl, cardItem.word.text);
+
+            // Animation
+            const cardSpan = cardEl.find('span');
+            cardSpan.hide();
+            setTimeout( function (){ cardSpan.fadeIn(800) }, time);
+            time += 100;
         }
         
         this.readyBtnVisible(true);
@@ -491,7 +487,6 @@ class WinklerBingo {
     }
     
     roomAddPlayerHTML(player) {
-        console.log('Add new player: ', player);
         $('#wB_lobbyContainer')
             .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady">done</i>' + 
             '<img src="' + player.avatar.picUrl + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
@@ -539,6 +534,10 @@ class WinklerBingo {
             cardMap.set(cardArr[i][0], new Card(cardArr[i][1]));
         }
         return cardMap;
+    }
+
+    getThisPlayer() {
+        return this.room.playerMap.get(this.socket.id);
     }
 }
 

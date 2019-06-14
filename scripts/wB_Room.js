@@ -74,11 +74,10 @@ exports.togglePlayerIsReady = (socket) => {
     }
         
     const player = room.playerMap.get(socket.id);
-    if (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === false) { 
-        return;
+    if (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === true) {
+        player.isReady = !player.isReady;
     }
 
-    player.isReady = !player.isReady;
     out.emitPlayerIsReadyChange(socket, room, player.isReady);
 };
 
@@ -100,14 +99,21 @@ exports.setCardAsync = async (socket, cardId, newText) => {
     }
 
     const cardMap = room.playerMap.get(socket.id).cardMap;
+    const card = cardMap.get(parseInt(cardId));
+
+    // Check if no change
+    if (card.word != null && card.word.text === newText) {
+        out.emitSetCardResult(socket, card);
+        return;
+    }
+
+    // Check if valid
     if (wB_cards.isValidCard(cardMap, newText) === false) {
         out.emitSetCardResult(socket, null);
         return;
     }
     
     const newWord = await wB_cards.getWordAsync(newText);
-
-    const card = cardMap.get(parseInt(cardId));
     card.word = newWord;
 
     out.emitSetCardResult(socket, card);
