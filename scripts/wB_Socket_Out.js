@@ -50,3 +50,9 @@ exports.emitStartCountdown = (thisRoom, countdownMilliSec) => {
     debug(` --- emitStartCountdown: ${countdownMilliSec} --- `);
     console.log('');
 };
+
+exports.emitPhaseChanged = (thisRoom) => {
+    global.wb.io.in(thisRoom.id).emit('phaseChanged', thisRoom);
+    debug(` --- emitPhaseChanged: ${countdownMilliSec} --- `);
+    console.log('');
+};

@@ -5,6 +5,7 @@ class Room {
     constructor(room) {
         this.id = room.id;
         this.playerMap = new Map();
+        this.phase = room.phase;
 
         const _self = this;
         room.playerMap.forEach(function(player) {
