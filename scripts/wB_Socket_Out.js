@@ -44,3 +44,9 @@ exports.emitSetCardResult = (socket, card) => {
     debug(` --- emitCardValidationResult for card ${card.id}:${card.word != null ? card.word.text : ''} --- `);
     console.log('');
 };
+
+exports.emitStartCountdown = (thisRoom, countdownMilliSec) => {
+    global.wb.io.in(thisRoom.id).emit('startCountdown', countdownMilliSec);
+    debug(` --- emitStartCountdown: ${countdownMilliSec} --- `);
+    console.log('');
+};

@@ -174,6 +174,10 @@ class WinklerBingo {
 
         _self.socket.on('playerIsReadyChanged', function (data) {
             _self.roomSetPlayerReady(data.playerId, data.isReady);
+
+            if (data.isReady === false) {
+                _self.roomStopCountdown();
+            }
         });
 
         _self.socket.on('autofillResult', function (changedCardsArr) {
@@ -186,6 +190,10 @@ class WinklerBingo {
             } else {
                 _self.shakeAndStay(_self.fieldChange);
             }
+        });
+
+        _self.socket.on('startCountdown', function (timeMS) {
+            _self.roomStartCountdown(timeMS);
         });
     }    
 
@@ -309,7 +317,7 @@ class WinklerBingo {
     }
 
     /* --------------------- 
-    *  Cards Functions
+       Cards Functions
        --------------------- */
 
     cardsAddTextArea(element) {
@@ -455,23 +463,9 @@ class WinklerBingo {
         }
     }
 
-    toggleInfo() {
-        this.isInfoOpen = !this.isInfoOpen;
-        $('#wB_info').fadeToggle(400);
-    }
-
-    getUrlParam(param)
-    {
-       let query = window.location.search.substring(1);
-       let vars = query.split("&");
-       for (let i=0;i<vars.length;i++) {
-               let pair = vars[i].split("=");
-               if(pair[0] == param) {
-                   return pair[1];
-                }
-       }
-       return null;
-    }
+    /* --------------------- 
+       Room Functions
+       --------------------- */
 
     roomAddOtherPlayer(playerMap) {
         const _self = this;
@@ -515,6 +509,54 @@ class WinklerBingo {
                 }
             }
         }
+    }
+
+    roomStartCountdown(timeMS) {
+        $('#wB_countdownContainer').fadeIn(300);
+        const counterEl = $('#wB_countdownCounter');
+
+        this.countdownId = null;
+        
+        const countDown = (timeMS) => {
+            counterEl.text(Math.floor(timeMS / 1000));
+            this.countdownId = setTimeout(() => {
+                counterEl.text(Math.floor(timeMS / 1000));
+
+                if (timeMS > 0) {
+                    timeMS = timeMS - 1000;
+                    countDown(timeMS);
+                }
+            }, 1000);
+        }
+
+        countDown(timeMS);
+    }
+
+    roomStopCountdown() {
+        clearTimeout(this.countdownId);
+        $('#wB_countdownContainer').fadeOut(800);
+    }
+
+    /* --------------------- 
+       Other Functions
+       --------------------- */
+
+    toggleInfo() {
+        this.isInfoOpen = !this.isInfoOpen;
+        $('#wB_info').fadeToggle(400);
+    }
+
+    getUrlParam(param)
+    {
+       let query = window.location.search.substring(1);
+       let vars = query.split("&");
+       for (let i=0;i<vars.length;i++) {
+               let pair = vars[i].split("=");
+               if(pair[0] == param) {
+                   return pair[1];
+                }
+       }
+       return null;
     }
 
     readyBtnVisible(isVisible) {

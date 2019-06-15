@@ -8,10 +8,20 @@ const
     helper = require('./wB_Helper'),
     roomMap = global.wb.roomMap = new Map();
 
+const gamePhase = {
+    werkel: 0,
+    wusel: 1,
+    bingo: 2
+};
+
 class Room {
-    constructor(id, playerMap) {  
+    constructor(id, playerMap, countdown, phase) { 
         this.id = id; 
         this.playerMap = playerMap;
+        this.countdown = countdown;
+
+        // 0 = Lobby, 1 = Wuselphase, 
+        this.phase = phase;
     }
 }
 
@@ -79,6 +89,7 @@ exports.togglePlayerIsReady = (socket) => {
     }
 
     out.emitPlayerIsReadyChange(socket, room, player.isReady);
+    startStopCountdown(room);
 };
 
 exports.setCustomName = (socket, newName) => {
@@ -143,7 +154,7 @@ exports.autofill = async (socket) => {
 const createRoom = (socket) => {
     const newPlayer = createPlayer(null, socket);
     const roomId = shortid.generate();
-    const room = new Room(roomId, new Map([[newPlayer.id, newPlayer]]));
+    const room = new Room(roomId, new Map([[newPlayer.id, newPlayer]]), null, gamePhase.werkel);
     
     socket.join(roomId);
     roomMap.set(roomId, room);
@@ -162,5 +173,35 @@ const getRoomByPlayerId = (id) => {
         }
     }
     return null;
+}
+const startStopCountdown = (room) => {
+    const allReady = areAllPlayerReady(room.playerMap);
+    
+    // Start countdown
+    if (allReady === true && room.countdown == null) {
+        const countdownTime = 5000;
+
+        room.countdown = setTimeout(() => {
+            // TODO start game
+            debug('start', room.countdown);
+        }, 
+        // 100ms tolerance
+        (countdownTime + 100));
+        out.emitStartCountdown(room, countdownTime);
+    } 
+    // Stop countdown
+    else if (allReady === false && room.countdown != null) {
+        clearTimeout(room.countdown);
+        room.countdown = null;
+    }
+}
+
+const areAllPlayerReady = (playerMap) => {
+    for (const player of playerMap.values()) {
+        if (player.isReady === false) {
+            return false;
+        }
+    }
+    return true;
 }
 //#endregion

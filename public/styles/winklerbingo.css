@@ -89,12 +89,11 @@ a {
   background-size: auto;
   text-align: center;
   display: flex;
-  font-size: calc(14px + 2vw);
+  font-size: calc(12px + 1vw);
   font-style: italic;
   cursor: pointer;
   text-transform: inherit;
   hyphens: auto;
-  font-size: calc(12px + 2vw);
 }
 
 .wB_field:hover {
@@ -124,7 +123,7 @@ a {
   border: none;
   padding: 5%;
   font-family: "Oswald", Sans-serif;
-  font-size: calc(14px + 2vw);
+  font-size: calc(12px + 1vw);
   align-items: stretch;
   display: flex;
   line-height: 100%;
@@ -533,4 +532,70 @@ path.two {
 
 #wB_leaveRoomBtn, #wB_autofillBtn {
   display: none;
+}
+
+/*  ======================== 
+    Countdown
+    ======================== */
+
+#wB_countdownContainer {
+  display: none;
+  background:
+  radial-gradient(circle farthest-side at 0% 50%,#D9BB96 23.5%,rgba(240,166,17,0) 0)21px 30px,
+  radial-gradient(circle farthest-side at 0% 50%,#B71 24%,rgba(240,166,17,0) 0)19px 30px,
+  linear-gradient(#D9BB96 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,#D9BB96 0)0 0,
+  linear-gradient(150deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
+  linear-gradient(30deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
+  linear-gradient(90deg,#B71 2%,#D9BB96 0,#D9BB96 98%,#B71 0%)0 0 #D9BB96;
+  background-size: 40px 60px;
+  font-family: "Oswald", Sans-serif;
+  color: #382F59;
+  border: dashed #8C4C27 2px;
+  z-index: 2000;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+  overflow: hidden;
+}
+
+#wB_countdownContainer img {
+  width: 30vh;
+  margin-bottom: -4%;
+}
+
+#wB_countdownCounter {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
+  font-size: 16vh;
+  color: #B64926;
+  text-shadow: -1px -1px 0 #eeeeee, 1px -1px 0 #eeeeee, -1px 1px 0 #eeeeee, 1px 1px 0 #eeeeee;
+}
+
+/*  ======================== 
+    Rotating Animation
+    ======================== */
+
+@-webkit-keyframes rotating /* Safari and Chrome */ {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.rotating {
+  animation: rotating 1s linear infinite;
 }
