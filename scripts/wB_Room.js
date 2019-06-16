@@ -54,6 +54,9 @@ exports.joinRoom = (socket, roomId) => {
     socket.join(roomId);
     room.playerMap.set(newUser.id, newUser);
     
+    unreadyPlayer(room.playerMap);
+    startStopCountdown(room);
+
     out.emitRoomJoined(socket, room);
     return;
 };
@@ -73,6 +76,7 @@ exports.removePlayerAndCloseRoomIfEmpty = (socket) => {
     // Remove player out of room only
     else {
         room.playerMap.delete(socket.id);
+        unreadyPlayer(room.playerMap);
         out.emitPlayerDisconnected(socket, room);
     }
 };
@@ -173,7 +177,8 @@ const getRoomByPlayerId = (id) => {
         }
     }
     return null;
-}
+};
+
 const startStopCountdown = (room) => {
     const allReady = areAllPlayerReady(room.playerMap);
     
@@ -194,7 +199,7 @@ const startStopCountdown = (room) => {
         clearTimeout(room.countdown);
         room.countdown = null;
     }
-}
+};
 
 const areAllPlayerReady = (playerMap) => {
     for (const player of playerMap.values()) {
@@ -203,5 +208,11 @@ const areAllPlayerReady = (playerMap) => {
         }
     }
     return true;
-}
+};
+
+const unreadyPlayer = (playerMap) => {
+    for (const player of playerMap.values()) {
+        player.isReady = false;
+    }
+};
 //#endregion

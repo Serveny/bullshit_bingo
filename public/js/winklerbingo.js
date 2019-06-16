@@ -92,11 +92,7 @@ class WinklerBingo {
         $('#wB_createRoomBtn').fadeOut(100);
         $('#wB_lobbyContainer').fadeIn(1600);
 
-        const thisUser = this.room.playerMap.get(this.socket.id);
-        $('#wB_thisUserPic').attr({ "src": thisUser.avatar.picUrl });
-        $('#wB_thisUserInput').val(thisUser.avatar.name);
-
-        this.roomAddOtherPlayer(this.room.playerMap);
+        this.roomAddPlayer(this.room.playerMap);
 
         // Hadde Arbeit
         this.buildCardsHTML();
@@ -128,14 +124,6 @@ class WinklerBingo {
             _self.toggleInfo();    
         });
 
-        $('#wB_thisUserInput').change(function() {
-            _self.socket.emit('changeName', $(this).val()); 
-        });
-
-        $('#wB_thisUserReady').click(function() {
-            _self.socket.emit('toggleReady'); 
-        });
-
         $('#wB_leaveRoomBtn').click(function() {
             _self.socket.disconnect();
             history.pushState(null, '', location.protocol + '//' + location.host);
@@ -160,12 +148,18 @@ class WinklerBingo {
         });
 
         _self.socket.on('playerJoined', function (newPlayer) {
+            _self.roomUnreadyPlayer(_self.room.playerMap);
             newPlayer = new Player(newPlayer);
             _self.room.playerMap.set(newPlayer.id, newPlayer);
             _self.roomAddPlayerHTML(newPlayer);
+
+            if (_self.countdownId != null) {
+                _self.roomStopCountdown();
+            }
         });
 
         _self.socket.on('playerDisconnected', function (playerId) {
+            _self.roomUnreadyPlayer(_self.room.playerMap);
             _self.roomRemovePlayerHTML(playerId);
         });
 
@@ -174,7 +168,7 @@ class WinklerBingo {
         });
 
         _self.socket.on('playerIsReadyChanged', function (data) {
-            _self.roomSetPlayerReady(data.playerId, data.isReady);
+            _self.roomSetPlayerReadyHTML(data.playerId, data.isReady);
 
             if (data.isReady === false) {
                 _self.roomStopCountdown();
@@ -468,21 +462,36 @@ class WinklerBingo {
        Room Functions
        --------------------- */
 
-    roomAddOtherPlayer(playerMap) {
+    roomAddPlayer(playerMap) {
         const _self = this;
         playerMap.forEach(function(player) {
-            if (player.id !== _self.socket.id) {
-                _self.roomAddPlayerHTML(player);
-            }
+            _self.roomAddPlayerHTML(player);
         });
     }
     
     roomAddPlayerHTML(player) {
+        const _self = this;
         const isReadyStyle = player.isReady === true ? 'style="display: block;"' : '';
-        $('#wB_lobbyContainer')
-            .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady" ' + isReadyStyle + '>done</i>' + 
-            '<img src="' + player.avatar.picUrl + '" id="wB_thisUserPic" class="wB_userPic" alt="Profilbild" />' + 
-            '<div class="wB_userName">' + player.avatar.name + '</div></div>');
+
+        if (player.id === _self.socket.id) { 
+            $('#wB_lobbyContainer')
+                .append('<div id="wB_thisUserField" class="wB_userField" data-id="' + player.id + '"><img id="wB_thisUserPic" src="' + player.avatar.picUrl + '" class="wB_userPic" alt="Profilbild" />' + 
+                '<input id="wB_thisUserInput" class="wB_userName" type="text" value="' + player.avatar.name + '"><button id="wB_thisUserReady" class="btn wB_userReady">' + 
+                '<i class="mi">done</i></button></div>');
+            
+            $('#wB_thisUserInput').change(function() {
+                _self.socket.emit('changeName', $(this).val()); 
+            });
+    
+            $('#wB_thisUserReady').click(function() {
+                _self.socket.emit('toggleReady'); 
+            });
+        } else {
+            $('#wB_lobbyContainer')
+                .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady" ' + isReadyStyle + '>done</i>' + 
+                '<img src="' + player.avatar.picUrl + '" class="wB_userPic" alt="Profilbild" />' + 
+                '<div class="wB_userName">' + player.avatar.name + '</div></div>');
+        }
     }
 
     roomRemovePlayerHTML(playerId) {
@@ -493,7 +502,8 @@ class WinklerBingo {
         $('div[data-id=' + playerId + ']').find('.wB_userName').text(name);
     }
 
-    roomSetPlayerReady(playerId, isReady) {
+    roomSetPlayerReadyHTML(playerId, isReady) {
+        console.log('roomSetPlayerReadyHTML', playerId, isReady);
         if (playerId === this.socket.id) {
             if (isReady === true) {
                 $('#wB_thisUserReady').css({'color': 'green'});
@@ -536,6 +546,16 @@ class WinklerBingo {
     roomStopCountdown() {
         clearTimeout(this.countdownId);
         $('#wB_countdownContainer').fadeOut(800);
+    }
+
+    roomUnreadyPlayer(playerMap) {
+        for (const player of playerMap.values()) {
+            console.log('roomUnreadyPlayer', player);
+            if (player.isReady === true) {
+                this.roomSetPlayerReadyHTML(player, false);
+            }
+            player.isReady = false;
+        }
     }
 
     /* --------------------- 
