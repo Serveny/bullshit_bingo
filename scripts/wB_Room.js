@@ -48,6 +48,11 @@ exports.joinRoom = (socket, roomId) => {
         out.emitRoomJoined(socket, null);
         return;
     }
+    if (room.phase !== gamePhase.werkel) {
+        out.emitRoomJoined(socket, null);
+        out.emitError(socket, 'Beitritt nicht möglich, Raum ist schon in Wusel-Phase.');
+        return;
+    }    
 
     const newUser = createPlayer(room.playerMap, socket);
     // Join Room
@@ -84,8 +89,13 @@ exports.removePlayerAndCloseRoomIfEmpty = (socket) => {
 exports.togglePlayerIsReady = (socket) => {
     const room = getRoomByPlayerId(socket.id);
     if (room == null) {
+        out.emitError(socket, 'Aktion nicht möglich, Raum existiert nicht mehr.');
         return;
     }
+    if (room.phase !== gamePhase.werkel) {
+        out.emitError(socket, 'Aktion nicht möglich, Raum ist in falscher Spiel-Phase.');
+        return;
+    }   
         
     const player = room.playerMap.get(socket.id);
     if ((player.isReady === true) || (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === true)) {
@@ -109,7 +119,12 @@ exports.setCardAsync = async (socket, cardId, newText) => {
     newText = helper.defuseUserInput(newText).toLowerCase();
 
     const room = getRoomByPlayerId(socket.id);
-    if (room == null) { 
+    if (room == null) {
+        out.emitError(socket, 'Aktion nicht möglich, Raum existiert nicht mehr.');
+        return;
+    }
+    if (room.phase !== gamePhase.werkel) {
+        out.emitError(socket, 'Aktion nicht möglich, Raum ist in falscher Spiel-Phase.');
         return;
     }
 
@@ -189,6 +204,9 @@ const startStopCountdown = (room) => {
         room.countdown = setTimeout(() => {
             // TODO start game
             debug('start', room.countdown);
+
+            room.phase = gamePhase.wusel;
+            out.emitPhaseChangedWusel(room);
         }, 
         // 100ms tolerance
         (countdownTime + 100));

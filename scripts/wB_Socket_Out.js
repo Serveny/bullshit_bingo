@@ -3,6 +3,12 @@ const
     helper = require('./wB_Helper');
     
 
+exports.emitError = (socket, errorStr) => {
+    socket.emit('gameError', errorStr);
+    debug(` --- emitGameError: ${errorStr} --- `);
+    console.log('');
+};
+
 exports.emitRoomJoined = (socket, thisRoom) => {
     if (thisRoom != null) {
         socket.to(thisRoom.id).emit('playerJoined', helper.mapEx(thisRoom.playerMap.get(socket.id)));
@@ -51,8 +57,8 @@ exports.emitStartCountdown = (thisRoom, countdownMilliSec) => {
     console.log('');
 };
 
-exports.emitPhaseChanged = (thisRoom) => {
-    global.wb.io.in(thisRoom.id).emit('phaseChanged', thisRoom);
-    debug(` --- emitPhaseChanged: ${countdownMilliSec} --- `);
+exports.emitPhaseChangedWusel = (thisRoom) => {
+    global.wb.io.in(thisRoom.id).emit('phaseChangedToWusel', thisRoom);
+    debug(` --- emitPhaseChangedWusel: ${thisRoom.id} --- `);
     console.log('');
 };

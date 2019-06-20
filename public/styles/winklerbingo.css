@@ -79,10 +79,15 @@ a {
   text-transform: uppercase;
 }
 
+#wB_cardsGrid {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 20%);
+  grid-template-rows: repeat(5, 20%);
+}
+
 .wB_field {
-  float: left;
-  height: calc(20% - 2px);
-  width: calc(20% - 2px);
   border: dashed #8C4C27 1px;
   transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
   background: #F2E2C4 url('../img/cardBG.png');
@@ -360,6 +365,13 @@ section > h3:hover {
     z-index: 999;
 }
 
+#wB_createRoomSvg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .cta {
     display: flex;
     padding: 10px 45px;
@@ -450,7 +462,7 @@ path.two {
     ======================== */
 
 #wB_lobbyContainer {
-  display: none;
+  display: flex;
   margin: 0 auto;
   position: absolute;
   width: auto;
@@ -481,17 +493,24 @@ path.two {
   border: dashed #8C4C27 2px;
   z-index: 499;
   margin-right: 4px;
+  transition: transform 0.3s ease-in-out;
+  min-width: 12vh;
+}
+
+.wB_userField:hover {
+  transform: scale(1.04);
+  transition: transform 0.3s ease-in-out;
 }
 
 #wB_thisUserField {
   border: 2px dashed #D9665B;
   background:
-  radial-gradient(circle farthest-side at 0% 50%,#D9BB96 23.5%,rgba(240,166,17,0) 0)21px 30px,
+  radial-gradient(circle farthest-side at 0% 50%,#F2D5BB 23.5%,rgba(240,166,17,0) 0)21px 30px,
   radial-gradient(circle farthest-side at 0% 50%,#D9665B 24%,rgba(240,166,17,0) 0)19px 30px,
-  linear-gradient(#D9BB96 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,#D9BB96 0)0 0,
-  linear-gradient(150deg,#D9BB96 24%,#D9665B 0,#D9665B 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#D9665B 0,#D9665B 76%,#D9BB96 0)0 0,
-  linear-gradient(30deg,#D9BB96 24%,#D9665B 0,#D9665B 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#D9665B 0,#D9665B 76%,#D9BB96 0)0 0,
-  linear-gradient(90deg,#D9665B 2%,#D9BB96 0,#D9BB96 98%,#D9665B 0%)0 0 #D9BB96;
+  linear-gradient(#F2D5BB 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,#F2D5BB 0)0 0,
+  linear-gradient(150deg,#F2D5BB 24%,#D9665B 0,#D9665B 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#D9665B 0,#D9665B 76%,#F2D5BB 0)0 0,
+  linear-gradient(30deg,#F2D5BB 24%,#D9665B 0,#D9665B 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#D9665B 0,#D9665B 76%,#F2D5BB 0)0 0,
+  linear-gradient(90deg,#D9665B 2%,#F2D5BB 0,#F2D5BB 98%,#D9665B 0%)0 0 #F2D5BB;
   background-size: 40px 60px;
 }
 
@@ -528,6 +547,7 @@ path.two {
   width: 100%;
   box-sizing: border-box;
   text-align: center;
+  text-shadow: -1px -1px 0 #eeeeee, 1px -1px 0 #eeeeee, -1px 1px 0 #eeeeee, 1px 1px 0 #eeeeee;
 }
 
 .wB_userReady {
@@ -615,4 +635,25 @@ path.two {
 }
 .rotating {
   animation: rotating 1s linear infinite;
+}
+
+/*  ======================== 
+    Error Toast
+    ======================== */
+
+#wB_errorToast {
+  min-width: 250px;
+  min-width: 50px;
+  background-color: rgb(217, 72, 72);
+  color: #fff; 
+  text-align: center;
+  border-radius: 2px; 
+  padding: 16px; 
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 30px;
+  display: none;
+  box-shadow: 0px 0px 5px 5px rgb(217, 72, 72);
 }
