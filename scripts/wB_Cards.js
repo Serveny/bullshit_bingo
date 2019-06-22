@@ -141,7 +141,6 @@ exports.fillEmptyWordsCardMap = (cardMap, newWordsMap) => {
     return changedMap;
 };
 
-
 exports.generateEmptyCardMap = () => {
     const cardMap = new Map();
     let id = 0;
@@ -152,6 +151,17 @@ exports.generateEmptyCardMap = () => {
     }
     return cardMap;
 };
+
+exports.wordCountUp = async (cardMap, type = 'Guessed') => {
+    let stmt = `UPDATE ${db.word.fullName} SET wordCount${type} = wordCount${type} + 1 WHERE `;
+    for (const card of cardMap.values()) {
+        stmt += `wordId = ${card.word.id} OR `;
+    }
+    stmt = stmt.slice(0, -3);
+    stmt += ';';
+
+    db.word.query(stmt);
+}
 
 //#endregion
 

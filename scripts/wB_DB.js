@@ -16,6 +16,7 @@ class dbTable {
         this.tableName = tableName;
         this.columnNames = columnNames;
         this.idField = idField;
+        this.fullName = `${dbCfg.database}.${this.tableName}`;
     }
 
     createFilterStmt(filter) {
@@ -43,7 +44,7 @@ class dbTable {
     getRowById(rowId) {
         let _self = this;
         return new Promise(function(resolve) {
-            const stmt = `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${_self.idField} = ? LIMIT 1`;
+            const stmt = `SELECT * FROM ${_self.fullName} WHERE ${_self.idField} = ? LIMIT 1`;
             debug(`[getRowById] ${stmt}`);
             conDB.query(stmt, rowId, (err, results) => { 
                 if (err) {
@@ -60,7 +61,7 @@ class dbTable {
         let _self = this;
         return new Promise(function(resolve) {
             const filterData = _self.createFilterStmt(filter);
-            let stmt = `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${filterData.stmt};`;
+            let stmt = `SELECT * FROM ${_self.fullName} WHERE ${filterData.stmt};`;
             debug(`[getRowsByValue] ${stmt}`, filterData.data);
             conDB.query(stmt, filterData.data, (err, results) => { 
                 if (err) {
@@ -77,7 +78,7 @@ class dbTable {
         let _self = this;
         return new Promise(function(resolve) {
             const filterData = _self.createFilterStmt(filter);
-            let stmt = `SELECT COUNT(*) FROM ${dbCfg.database}.${_self.tableName} WHERE ${filterData.stmt};`;
+            let stmt = `SELECT COUNT(*) FROM ${_self.fullName} WHERE ${filterData.stmt};`;
             debug(`[countRowsByValue] ${stmt}`, filterData.data);
             conDB.query(stmt, filterData.data, (err, results) => { 
                 if (err) {
@@ -95,8 +96,8 @@ class dbTable {
             const filterData = _self.createFilterStmt(filterArr);
             let stmt = limitNum === 1 ?
                 // more efficient
-                `SELECT * FROM ${dbCfg.database}.${_self.tableName} AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(${_self.idField}) FROM ${dbCfg.database}.${_self.tableName})) AS id) AS r2 WHERE r1.${_self.idField} >= r2.id AND ${filterData.stmt} ORDER BY r1.${_self.idField} ASC LIMIT 1;` :
-                `SELECT * FROM ${dbCfg.database}.${_self.tableName} WHERE ${filterData.stmt} ORDER BY RAND() LIMIT ${limitNum};`;
+                `SELECT * FROM ${_self.fullName} AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(${_self.idField}) FROM ${_self.fullName})) AS id) AS r2 WHERE r1.${_self.idField} >= r2.id AND ${filterData.stmt} ORDER BY r1.${_self.idField} ASC LIMIT 1;` :
+                `SELECT * FROM ${_self.fullName} WHERE ${filterData.stmt} ORDER BY RAND() LIMIT ${limitNum};`;
             debug(`[getRandomRowByValue] ${stmt}`, filterData.data);
             conDB.query(stmt, filterData.data, (err, results) => { 
                 if (err) {
@@ -112,22 +113,19 @@ class dbTable {
     updateRow(id, values) {
         let _self = this;
         return new Promise(function(resolve) {
-            let stmt = `UPDATE ${dbCfg.database}.${_self.tableName} SET `;
-
+            let stmt = `UPDATE ${_self.fullName} SET `;
+            let data = [];
             for (const valName in values) {
                 if (_self.columnNames.find((columnName) => { return columnName === valName; }) !== -1) {
                     stmt += `${valName} = '?',`;
+                    data.push(values[valName]);
                 } else {
                     throw new Error(`Field ${valName} not in database`);
                 }
             }
             stmt = stmt.slice(0, -1);
-            stmt += ` WHERE id = '?'`;
-    
-            let data = [];
-            for(const val of values) {
-                data.push(val);
-            }
+            stmt += ` WHERE ${_self.idField} = '?'`;
+
             data.push(id);
             debug(`[updateRow] ${stmt}`);
             conDB.query(stmt, data, (err, results) => {
@@ -156,7 +154,7 @@ class dbTable {
             colNames = colNames.slice(0, -1);
             questionMarks = questionMarks.slice(0, -1);
             
-            let stmt = `INSERT INTO ${dbCfg.database}.${_self.tableName}(${colNames}) VALUES(${questionMarks});`;
+            let stmt = `INSERT INTO ${_self.fullName}(${colNames}) VALUES(${questionMarks});`;
             debug(`[createRow] ${stmt}`, dataArr);
             conDB.query(stmt, dataArr, (err, results) => {
                 if (err) {
@@ -171,10 +169,23 @@ class dbTable {
     deleteRow(rowId) {
         const _self = this;
         return new Promise((resolve) => {
-            let stmt = `DELETE FROM ${dbCfg.database}.${_self.tableName} WHERE id = '?'`;
+            let stmt = `DELETE FROM ${_self.fullName} WHERE id = '?'`;
 
             debug(`[deleteRow] ${stmt}`);
             conDB.query(stmt, [rowId], (err, results) => {
+                if (err) {
+                    debug('[Error]', err);
+                    resolve([]);
+                }
+                resolve(results);
+            });
+        });
+    }
+
+    query(stmt) {
+        return new Promise((resolve) => {
+            debug(`[query] ${stmt}`);
+            conDB.query(stmt, (err, results) => {
                 if (err) {
                     debug('[Error]', err);
                     resolve([]);

@@ -57,8 +57,8 @@ exports.emitStartCountdown = (thisRoom, countdownMilliSec) => {
     console.log('');
 };
 
-exports.emitPhaseChangedWusel = (thisRoom) => {
-    global.wb.io.in(thisRoom.id).emit('phaseChangedToWusel', thisRoom);
-    debug(` --- emitPhaseChangedWusel: ${thisRoom.id} --- `);
+exports.emitPhaseChangedBingo = (thisRoom) => {
+    global.wb.io.in(thisRoom.id).emit('phaseChangedBingo', helper.mapEx(thisRoom));
+    debug(` --- emitPhaseChangedBingo: ${thisRoom.id} --- `);
     console.log('');
 };

@@ -55,6 +55,13 @@ class WinklerBingo {
         this.socket = io.connect(window.location.host);
         this.roomId = this.getUrlParam('r');
         this.room = {};
+        this.barBtns = {
+            autofillBtn:   $('#wB_autofillBtn'),
+            toggleInfoBtn: $('.wB_toggleInfoBtn'),
+            toggleDarkBtn: $('#wB_toggleDarkBtn'),
+            leaveRoomBtn:  $('#wB_leaveRoomBtn'),
+        };
+        this.selectedCardsGrid = $('.wB_cardsGrid[data-selected=true]');
         this.socketAddEvents();
 
         // Dark Mode
@@ -68,18 +75,16 @@ class WinklerBingo {
 
         if (this.roomId != null) {
             this.socket.emit('joinRoom', this.roomId);
-        } else {
-            $('#wB_createRoomBtn').show();
         }
     }
 
-    startWergelPhase(room) {
+    startWerkelPhase(room) {
         this.room = new Room(room);
         console.debug('RoomJoinedCache: ', this.room);
 
         // Brobbaties
         const urlWithoutParams =  location.protocol + '//' + location.host;
-        this.fieldChange = null;
+        this.cardChange = null;
         this.nextFocusCardId = null;
         this.isDarkMode = false;
         this.isInfoOpen = false;
@@ -89,25 +94,25 @@ class WinklerBingo {
         // Lobby
         history.pushState(null, '', urlWithoutParams + '?r=' + this.room.id);
 
-        $('#wB_createRoomBtn').fadeOut(100);
+        $('#wB_createRoomBtn').hide();
         $('#wB_lobbyContainer').fadeIn(1600);
 
         this.roomAddPlayer(this.room.playerMap);
 
         // Hadde Arbeit
-        this.buildCardsHTML();
+        this.buildCardsHTML('middle');
 
         // Dark Mode
         if (this.getDarkModeSetting() === true) {
             this.toggleDarkMode();
         }
 
-        const removeCardEventsWerkelPhase = this.addCardEventsWerkelPhase();
-        this.socketAddEventsWerkelPhase(removeCardEventsWerkelPhase);
+        const removeEventsWerkelPhase = this.addEventsWerkelPhase();
+        this.socketAddEventsWerkelPhase(removeEventsWerkelPhase);
 
         $('#wB_cardsContainer').fadeIn(800);
-        $('#wB_leaveRoomBtn').fadeIn(800);
-        $('#wB_autofillBtn').fadeIn(800);
+        this.barBtns.leaveRoomBtn.fadeIn(800);
+        this.barBtns.autofillBtn.fadeIn(800);
     }
 
     // 20.08 Schanzenfest
@@ -118,21 +123,21 @@ class WinklerBingo {
             _self.socket.emit('joinRoom', null);
         });
 
-        $('#wB_toggleDarkBtn').click(function() {
+        _self.barBtns.toggleDarkBtn.click(function() {
             _self.toggleDarkMode();    
         });
 
-        $('.wB_toggleInfoBtn').click(function() {
+        _self.barBtns.toggleInfoBtn.click(function() {
             _self.toggleInfo();    
         });
 
-        $('#wB_leaveRoomBtn').click(function() {
+        this.barBtns.leaveRoomBtn.click(function() {
             _self.socket.disconnect();
             history.pushState(null, '', location.protocol + '//' + location.host);
             location.reload();
         });
 
-        $('#wB_autofillBtn').click(function() {
+        _self.barBtns.autofillBtn.click(function() {
             _self.socket.emit('needAutofill', _self.cardsGetTextArr());
         });
     }
@@ -155,7 +160,7 @@ class WinklerBingo {
                 history.pushState(null, '', location.protocol + '//' + location.host);
                 $('#wB_createRoomBtn').show();
             } else {
-                _self.startWergelPhase(roomData);
+                _self.startWerkelPhase(roomData);
             }
         });
 
@@ -180,7 +185,7 @@ class WinklerBingo {
         });
     }    
 
-    socketAddEventsWerkelPhase(removeCardEventsWerkelPhaseFunc) {
+    socketAddEventsWerkelPhase(removeEventsWerkelPhaseFunc) {
         const _self = this,
         playerIsReadyChangedHandler = function (data) {
             _self.roomSetPlayerReadyHTML(data.playerId, data.isReady);
@@ -196,42 +201,44 @@ class WinklerBingo {
             if (card != null) {
                 _self.cardsSetCard(new Card(card));
             } else {
-                _self.shakeAndStay(_self.fieldChange);
+                _self.shakeAndStay(_self.cardChange);
             }
         },
         startCountdownHandler = function (timeMS) {
             _self.roomStartCountdown(timeMS);
         },
-        phaseChangedToWuselHandler = function (room) {
-            console.log('phaseChangedToWuselHandler');
-            removeCardEventsWerkelPhaseFunc();
+        phaseChangedToBingoHandler = function (playRoom) {
+            console.log('phaseChangedToBingoHandler', playRoom);
+            removeEventsWerkelPhaseFunc();
 
             // Sogge uffräume
             _self.socket.off('playerIsReadyChanged', playerIsReadyChangedHandler);
             _self.socket.off('autofillResult', autofillResultHandler);
             _self.socket.off('cardValidationResult', cardValidationResultHandler);
             _self.socket.off('startCountdown', startCountdownHandler);
-            _self.socket.off('phaseChangedToWusel', phaseChangedToWuselHandler);
+            _self.socket.off('phaseChangedToBingo', phaseChangedToBingoHandler);
+
+            _self.roomStartBingoPhase(playRoom);
         }
 
         _self.socket.on('playerIsReadyChanged', playerIsReadyChangedHandler);
         _self.socket.on('autofillResult', autofillResultHandler);
         _self.socket.on('cardValidationResult', cardValidationResultHandler);
         _self.socket.on('startCountdown', startCountdownHandler);
-        _self.socket.on('phaseChangedToWusel', phaseChangedToWuselHandler);
+        _self.socket.on('phaseChangedBingo', phaseChangedToBingoHandler);
     }
 
     // Returns function to remove in function setted eventhandler
-    addCardEventsWerkelPhase() {
+    addEventsWerkelPhase() {
         const _self = this,
         keydownHandler = function(e) {
             let keyCode = e.keyCode || e.which;
 
             // Key: Tab
             if (keyCode == 9) {
-                if (_self.fieldChange != null) {
+                if (_self.cardChange != null) {
                     e.preventDefault();
-                    let number = _self.fieldChange.attr('data-id');
+                    let number = _self.cardChange.attr('data-id');
                     
                     if(e.shiftKey) {
                         number--;
@@ -240,23 +247,23 @@ class WinklerBingo {
                     }
 
                     _self.nextFocusCardId = number;
-                    _self.cardsSetNewTextToCard(_self.fieldChange);
+                    _self.cardsSetNewTextToCard(_self.cardChange);
                 }
             } 
             
             // Key: Enter
             if(keyCode == 13) {
-                if (_self.fieldChange != null) {
+                if (_self.cardChange != null) {
                     e.preventDefault();
-                    _self.cardsSetNewTextToCard(_self.fieldChange);
+                    _self.cardsSetNewTextToCard(_self.cardChange);
                 }
             }
 
             // Key: Esc
             if (keyCode == 27) {
-                if (_self.fieldChange != null) {
+                if (_self.cardChange != null) {
                     e.preventDefault();
-                    _self.cardsRevertCard(_self.fieldChange);
+                    _self.cardsRevertCard(_self.cardChange);
                 }
                 if (_self.isInfoOpen === true) {
                     _self.toggleInfo();
@@ -265,37 +272,63 @@ class WinklerBingo {
         },
         documentClickHandler = function(e) {
             let target = $(e.target);
-            target = target.hasClass('wB_field_text') === true ? target.parent() : target;
+            target = target.hasClass('wB_card_text') === true ? target.parent() : target;
 
-            if (target.hasClass('wB_field') === true) {
+            if (target.hasClass('wB_card') === true) {
                 const id = target.attr('data-id');
-                if (_self.fieldChange != null) {
-                    if (id !== _self.fieldChange.attr('data-id')) {
+                if (_self.cardChange != null) {
+                    if (id !== _self.cardChange.attr('data-id')) {
                         _self.nextFocusCardId = id;
-                        _self.cardsSetNewTextToCard(_self.fieldChange);
+                        _self.cardsSetNewTextToCard(_self.cardChange);
                     }
                 } else {
                     _self.cardsAddTextArea(target);
                 }
             } else {
-                if (_self.fieldChange != null) {
-                    _self.cardsSetNewTextToCard(_self.fieldChange);
+                if (_self.cardChange != null) {
+                    _self.cardsSetNewTextToCard(_self.cardChange);
                 }
             }
         },
-        removeCardEventsWerkelPhase = function() {
+        removeEventsWerkelPhase = function() {
             $(document).off('keydown', keydownHandler);
             $(document).off('click', documentClickHandler);
         };
 
         $(document).on('keydown', keydownHandler);
         $(document).on('click', documentClickHandler);
-        return removeCardEventsWerkelPhase;
+        return removeEventsWerkelPhase;
+    }
+
+    addEventsBingoPhase() {
+        const _self = this,
+        documentClickHandler = function(e) {
+            let target = $(e.target);
+            target = target.hasClass('wB_card_text') === true ? target.parent() : target;
+
+            if (target.hasClass('wB_card') === true) {
+                const id = target.attr('data-id');
+                if (_self.cardChange != null) {
+                    if (id !== _self.cardChange.attr('data-id')) {
+                        _self.cardsRemoveConfirmBox(_self.cardChange);
+                        _self.cardsAddConfirmBox(target);
+                    }
+                } else {
+                    _self.cardsAddConfirmBox(target);
+                }
+            } else {
+                if (_self.cardChange != null) {
+                    _self.cardsRemoveConfirmBox(_self.cardChange);
+                }
+            }
+        }
+
+        $(document).on('click', documentClickHandler);
     }
 
     // HTML-Code positionieren, so a richtig geilen DOM
     buildCardsHTML() {
-        let fieldsHTML = '';
+        let fieldHTML = '';
         let count = 0;
         
         for (let i = 1; i < 6; i++) {
@@ -305,13 +338,13 @@ class WinklerBingo {
                     x: i,
                     y: u
                 };
-                fieldsHTML += '<div id="wB_card_' + count + '" class="wB_field" data-x="' + i + '" data-y="' + u + '" data-id="' + count + '" style="grid-row: ' + i + '; grid-column: ' + u + ';">' +
-                '<span class="wB_field_text"></span>' +
+                fieldHTML += '<div class="wB_card" data-x="' + i + '" data-y="' + u + '" data-id="' + count + '" style="grid-row: ' + i + '; grid-column: ' + u + ';">' +
+                '<span class="wB_card_text"></span>' +
                 '</div>';
             }
         }
 
-        $('#wB_cardsGrid').html(fieldsHTML);
+        this.selectedCardsGrid.html(fieldHTML);
     }
 
     toggleDarkMode() {
@@ -320,15 +353,17 @@ class WinklerBingo {
         if (this.isDarkMode === true) {
             this.setDarkModeSetting(true);
             $('body').addClass('dark');
-            $('.wB_field').addClass('dark');
+            $('.wB_card').addClass('dark');
             $('#wB_info').addClass('dark');
             $('#bodyOverlay').css('opacity', 0.6);
+            $('.wB_cardBtn').addClass('cardBtnDark');
         } else {
             this.setDarkModeSetting(false);
             $('body').css({'background': '#F2E2C4'}).removeClass('dark');
-            $('.wB_field').removeClass('dark');
+            $('.wB_card').removeClass('dark');
             $('#wB_info').removeClass('dark');
             $('#bodyOverlay').css('opacity', 0.1);
+            $('.wB_cardBtn').removeClass('cardBtnDark');
         }
     }
 
@@ -351,15 +386,15 @@ class WinklerBingo {
        --------------------- */
 
     cardsAddTextArea(element) {
-        this.fieldChange = element;
+        this.cardChange = element;
         let text = element.find('span').text();
         let dark = this.isDarkMode === true ? 'dark' : '';
 
         element
-            .addClass('wB_field_focus')
-            .html('<textarea id="wB_fieldTextArea" class="wB_field_text ' + dark + '" maxlength="32"></textarea>');
+            .addClass('wB_card_focus')
+            .html('<textarea id="wB_cardTextArea" class="wB_card_text ' + dark + '" maxlength="32"></textarea>');
         
-        $('#wB_fieldTextArea').focus().val(text);
+        $('#wB_cardTextArea').focus().val(text);
     }
 
     cardsSetNewTextToCard(element) {
@@ -378,7 +413,7 @@ class WinklerBingo {
         
         // Check if no change
         if ((card.word == null && text === '') || (card.word != null && card.word.text === text)) {
-            this.cardsSetTextHTML(this.fieldChange, text);
+            this.cardsSetTextHTML(this.cardChange, text);
             return true;
         }
 
@@ -398,22 +433,22 @@ class WinklerBingo {
     // Should only triggered after server validation
     cardsSetCard(card) {
         this.getThisPlayer().cardMap.set(card.id, card);
-        this.cardsSetTextHTML($('#wB_card_' + card.id), card.word != null ? card.word.text : '');
+        this.cardsSetTextHTML(this.selectedCardsGrid.find('[data-id=' + card.id + ']'), card.word != null ? card.word.text : '');
     }
 
     cardsSetTextHTML(element, text) {
-        element.removeClass('wB_field_focus');
-        element.html('<span class="wB_field_text"></span>');
-        element.find('.wB_field_text').text(text);
+        element.removeClass('wB_card_focus');
+        element.html('<span class="wB_card_text"></span>');
+        element.find('.wB_card_text').text(text);
         
-        this.fieldChange = null;
+        this.cardChange = null;
         this.cardsCheckAllFilled();
         this.cardsFocusNext();
     }
 
     cardsFocusNext() {
         if (this.nextFocusCardId != null) {
-            this.cardsAddTextArea($('#wB_card_' + this.nextFocusCardId));
+            this.cardsAddTextArea(this.selectedCardsGrid.find('[data-id=' + + this.nextFocusCardId + ']'));
             this.nextFocusCardId = null;
         }
     }
@@ -467,13 +502,13 @@ class WinklerBingo {
     shakeAndStay(element) {
         element.find('textarea').focus();
         element
-            .removeClass('wB_field_focus')
+            .removeClass('wB_card_focus')
             .addClass('shake_short');
 
         setTimeout(function() {
             element
                 .removeClass('shake_short')
-                .addClass('wB_field_focus');
+                .addClass('wB_card_focus');
         }, 820);
     }
 
@@ -482,7 +517,7 @@ class WinklerBingo {
         let time = 0;
         for (const cardItem of changedCardMap.values()) {
             cardMap.set(cardItem.id, cardItem);
-            const cardEl = $('#wB_card_' + cardItem.id);
+            const cardEl = this.selectedCardsGrid.find('[data-id=' + cardItem.id + ']');
             this.cardsSetTextHTML(cardEl, cardItem.word.text);
 
             // Animation
@@ -491,6 +526,50 @@ class WinklerBingo {
             setTimeout(function () { cardSpan.fadeIn(800) }, time);
             time += 50;
         }
+    }
+
+    cardsShowField(player) {
+        const cards = player.cardMap;
+    }
+
+    // Rückwerts effekte kurz erklährung, lel
+    cardsFlipAnimation() {
+        return new Promise((resolve) => {
+            const bigText = $('#wB_bigText').text('Bingo').addClass('fadeLeftToRight').show();
+            const cardsText = $('.wB_card_text').addClass('mirror');
+            const cardsContainer = $('#wB_cardsContainer').addClass('flip');
+
+            setTimeout(function() {
+                bigText.hide().removeClass('fadeLeftToRight');
+                cardsText.removeClass('mirror');
+                cardsContainer.removeClass('flip');
+                resolve();
+            }, 2500);
+        });
+    }
+
+    cardsAddConfirmBox(cardEl) {
+        const _self = this;
+        const dark = _self.isDarkMode === true ? ' cardBtnDark' : '';
+
+        cardEl.find('.wB_card_text').css({'margin': '0 auto'});
+        cardEl.append('<div class="wB_cardConfirmBox"><button id="wB_cardSubmit" class="wB_cardBtn' + dark + '"><i class="mi">done</i>' + 
+            '</button><button id="wB_cardCancel" class="wB_cardBtn' + dark + '"><i class="mi">close</i></button></div>')
+            .addClass('wB_card_focus');
+
+        $('#wB_cardSubmit').on('click', function() {
+            _self.socket.emit('cardWordSaid', _self.cardChange.attr('data-id'));
+        });
+        $('#wB_cardCancel').on('click', function() {
+            _self.cardsRemoveConfirmBox(_self.cardChange);
+        });
+        this.cardChange = cardEl;
+    }
+
+    cardsRemoveConfirmBox(cardEl) {
+        cardEl.find('.wB_card_text').attr('style', '');
+        cardEl.removeClass('wB_card_focus').find('.wB_cardConfirmBox').remove();
+        this.cardChange = null;
     }
 
     /* --------------------- 
@@ -510,9 +589,9 @@ class WinklerBingo {
 
         if (player.id === _self.socket.id) { 
             $('#wB_lobbyContainer')
-                .append('<div id="wB_thisUserField" class="wB_userField" data-id="' + player.id + '"><img id="wB_thisUserPic" src="' + player.avatar.picUrl + '" class="wB_userPic" alt="Profilbild" />' + 
+                .append('<div id="wB_thisUserField" class="wB_userField wb_userSelected" data-id="' + player.id + '"><img id="wB_thisUserPic" src="' + player.avatar.picUrl + '" class="wB_userPic" alt="Profilbild" />' + 
                 '<input id="wB_thisUserInput" class="wB_userName" type="text" value="' + player.avatar.name + '"><button id="wB_thisUserReady" class="btn wB_userReady">' + 
-                '<i class="mi">done</i></button></div>');
+                '<i class="mi">done</i></button><div class="wB_userFieldPointer"></div></div>');
             
             $('#wB_thisUserInput').change(function() {
                 _self.socket.emit('changeName', $(this).val()); 
@@ -525,16 +604,16 @@ class WinklerBingo {
             $('#wB_lobbyContainer')
                 .append('<div class="wB_userField" data-id="' + player.id + '"><i class="mi wB_userReady" ' + isReadyStyle + '>done</i>' + 
                 '<img src="' + player.avatar.picUrl + '" class="wB_userPic" alt="Profilbild" />' + 
-                '<div class="wB_userName">' + player.avatar.name + '</div></div>');
+                '<div class="wB_userName">' + player.avatar.name + '</div><div class="wB_userFieldPointer"></div></div>');
         }
     }
 
     roomRemovePlayerHTML(playerId) {
-        $('div[data-id=' + playerId + ']').remove();
+        $('.wB_userField[data-id=' + playerId + ']').remove();
     }
 
     roomPlayerChangeName(playerId, name) {
-        $('div[data-id=' + playerId + ']').find('.wB_userName').text(name);
+        $('.wB_userField[data-id=' + playerId + ']').find('.wB_userName').text(name);
     }
 
     roomSetPlayerReadyHTML(playerId, isReady) {
@@ -546,7 +625,7 @@ class WinklerBingo {
                 $('#wB_thisUserReady').css({'color': 'gray'});
             }
         } else {
-            let player = $('div[data-id=' + playerId + ']');
+            let player = $('.wB_userField[data-id=' + playerId + ']');
             if (player != null) {
                 if (isReady === true) {
                     player.find('.wB_userReady').show();
@@ -593,6 +672,18 @@ class WinklerBingo {
         }
     }
 
+    roomStartBingoPhase(room) {
+        const _self = this;
+        _self.cardsFlipAnimation().then(function() {
+            _self.addEventsBingoPhase();
+        });
+        _self.cardChange = null;
+        _self.room = new Room(room);
+        
+        $('#wB_countdownContainer').fadeOut(800);
+        $('.wB_userReady').hide();
+    }
+
     /* --------------------- 
        Other Functions
        --------------------- */
@@ -637,6 +728,26 @@ class WinklerBingo {
 
     showErrorToast(errorStr) {
         $('#wB_errorToast').finish().text(errorStr).fadeIn(300).delay(4000).fadeOut(800);
+    }
+
+    makeScrollableX() {
+        const _self = this, elements = $('.wB_scrollX');
+
+        if (elements.length > 0) {
+            elements.forEach(function(el) {
+                el.append('<div class="wB_scrollbar"></div>');
+            });
+
+            $(window).resize(function() {
+
+            });
+        }
+    }
+
+    sizeScrollbarsX(elements) {
+        elements.forEach(function(el) { 
+            el.prop('scrollWidth')
+        });
     }
 }
 

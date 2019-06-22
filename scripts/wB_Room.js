@@ -10,27 +10,31 @@ const
 
 const gamePhase = {
     werkel: 0,
-    wusel: 1,
     bingo: 2
 };
 
+const errorText = {
+    roomNotExist: 'Aktion nicht möglich, Raum existiert nicht mehr.',
+    wrongPhase: 'Aktion nicht möglich, Spieler ist in falscher Spiel-Phase.'
+}
+
 class Room {
-    constructor(id, playerMap, countdown, phase) { 
+    constructor(id, playerMap, countdown) { 
         this.id = id; 
         this.playerMap = playerMap;
         this.countdown = countdown;
-
-        // 0 = Lobby, 1 = Wuselphase, 
-        this.phase = phase;
     }
 }
 
 class Player {
-    constructor(id, avatar, isReady, cardMap) {
+    constructor(id, avatar, isReady, cardMap, phase) {
         this.id = id;
         this.avatar = avatar;
         this.isReady = isReady;
         this.cardMap = cardMap;
+        
+        // 0 = Werkelphase, 2 = Bingophase
+        this.phase = phase;
     }
 }
 
@@ -47,12 +51,7 @@ exports.joinRoom = (socket, roomId) => {
     if (room == null) {
         out.emitRoomJoined(socket, null);
         return;
-    }
-    if (room.phase !== gamePhase.werkel) {
-        out.emitRoomJoined(socket, null);
-        out.emitError(socket, 'Beitritt nicht möglich, Raum ist schon in Wusel-Phase.');
-        return;
-    }    
+    }  
 
     const newUser = createPlayer(room.playerMap, socket);
     // Join Room
@@ -89,15 +88,16 @@ exports.removePlayerAndCloseRoomIfEmpty = (socket) => {
 exports.togglePlayerIsReady = (socket) => {
     const room = getRoomByPlayerId(socket.id);
     if (room == null) {
-        out.emitError(socket, 'Aktion nicht möglich, Raum existiert nicht mehr.');
-        return;
-    }
-    if (room.phase !== gamePhase.werkel) {
-        out.emitError(socket, 'Aktion nicht möglich, Raum ist in falscher Spiel-Phase.');
+        out.emitError(socket, errorText.roomNotExist);
         return;
     }   
         
     const player = room.playerMap.get(socket.id);
+    if (player.phase !== gamePhase.werkel) {
+        out.emitError(socket, errorText.wrongPhase);
+        return;
+    }
+
     if ((player.isReady === true) || (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === true)) {
         player.isReady = !player.isReady;
     }
@@ -120,15 +120,16 @@ exports.setCardAsync = async (socket, cardId, newText) => {
 
     const room = getRoomByPlayerId(socket.id);
     if (room == null) {
-        out.emitError(socket, 'Aktion nicht möglich, Raum existiert nicht mehr.');
+        out.emitError(socket, errorText.roomNotExist);
         return;
     }
-    if (room.phase !== gamePhase.werkel) {
-        out.emitError(socket, 'Aktion nicht möglich, Raum ist in falscher Spiel-Phase.');
+    const player = room.playerMap.get(socket.id);
+    if (player.phase !== gamePhase.werkel) {
+        out.emitError(socket, errorText.wrongPhase);
         return;
     }
 
-    const cardMap = room.playerMap.get(socket.id).cardMap;
+    const cardMap = player.cardMap;
     const card = cardMap.get(parseInt(cardId));
 
     // Check if no change
@@ -153,11 +154,17 @@ exports.setCardAsync = async (socket, cardId, newText) => {
 
 exports.autofill = async (socket) => {
     const room = getRoomByPlayerId(socket.id);
-    if (room == null) { 
+    if (room == null) {
+        out.emitError(socket, errorText.roomNotExist);
+        return;
+    }
+    const player = room.playerMap.get(socket.id);
+    if (player.phase !== gamePhase.werkel) {
+        out.emitError(socket, errorText.wrongPhase);
         return;
     }
     
-    const cardMap = room.playerMap.get(socket.id).cardMap;
+    const cardMap = player.cardMap;
     const newWordsMap = await wB_cards.getUntakenWordsMap(wB_cards.getTakenWordsMap(cardMap));
     let changedMap = null;
 
@@ -173,7 +180,7 @@ exports.autofill = async (socket) => {
 const createRoom = (socket) => {
     const newPlayer = createPlayer(null, socket);
     const roomId = shortid.generate();
-    const room = new Room(roomId, new Map([[newPlayer.id, newPlayer]]), null, gamePhase.werkel);
+    const room = new Room(roomId, new Map([[newPlayer.id, newPlayer]]), null);
     
     socket.join(roomId);
     roomMap.set(roomId, room);
@@ -182,7 +189,7 @@ const createRoom = (socket) => {
 
 const createPlayer = (playerMap, socket) => {
     const avatar = avatars.getRandomAvatar(playerMap);
-    return new Player(socket.id, avatar, false, wB_cards.generateEmptyCardMap());
+    return new Player(socket.id, avatar, false, wB_cards.generateEmptyCardMap(), gamePhase.werkel);
 };
 
 const getRoomByPlayerId = (id) => {
@@ -199,14 +206,11 @@ const startStopCountdown = (room) => {
     
     // Start countdown
     if (allReady === true && room.countdown == null) {
-        const countdownTime = 5000;
+        const countdownTime = 3000;
 
         room.countdown = setTimeout(() => {
-            // TODO start game
             debug('start', room.countdown);
-
-            room.phase = gamePhase.wusel;
-            out.emitPhaseChangedWusel(room);
+            startBingoPhase(room);
         }, 
         // 100ms tolerance
         (countdownTime + 100));
@@ -233,4 +237,16 @@ const unreadyPlayer = (playerMap) => {
         player.isReady = false;
     }
 };
+
+const startBingoPhase = (room) => {
+    
+    for (const player of room.playerMap.values()) {
+        if (player.isReady === true && player.phase === gamePhase.werkel) {
+            player.phase = gamePhase.bingo;
+            wB_cards.wordCountUp(player.cardMap, 'Guessed');
+        }
+    }
+
+    out.emitPhaseChangedBingo(room);
+}
 //#endregion
