@@ -34,4 +34,9 @@ exports.addEvents = (socket) => {
       debug(` --- ${socket.id} set card ${data.cardId} to ${data.cardText} --- `);
       wB_Room.setCardAsync(socket, data.cardId, data.cardText);
     });
+
+    socket.on('cardHit', (cardId) => {
+      debug(` --- ${socket.id} Word said, cardId: ${cardId} --- `);
+      wB_Room.cardHit(socket, cardId);
+    });
 }

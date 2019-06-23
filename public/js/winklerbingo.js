@@ -207,8 +207,8 @@ class WinklerBingo {
         startCountdownHandler = function (timeMS) {
             _self.roomStartCountdown(timeMS);
         },
-        phaseChangedToBingoHandler = function (playRoom) {
-            console.log('phaseChangedToBingoHandler', playRoom);
+        phaseChangedBingoHandler = function (playRoom) {
+            console.log('phaseChangedBingoHandler', playRoom);
             removeEventsWerkelPhaseFunc();
 
             // Sogge uffräume
@@ -216,7 +216,7 @@ class WinklerBingo {
             _self.socket.off('autofillResult', autofillResultHandler);
             _self.socket.off('cardValidationResult', cardValidationResultHandler);
             _self.socket.off('startCountdown', startCountdownHandler);
-            _self.socket.off('phaseChangedToBingo', phaseChangedToBingoHandler);
+            _self.socket.off('phaseChangedToBingo', phaseChangedBingoHandler);
 
             _self.roomStartBingoPhase(playRoom);
         }
@@ -225,7 +225,7 @@ class WinklerBingo {
         _self.socket.on('autofillResult', autofillResultHandler);
         _self.socket.on('cardValidationResult', cardValidationResultHandler);
         _self.socket.on('startCountdown', startCountdownHandler);
-        _self.socket.on('phaseChangedBingo', phaseChangedToBingoHandler);
+        _self.socket.on('phaseChangedBingo', phaseChangedBingoHandler);
     }
 
     // Returns function to remove in function setted eventhandler
@@ -326,25 +326,12 @@ class WinklerBingo {
         $(document).on('click', documentClickHandler);
     }
 
-    // HTML-Code positionieren, so a richtig geilen DOM
-    buildCardsHTML() {
-        let fieldHTML = '';
-        let count = 0;
-        
-        for (let i = 1; i < 6; i++) {
-            for (let u = 1; u < 6; u++) {
-                this.cards[++count] = {
-                    text: '',
-                    x: i,
-                    y: u
-                };
-                fieldHTML += '<div class="wB_card" data-x="' + i + '" data-y="' + u + '" data-id="' + count + '" style="grid-row: ' + i + '; grid-column: ' + u + ';">' +
-                '<span class="wB_card_text"></span>' +
-                '</div>';
-            }
-        }
-
-        this.selectedCardsGrid.html(fieldHTML);
+    socketAddEventsBingoPhase() {
+        const _self = this,
+        cardHitHandler = function(data) {
+            _self.cardsSetHit(data.playerId, data.cardId, data.isHit);
+        };
+        _self.socket.on('cardHit', cardHitHandler);
     }
 
     toggleDarkMode() {
@@ -352,16 +339,16 @@ class WinklerBingo {
 
         if (this.isDarkMode === true) {
             this.setDarkModeSetting(true);
-            $('body').addClass('dark');
+            $('body').addClass('darkI');
             $('.wB_card').addClass('dark');
-            $('#wB_info').addClass('dark');
+            $('#wB_info').addClass('darkI');
             $('#bodyOverlay').css('opacity', 0.6);
             $('.wB_cardBtn').addClass('cardBtnDark');
         } else {
             this.setDarkModeSetting(false);
-            $('body').css({'background': '#F2E2C4'}).removeClass('dark');
+            $('body').css({'background': '#F2E2C4'}).removeClass('darkI');
             $('.wB_card').removeClass('dark');
-            $('#wB_info').removeClass('dark');
+            $('#wB_info').removeClass('darkI');
             $('#bodyOverlay').css('opacity', 0.1);
             $('.wB_cardBtn').removeClass('cardBtnDark');
         }
@@ -384,6 +371,27 @@ class WinklerBingo {
     /* --------------------- 
        Cards Functions
        --------------------- */
+
+    // HTML-Code positionieren, so a richtig geilen DOM
+    buildCardsHTML() {
+        let fieldHTML = '';
+        let count = 0;
+        
+        for (let i = 0; i < 5; i++) {
+            for (let u = 0; u < 5; u++) {
+                this.cards[++count] = {
+                    text: '',
+                    x: i,
+                    y: u
+                };
+                fieldHTML += '<div class="wB_card" data-x="' + i + '" data-y="' + u + '" data-id="' + count + 
+                '" style="grid-row: ' + (i+1) + '; grid-column: ' + (u+1) + ';">' +
+                '<span class="wB_card_text"></span></div>';
+            }
+        }
+
+        this.selectedCardsGrid.html(fieldHTML);
+    }
 
     cardsAddTextArea(element) {
         this.cardChange = element;
@@ -535,7 +543,7 @@ class WinklerBingo {
     // Rückwerts effekte kurz erklährung, lel
     cardsFlipAnimation() {
         return new Promise((resolve) => {
-            const bigText = $('#wB_bigText').text('Bingo').addClass('fadeLeftToRight').show();
+            const bigText = $('#wB_bigText').text('bingo').addClass('fadeLeftToRight').show();
             const cardsText = $('.wB_card_text').addClass('mirror');
             const cardsContainer = $('#wB_cardsContainer').addClass('flip');
 
@@ -557,13 +565,13 @@ class WinklerBingo {
             '</button><button id="wB_cardCancel" class="wB_cardBtn' + dark + '"><i class="mi">close</i></button></div>')
             .addClass('wB_card_focus');
 
+        this.cardChange = cardEl;
         $('#wB_cardSubmit').on('click', function() {
-            _self.socket.emit('cardWordSaid', _self.cardChange.attr('data-id'));
+            _self.socket.emit('cardHit', _self.cardChange.attr('data-id'));
         });
         $('#wB_cardCancel').on('click', function() {
             _self.cardsRemoveConfirmBox(_self.cardChange);
         });
-        this.cardChange = cardEl;
     }
 
     cardsRemoveConfirmBox(cardEl) {
@@ -571,6 +579,18 @@ class WinklerBingo {
         cardEl.removeClass('wB_card_focus').find('.wB_cardConfirmBox').remove();
         this.cardChange = null;
     }
+
+    cardsSetHit(playerId, cardId, isHit) {
+        console.log(playerId, cardId, isHit);
+        this.room.playerMap.get(playerId).cardMap.get(parseInt(cardId)).isHit = isHit;
+
+        const cardEl = this.selectedCardsGrid.find('[data-id=' + cardId + ']');
+        if(isHit === true) {
+            cardEl.css({'background': '#98A67B url(\'../img/cardBG.png\')'});
+        } else {
+            cardEl.attr('style', '');
+        }
+    };
 
     /* --------------------- 
        Room Functions
@@ -589,8 +609,10 @@ class WinklerBingo {
 
         if (player.id === _self.socket.id) { 
             $('#wB_lobbyContainer')
-                .append('<div id="wB_thisUserField" class="wB_userField wb_userSelected" data-id="' + player.id + '"><img id="wB_thisUserPic" src="' + player.avatar.picUrl + '" class="wB_userPic" alt="Profilbild" />' + 
-                '<input id="wB_thisUserInput" class="wB_userName" type="text" value="' + player.avatar.name + '"><button id="wB_thisUserReady" class="btn wB_userReady">' + 
+                .append('<div id="wB_thisUserField" class="wB_userField wb_userSelected" data-id="' + player.id + '">' +
+                '<img id="wB_thisUserPic" src="' + player.avatar.picUrl + '" class="wB_userPic" alt="Profilbild" />' + 
+                '<input id="wB_thisUserInput" class="wB_userName" type="text" value="' + player.avatar.name + '">' +
+                '<button id="wB_thisUserReady" class="btn wB_userReady">' + 
                 '<i class="mi">done</i></button><div class="wB_userFieldPointer"></div></div>');
             
             $('#wB_thisUserInput').change(function() {
@@ -617,7 +639,6 @@ class WinklerBingo {
     }
 
     roomSetPlayerReadyHTML(playerId, isReady) {
-        console.log('roomSetPlayerReadyHTML', playerId, isReady);
         if (playerId === this.socket.id) {
             if (isReady === true) {
                 $('#wB_thisUserReady').css({'color': 'green'});
@@ -676,6 +697,7 @@ class WinklerBingo {
         const _self = this;
         _self.cardsFlipAnimation().then(function() {
             _self.addEventsBingoPhase();
+            _self.socketAddEventsBingoPhase();
         });
         _self.cardChange = null;
         _self.room = new Room(room);

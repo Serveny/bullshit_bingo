@@ -62,3 +62,15 @@ exports.emitPhaseChangedBingo = (thisRoom) => {
     debug(` --- emitPhaseChangedBingo: ${thisRoom.id} --- `);
     console.log('');
 };
+
+exports.emitCardHit = (socket, thisRoom, cardId, isHit) => {
+    global.wb.io.in(thisRoom.id).emit('cardHit', {playerId: socket.id, cardId: cardId, isHit: isHit});
+    debug(` --- emitCardHit in room ${thisRoom.id} (${socket.id} set ${cardId} to ${isHit} --- `);
+    console.log('');
+};
+
+exports.emitWin = (socket, thisRoom) => {
+    global.wb.io.in(thisRoom.id).emit('win', socket.id);
+    debug(` --- emitWin in room ${thisRoom.id} for player ${socket.id} --- `);
+    console.log('');
+};

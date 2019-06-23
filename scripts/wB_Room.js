@@ -15,6 +15,7 @@ const gamePhase = {
 
 const errorText = {
     roomNotExist: 'Aktion nicht möglich, Raum existiert nicht mehr.',
+    cardNotExist: 'Aktion nicht möglich, Karte existiert nicht.',
     wrongPhase: 'Aktion nicht möglich, Spieler ist in falscher Spiel-Phase.'
 }
 
@@ -174,6 +175,30 @@ exports.autofill = async (socket) => {
     
     out.emitAutofillResult(socket, changedMap);
 };
+
+exports.cardHit = (socket, cardId) => {
+    const room = getRoomByPlayerId(socket.id);
+    if (room == null) {
+        out.emitError(socket, errorText.roomNotExist);
+        return;
+    }
+    const player = room.playerMap.get(socket.id);
+    if (player.phase !== gamePhase.bingo) {
+        out.emitError(socket, errorText.wrongPhase);
+        return;
+    }
+    const card = player.cardMap.get(parseInt(cardId));
+    if (card == null) {
+        out.emitError(socket, errorText.cardNotExist);
+        return;
+    }
+    card.isHit = true;
+    out.emitCardHit(socket, room, cardId, card.isHit);
+
+    if (wB_cards.checkWin(player.cardMap) === true) {
+        out.emitWin(socket, room);
+    }
+}
 //#endregion
 
 //#region private
@@ -239,7 +264,6 @@ const unreadyPlayer = (playerMap) => {
 };
 
 const startBingoPhase = (room) => {
-    
     for (const player of room.playerMap.values()) {
         if (player.isReady === true && player.phase === gamePhase.werkel) {
             player.phase = gamePhase.bingo;

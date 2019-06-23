@@ -5,11 +5,12 @@ const
     helper = require('./wB_Helper');
 
 class Card {
-    constructor(id, word, posX, posY) {
+    constructor(id, word, posX, posY, isHit) {
         this.id = id;
         this.word = word;
         this.posX = posX;
         this.posY = posY;
+        this.isHit = isHit;
     }
 }
 
@@ -144,9 +145,9 @@ exports.fillEmptyWordsCardMap = (cardMap, newWordsMap) => {
 exports.generateEmptyCardMap = () => {
     const cardMap = new Map();
     let id = 0;
-    for (let x = 1; x < 6; x++) {
-        for (let y = 1; y < 6; y++) {
-            cardMap.set(++id, new Card(id, null, x, y));
+    for (let x = 0; x < 5; x++) {
+        for (let y = 0; y < 5; y++) {
+            cardMap.set(++id, new Card(id, null, x, y, false));
         }
     }
     return cardMap;
@@ -163,6 +164,66 @@ exports.wordCountUp = async (cardMap, type = 'Guessed') => {
     db.word.query(stmt);
 }
 
+exports.checkWin = (cardMap) => {
+    const mtx = createCardHitMatrix(cardMap);
+    
+    // horizontal
+    for (let y = 0; y < 5; y++) {
+        let countH = 0;
+        for (let x = 0; x < 5; x++) {
+            if (mtx[y][x] === true) {
+                countH++;
+            } else {
+                break;
+            }
+        }
+        if (countH >= 5) {
+            return true;
+        }
+    }
+
+    // vertical
+    for (let y = 0; y < 5; y++) {
+        let countV = 0;
+        for (let x = 0; x < 5; x++) {
+            if (mtx[x][y] === true) {
+                countV++;
+            } else {
+                break;
+            }
+        }
+        if (countV >= 5) {
+            return true;
+        }
+    }
+
+    // diagonal1
+    let countD1 = 0;
+    for (let i = 0; i < 5; i++) {
+        if (mtx[i][i] === true) {
+            countD1++;
+        } else {
+            break;
+        }
+    }
+    if (countD1 >= 5) {
+        return true;
+    }
+    
+    // diagonal2
+    let countD2 = 0;
+    for (let i = 0; i < 5; i++) {
+        if (mtx[i][4-i] === true) {
+            countD2++;
+        } else {
+            break;
+        }
+    }
+    if (countD2 >= 5) {
+        return true;
+    }
+    return false;
+}
 //#endregion
 
 //#region private
@@ -173,5 +234,23 @@ const areCardsFilled = (cardMap) => {
         }
     }
     return true;
+}
+
+const emptyMatrix = () => {
+    return [
+        [false, false, false, false, false],
+        [false, false, false, false, false],
+        [false, false, false, false, false],
+        [false, false, false, false, false],
+        [false, false, false, false, false]
+    ];
+}
+
+const createCardHitMatrix = (cardMap) => {
+    const matrixArr = emptyMatrix();
+    for(const card of cardMap.values()) {
+        matrixArr[parseInt(card.posY)][parseInt(card.posX)] = card.isHit;
+    }
+    return matrixArr;
 }
 //#endregion
