@@ -6,6 +6,11 @@ const
 // Events Input
 exports.addEvents = (socket) => {
 
+    socket.on('recoverRoom', (data) => {
+        debug(` --- Recovering room for client ${data.oldId}/${socket.id} --- `);
+        wB_Room.recoverGame(socket, data.room, data.oldId);
+    });
+    
     socket.on('joinRoom', (roomId) => {
       wB_Room.joinRoom(socket, roomId);
     });
