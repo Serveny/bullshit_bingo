@@ -177,6 +177,7 @@ class WinklerBingo {
 
         _self.socket.on('playerDisconnected', function (playerId) {
             _self.roomUnreadyPlayer(_self.room.playerMap);
+            console.log('PlayerId', playerId);
             _self.roomRemovePlayerHTML(playerId);
         });
 
@@ -330,8 +331,12 @@ class WinklerBingo {
         const _self = this,
         cardHitHandler = function(data) {
             _self.cardsSetHit(data.playerId, data.cardId, data.isHit);
+        },
+        playerLaterBingoPhase = function(data) {
+            // TODO
         };
         _self.socket.on('cardHit', cardHitHandler);
+        _self.socket.on('playerLaterBingoPhase', playerLaterBingoPhase);
     }
 
     toggleDarkMode() {
@@ -684,12 +689,12 @@ class WinklerBingo {
     }
 
     roomUnreadyPlayer(playerMap) {
-        for (const player of playerMap.values()) {
-            console.log('roomUnreadyPlayer', player);
-            if (player.isReady === true) {
-                this.roomSetPlayerReadyHTML(player, false);
+        if (this.roomIsBingoPhase() === false) {
+            for (const player of playerMap.values()) {
+                console.log('roomUnreadyPlayer', player);
+                this.roomSetPlayerReadyHTML(player.id, false);
+                player.isReady = false;
             }
-            player.isReady = false;
         }
     }
 
@@ -704,6 +709,15 @@ class WinklerBingo {
         
         $('#wB_countdownContainer').fadeOut(800);
         $('.wB_userReady').hide();
+    }
+
+    roomIsBingoPhase() {
+        for(const player of this.room.playerMap.values()) {
+            if(player.phase === 2) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /* --------------------- 

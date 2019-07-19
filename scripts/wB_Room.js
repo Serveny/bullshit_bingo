@@ -59,8 +59,10 @@ exports.joinRoom = (socket, roomId) => {
     socket.join(roomId);
     room.playerMap.set(newUser.id, newUser);
     
-    unreadyPlayer(room.playerMap);
-    startStopCountdown(room);
+    if (isBingoPhase(room.playerMap) === false) {
+        unreadyPlayer(room.playerMap);
+        startStopCountdown(room);
+    }
 
     out.emitRoomJoined(socket, room);
     return;
@@ -71,6 +73,11 @@ exports.removePlayerAndCloseRoomIfEmpty = (socket) => {
 
     if (room == null) {
         return;
+    }
+    
+    if (isBingoPhase(room.playerMap) === false) {
+        unreadyPlayer(room.playerMap);
+        startStopCountdown(room);
     }
 
     // Remove room if empty
@@ -102,9 +109,15 @@ exports.togglePlayerIsReady = (socket) => {
     if ((player.isReady === true) || (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === true)) {
         player.isReady = !player.isReady;
     }
-
-    out.emitPlayerIsReadyChange(socket, room, player.isReady);
-    startStopCountdown(room);
+    
+    // If the game already started, player ca join without countdown
+    if (isBingoPhase(room.playerMap) === true) {
+        startPlayerBingoPhase(player);
+        out.emitPlayerLaterBingoPhase(socket, room, player.isReady);
+    } else {
+        startStopCountdown(room);
+        out.emitPlayerIsReadyChange(socket, room, player.isReady);
+    }
 };
 
 exports.setCustomName = (socket, newName) => {
@@ -265,12 +278,24 @@ const unreadyPlayer = (playerMap) => {
 
 const startBingoPhase = (room) => {
     for (const player of room.playerMap.values()) {
-        if (player.isReady === true && player.phase === gamePhase.werkel) {
-            player.phase = gamePhase.bingo;
-            wB_cards.wordCountUp(player.cardMap, 'Guessed');
+        startPlayerBingoPhase(player);
+    }
+    out.emitPhaseChangedBingo(room);
+}
+
+const startPlayerBingoPhase = (player) => {
+    if (player.isReady === true && player.phase === gamePhase.werkel) {
+        player.phase = gamePhase.bingo;
+        wB_cards.wordCountUp(player.cardMap, 'Guessed');
+    }
+} 
+
+const isBingoPhase = (playerMap) => {
+    for(const player of playerMap.values()) {
+        if(player.phase === gamePhase.bingo) {
+            return true;
         }
     }
-
-    out.emitPhaseChangedBingo(room);
+    return false;
 }
 //#endregion
