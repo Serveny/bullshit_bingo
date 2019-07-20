@@ -1,7 +1,7 @@
-"use strict";
-const debug = require("debug")("wb"),
-  db = require("./wB_DB"),
-  helper = require("./wB_Helper");
+'use strict';
+const debug = require('debug')('wb'),
+  db = require('./wB_DB'),
+  helper = require('./wB_Helper');
 
 class Card {
   constructor(id, word, posX, posY, isHit) {
@@ -24,7 +24,7 @@ class Word {
     flagUseForAutofill
   ) {
     this.id = id;
-    this.text = text == null ? "" : text;
+    this.text = text == null ? '' : text;
     this.countGuessed = countGuessed;
     this.countUsed = countUsed;
     this.createdAt = createdAt;
@@ -47,12 +47,12 @@ exports.Card = Card;
 exports.Word = Word;
 
 exports.getWordAsync = async text => {
-  if (text == null || text === "") {
+  if (text == null || text === '') {
     return null;
   }
 
-  let res = await db.word.getRowsByValue([["wordText", "=", text]]);
-  debug("Res: ", res);
+  let res = await db.word.getRowsByValue([['wordText', '=', text]]);
+  debug('Res: ', res);
 
   if (res.length <= 0) {
     res = await db.word.createRow({ wordText: text });
@@ -77,7 +77,7 @@ exports.getWordAsync = async text => {
 };
 
 exports.isValidCard = (cardMap, cardText) => {
-  if (cardText == null || cardText === "") {
+  if (cardText == null || cardText === '') {
     return true;
   }
   cardText = cardText.toLowerCase();
@@ -93,7 +93,7 @@ exports.isValidCard = (cardMap, cardText) => {
 exports.areCardsFilledAndValid = cardMap => {
   if (
     areCardsFilled(cardMap) === true &&
-    helper.hasDoubleValuesMap(cardMap, ["text"]) === false
+    helper.hasDoubleValuesMap(cardMap, ['text']) === false
   ) {
     return true;
   } else {
@@ -114,12 +114,12 @@ exports.getTakenWordsMap = cardMap => {
 exports.getUntakenWordsMap = async takenMap => {
   const needCount = 25 - takenMap.size;
   const wordsMap = new Map();
-  let filterArr = [["wordFlagUseForAutofill", "=", 1]];
+  let filterArr = [['wordFlagUseForAutofill', '=', 1]];
 
   if (takenMap.size > 0) {
     for (const takenWord of takenMap.values()) {
-      filterArr.push("AND");
-      filterArr.push(["wordText", "!=", takenWord.text]);
+      filterArr.push('AND');
+      filterArr.push(['wordText', '!=', takenWord.text]);
     }
   }
 
@@ -173,7 +173,7 @@ exports.generateEmptyCardMap = () => {
   return cardMap;
 };
 
-exports.wordCountUp = async (cardMap, type = "Guessed") => {
+exports.wordCountUp = async (cardMap, type = 'Guessed') => {
   let stmt = `UPDATE ${
     db.word.fullName
   } SET wordCount${type} = wordCount${type} + 1 WHERE `;
@@ -181,7 +181,7 @@ exports.wordCountUp = async (cardMap, type = "Guessed") => {
     stmt += `wordId = ${card.word.id} OR `;
   }
   stmt = stmt.slice(0, -3);
-  stmt += ";";
+  stmt += ';';
 
   db.word.query(stmt);
 };
@@ -251,7 +251,7 @@ exports.checkWin = cardMap => {
 //#region private
 const areCardsFilled = cardMap => {
   for (const card of cardMap.values()) {
-    if (card.word == null || card.word.text == null || card.word.text === "") {
+    if (card.word == null || card.word.text == null || card.word.text === '') {
       return false;
     }
   }

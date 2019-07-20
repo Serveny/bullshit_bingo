@@ -1,7 +1,7 @@
-"use strict";
-const debug = require("debug")("wb"),
-  dbCfg = require("config").db,
-  mysql = require("mysql2"),
+'use strict';
+const debug = require('debug')('wb'),
+  dbCfg = require('config').db,
+  mysql = require('mysql2'),
   conDB = mysql.createConnection({
     host: dbCfg.host,
     user: dbCfg.username,
@@ -19,7 +19,7 @@ class dbTable {
   }
 
   createFilterStmt(filter) {
-    let stmt = "";
+    let stmt = '';
     let data = [];
     for (let i = 0; i < filter.length; i++) {
       if (Array.isArray(filter[i])) {
@@ -90,7 +90,7 @@ class dbTable {
           error(err);
           resolve([]);
         }
-        resolve(results[0]["COUNT(*)"]);
+        resolve(results[0]['COUNT(*)']);
       });
     });
   }
@@ -117,7 +117,7 @@ class dbTable {
       debug(`[getRandomRowByValue] ${stmt}`, filterData.data);
       conDB.query(stmt, filterData.data, (err, results) => {
         if (err) {
-          debug("[Error]", err);
+          debug('[Error]', err);
           resolve([]);
         }
         resolve(results);
@@ -150,7 +150,7 @@ class dbTable {
       debug(`[updateRow] ${stmt}`);
       conDB.query(stmt, data, (err, results) => {
         if (err) {
-          debug("[Error]", err);
+          debug('[Error]', err);
           resolve([]);
         }
         resolve(results);
@@ -162,11 +162,11 @@ class dbTable {
   createRow(valuesObj) {
     let _self = this;
     return new Promise(resolve => {
-      let colNames = "";
-      let questionMarks = "";
+      let colNames = '';
+      let questionMarks = '';
       let dataArr = [];
       for (const colName in valuesObj) {
-        colNames += "`" + colName + "`,";
+        colNames += '`' + colName + '`,';
         questionMarks += `?,`;
         dataArr.push(valuesObj[colName]);
       }
@@ -180,7 +180,7 @@ class dbTable {
       debug(`[createRow] ${stmt}`, dataArr);
       conDB.query(stmt, dataArr, (err, results) => {
         if (err) {
-          debug("[Error]", err);
+          debug('[Error]', err);
           resolve([]);
         }
         resolve(results);
@@ -196,7 +196,7 @@ class dbTable {
       debug(`[deleteRow] ${stmt}`);
       conDB.query(stmt, [rowId], (err, results) => {
         if (err) {
-          debug("[Error]", err);
+          debug('[Error]', err);
           resolve([]);
         }
         resolve(results);
@@ -209,7 +209,7 @@ class dbTable {
       debug(`[query] ${stmt}`);
       conDB.query(stmt, (err, results) => {
         if (err) {
-          debug("[Error]", err);
+          debug('[Error]', err);
           resolve([]);
         }
         resolve(results);
@@ -220,29 +220,29 @@ class dbTable {
 
 // #region Model
 exports.word = new dbTable(
-  "word",
+  'word',
   [
-    "wordText",
-    "wordCountGuessed",
-    "wordCountUsed",
-    "createdAt",
-    "changedAt",
-    "wordFlagUseForAutofill"
+    'wordText',
+    'wordCountGuessed',
+    'wordCountUsed',
+    'createdAt',
+    'changedAt',
+    'wordFlagUseForAutofill'
   ],
-  "wordId"
+  'wordId'
 );
 // #endregion
 
 // #region Format-Converter
 const dbFormat = filterI => {
-  let stmt = "";
-  let val = "";
+  let stmt = '';
+  let val = '';
 
   if (filterI[2] instanceof Date) {
     // Date
     stmt = `DATE(${filterI[0]}) ${filterI[1]} ?`;
     val = dateToMysql(filterI[2]);
-  } else if (typeof filterI[2] === "string") {
+  } else if (typeof filterI[2] === 'string') {
     // String
     stmt = `${filterI[0]} ${filterI[1]} BINARY ?`;
     val = filterI[2];
@@ -255,23 +255,23 @@ const dbFormat = filterI => {
 };
 
 const twoDigits = d => {
-  if (0 <= d && d < 10) return "0" + d.toString();
-  if (-10 < d && d < 0) return "-0" + (-1 * d).toString();
+  if (0 <= d && d < 10) return '0' + d.toString();
+  if (-10 < d && d < 0) return '-0' + (-1 * d).toString();
   return d.toString();
 };
 
 const dateToMysql = date => {
   return (
     date.getUTCFullYear() +
-    "-" +
+    '-' +
     twoDigits(1 + date.getUTCMonth()) +
-    "-" +
+    '-' +
     twoDigits(date.getUTCDate()) +
-    " " +
+    ' ' +
     twoDigits(date.getUTCHours()) +
-    ":" +
+    ':' +
     twoDigits(date.getUTCMinutes()) +
-    ":" +
+    ':' +
     twoDigits(date.getUTCSeconds())
   );
 };

@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
 const htmlEscapeMap = new Map()
-  .set("&", "&amp;")
-  .set("<", "&lt;")
-  .set(">", "&gt;")
-  .set('"', "&quot;")
-  .set("'", "&#39;")
-  .set("/", "&#x2F;")
-  .set("`", "&#x60;")
-  .set("=", "&#x3D;");
+  .set('&', '&amp;')
+  .set('<', '&lt;')
+  .set('>', '&gt;')
+  .set('"', '&quot;')
+  .set("'", '&#39;')
+  .set('/', '&#x2F;')
+  .set('`', '&#x60;')
+  .set('=', '&#x3D;');
 
 //#region public
 exports.getRandomBetween = (minNum, maxNum) => {
@@ -101,7 +101,7 @@ const mapEx = objToCopy => {
   for (const prop of Object.keys(obj)) {
     if (obj[prop] instanceof Map) {
       obj[prop] = mapToArr(obj[prop]);
-    } else if (typeof prop === "object") {
+    } else if (typeof prop === 'object') {
       prop = mapEx(prop);
     }
   }
@@ -116,7 +116,7 @@ const mapToArr = map => {
   let arr = [];
   for (const key of map.keys()) {
     let item = map.get(key);
-    if (typeof item === "object") {
+    if (typeof item === 'object') {
       item = mapEx(item);
     }
     arr.push([key, item]);

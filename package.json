@@ -1,33 +1,33 @@
 {
-    "name": "drachenlord-bullshit-bingo",
-    "description": "Meddl Loide",
-    "version": "0.0.1",
-    "main": "app.js",
-    "author": "Serveny",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Serveny/drachenlord_bullshit_bingo"
-    },
-    "license": "MIT",
-    "scripts": {
-        "start": "node app.js",
-        "start-dev": "@powershell -Command $env:DEBUG='wb';nodemon app.js",
-        "start-forever": "forever start app.js",
-        "kill-win": "taskkill /im node.exe",
-        "kill-lin": "killall node",
-        "restart": "npm run kill-win && npm run start",
-        "createDB": "node ./scripts/wB_create_db.js"
-    },
-    "devDependencies": {
-        "var_dump": "^1.0.5"
-    },
-    "dependencies": {
-        "config": "^3.1.0",
-        "debug": "^4.1.1",
-        "express": "^4.16.4",
-        "mysql2": "^1.6.5",
-        "serve-favicon": "^2.5.0",
-        "shortid": "^2.2.14",
-        "socket.io": "^2.2.0"
-    }
+  "name": "drachenlord-bullshit-bingo",
+  "description": "Meddl Loide",
+  "version": "0.0.1",
+  "main": "app.js",
+  "author": "Serveny",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Serveny/drachenlord_bullshit_bingo"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js",
+    "start-dev": "@powershell -Command $env:DEBUG='wb';nodemon app.js",
+    "start-forever": "forever start app.js",
+    "kill-win": "taskkill /im node.exe",
+    "kill-lin": "killall node",
+    "restart": "npm run kill-win && npm run start",
+    "createDB": "node ./scripts/wB_create_db.js"
+  },
+  "devDependencies": {
+    "var_dump": "^1.0.5"
+  },
+  "dependencies": {
+    "config": "^3.1.0",
+    "debug": "^4.1.1",
+    "express": "^4.16.4",
+    "mysql2": "^1.6.5",
+    "serve-favicon": "^2.5.0",
+    "shortid": "^2.2.14",
+    "socket.io": "^2.2.0"
+  }
 }

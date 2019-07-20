@@ -1,20 +1,20 @@
 @font-face {
-  font-family: "Oswald";
+  font-family: 'Oswald';
   font-style: normal;
   font-weight: 700;
-  src: local("Oswald"), local("Oswald-Regular"),
-    url(fonts/Oswald-Regular.ttf) format("truetype");
+  src: local('Oswald'), local('Oswald-Regular'),
+    url(fonts/Oswald-Regular.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: "Material Icons";
+  font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
   src: url(fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
-  src: local("Material Icons"), local("MaterialIcons-Regular"),
-    url(fonts/MaterialIcons-Regular.woff2) format("woff2"),
-    url(fonts/MaterialIcons-Regular.woff) format("woff"),
-    url(fonts/MaterialIcons-Regular.ttf) format("truetype");
+  src: local('Material Icons'), local('MaterialIcons-Regular'),
+    url(fonts/MaterialIcons-Regular.woff2) format('woff2'),
+    url(fonts/MaterialIcons-Regular.woff) format('woff'),
+    url(fonts/MaterialIcons-Regular.ttf) format('truetype');
 }
 
 html,
@@ -26,7 +26,7 @@ body {
   background: #222222;
   overflow: hidden;
   z-index: 5;
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   font-size: calc(14px + 1vw);
 }
 
@@ -35,7 +35,7 @@ body {
 }
 
 #bodyOverlay {
-  background: url("../img/noise-texture-overlay_1.png");
+  background: url('../img/noise-texture-overlay_1.png');
   background-size: auto;
   opacity: 0.1;
   top: 0;
@@ -73,9 +73,9 @@ a {
   left: 20px;
   right: 20px;
   top: 17%;
-  z-index: 1000;
+  z-index: 50;
   border: dashed #8c4c27 1px;
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   display: none;
   text-transform: uppercase;
 }
@@ -84,7 +84,7 @@ a {
   position: absolute;
   left: 0;
   top: 0;
-  z-index: 1001;
+  z-index: 100;
 }
 
 .wB_cardsGrid {
@@ -98,7 +98,7 @@ a {
 .wB_card {
   border: dashed #8c4c27 1px;
   transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  background: #f2e2c4 url("../img/cardBG.png");
+  background: #f2e2c4 url('../img/cardBG.png');
   background-size: auto;
   text-align: center;
   display: flex;
@@ -136,7 +136,7 @@ a {
   background: none;
   border: none;
   padding: 5%;
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   font-size: calc(12px + 1vw);
   align-items: stretch;
   display: flex;
@@ -195,7 +195,7 @@ a {
   font-weight: 400;
   width: auto;
   height: auto;
-  z-index: 1000;
+  z-index: 200;
   background: none;
   bottom: -3px;
 }
@@ -228,14 +228,14 @@ section > h3 {
 }
 
 section > h1 {
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   text-transform: uppercase;
   font-weight: 400;
   font-size: 5vh;
   text-shadow: 4px 5px #ffac69, 6px 7px #d96248;
   margin: -20px;
   overflow: hidden;
-  z-index: 500;
+  z-index: 50;
 }
 
 h1 span {
@@ -248,21 +248,21 @@ span.star {
 }
 
 section > h3 {
-  font-family: "Open Sans", Sans-serif;
+  font-family: 'Open Sans', Sans-serif;
   text-transform: uppercase;
   font-weight: 700;
   font-size: 2vh;
   letter-spacing: 0.1em;
   margin-bottom: 10px;
   position: relative;
-  z-index: 501;
+  z-index: 51;
   transition: transform 0.3s ease-in-out;
   width: auto;
 }
 
 section > h3:before,
 section > h3:after {
-  content: " ";
+  content: ' ';
   position: absolute;
   width: 100px;
   height: 0.75vh;
@@ -287,7 +287,7 @@ section > h3:hover {
     ======================== */
 
 .mi {
-  font-family: "Material Icons";
+  font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
   display: inline-block;
@@ -307,7 +307,7 @@ section > h3:hover {
   -moz-osx-font-smoothing: grayscale;
 
   /* Support for IE. */
-  font-feature-settings: "liga";
+  font-feature-settings: 'liga';
 }
 
 /*  ======================== 
@@ -392,7 +392,7 @@ section > h3:hover {
 }
 
 .mirror {
-  animation: mirror 1s ease-out 1;
+  animation: mirror 1.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 @keyframes mirror {
@@ -417,9 +417,9 @@ section > h3:hover {
   right: 10%;
   background-color: rgba(242, 226, 196, 0.8);
   overflow: hidden;
-  z-index: 1001;
+  z-index: 260;
   border: 1px solid #b64926;
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   padding: 10px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -457,7 +457,7 @@ section > h3:hover {
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
-  z-index: 999;
+  z-index: 53;
 }
 
 #wB_createRoomSvg {
@@ -471,14 +471,14 @@ section > h3:hover {
   display: flex;
   padding: 10px 45px;
   text-decoration: none;
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   font-size: calc(14px + 2vw);
   color: white;
   background: #d96248;
   transition: 1s;
   box-shadow: 6px 6px 0 black;
   transform: skewX(-15deg);
-  z-index: 1000;
+  z-index: 54;
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -618,12 +618,12 @@ path.two {
       0 0,
     linear-gradient(90deg, #b71 2%, #d9bb96 0, #d9bb96 98%, #b71 0%) 0 0 #d9bb96;
   background-size: 40px 60px;
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   color: #382f59;
   position: relative;
   overflow: visible;
   border: dashed #8c4c27 2px;
-  z-index: 499;
+  z-index: 49;
   margin-right: 4px;
   transition: transform 0.3s ease-in-out, box-shadow 0.5s ease-in-out;
   min-width: 12vh;
@@ -693,11 +693,11 @@ path.two {
 }
 
 .wB_userField input {
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   font-size: 2vh;
   background: none;
   border: none;
-  z-index: 502;
+  z-index: 52;
   color: #382f59;
   box-sizing: border-box;
 }
@@ -708,7 +708,7 @@ path.two {
   grid-row: 1;
   border: 4px solid #8c4c27;
   float: left;
-  z-index: 501;
+  z-index: 51;
   margin: 10px;
 }
 
@@ -738,7 +738,7 @@ path.two {
   font-size: 10vh;
   color: green;
   background: none;
-  z-index: 502;
+  z-index: 52;
   display: none;
 }
 
@@ -824,10 +824,10 @@ path.two {
       0 0,
     linear-gradient(90deg, #b71 2%, #d9bb96 0, #d9bb96 98%, #b71 0%) 0 0 #d9bb96;
   background-size: 40px 60px;
-  font-family: "Oswald", Sans-serif;
+  font-family: 'Oswald', Sans-serif;
   color: #382f59;
   border: dashed #8c4c27 2px;
-  z-index: 2000;
+  z-index: 225;
   position: fixed;
   left: 50%;
   top: 50%;
@@ -883,7 +883,7 @@ path.two {
   border-radius: 2px;
   padding: 16px;
   position: fixed;
-  z-index: 1001;
+  z-index: 256;
   left: 50%;
   transform: translateX(-50%);
   bottom: 30px;
@@ -914,7 +914,7 @@ path.two {
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 9999;
+  z-index: 241;
   font-size: 50vh;
   line-height: 100vh;
   text-shadow: -1vh -1vh 0 #eeeeee, 1vh -1vh 0 #eeeeee, -1vh 1vh 0 #eeeeee,
@@ -931,7 +931,7 @@ path.two {
 
 .wB_bigTextCenter {
   text-align: center;
-  font-size: 22vw !important;
+  font-size: 20vw !important;
   transform: none;
 }
 
@@ -969,7 +969,7 @@ path.two {
     transform: scale(0) translate3d(20px, -20px, 50px) rotate3d(3, 2, 2, 90deg);
   }
   75% {
-    transform: scale(0.1) translate3d(30px, -30px, 60px)
+    transform: scale(0.05) translate3d(30px, -30px, 60px)
       rotate3d(2, 1, 1, 45deg);
   }
 }
@@ -1024,4 +1024,38 @@ path.two {
     -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
     box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
   }
+}
+
+/*  ======================== 
+    Confetti Animation
+    ======================== */
+
+#confettiContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 56;
+  display: none;
+}
+
+[class|='confetti'] {
+  position: absolute;
+}
+
+.yellow {
+  background-color: #ffc636;
+}
+
+.red {
+  background-color: #b64926;
+}
+
+.orange {
+  background-color: #e88154;
+}
+
+.cyan {
+  background-color: #00ada9;
 }

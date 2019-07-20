@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 class Avatar {
   constructor(id, name, picUrl) {
@@ -9,22 +9,22 @@ class Avatar {
 }
 
 const avatarList = [
-  "Baby Chrizzy",
-  "Biancer",
-  "Der böse Wolf",
-  "Drachenbruder",
-  "Drachenlady",
-  "Erdbeerchen",
-  "Ey Malla",
-  "Gummibeerchen",
-  "Leiffelsbursche",
-  "Nachber",
-  "Reiner",
-  "Ramoner",
-  "Riter",
-  "Rudi",
-  "Marion",
-  "Zoomulle"
+  'Baby Chrizzy',
+  'Biancer',
+  'Der böse Wolf',
+  'Drachenbruder',
+  'Drachenlady',
+  'Erdbeerchen',
+  'Ey Malla',
+  'Gummibeerchen',
+  'Leiffelsbursche',
+  'Nachber',
+  'Reiner',
+  'Ramoner',
+  'Riter',
+  'Rudi',
+  'Marion',
+  'Zoomulle'
 ];
 
 const getRandomAvatar = playerMap => {
