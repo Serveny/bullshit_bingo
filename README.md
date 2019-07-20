@@ -7,17 +7,12 @@ für einen Unsinn anstellt und redet, schaut man immer wieder rein.
 Aus diesem Grund wird hier das Drachenlord Bullshit Bingo entwickelt.
 
 # Spielregeln
-Das Spiel ist unterteilt in 3 Phasen:
+Das Spiel ist unterteilt in 2 Phasen:
 
  - Werkel-Phase:
     Die Spieler können entweder eigene Wörter in die Felder eintragen, oder welche aus einer Liste 
     auswählen. Fallen einem Spieler keine 25 Begriffe ein, kann dieser die restlichen Felder auch
     automatisch auffüllen lassen.
-
- - Wusel-Phase: 
-    Nachdem alle Spieler eine Auswahl von 25 begriffen getroffen haben, geht es in die Wusel-Phase
-    Die Spieler können sich die Spielfelder ihrer Gegner anschauen und diese bis zu 3 mal zufällig 
-    durchmischen, um so die Chanchen der Gegner auf 5 Worte in einer Reihe zu verschlechtern.
 
  - Bingo-Phase:
     Hier beginnt das eigentliche Spiel. Drache streamt und jedes Mal wenn ein Wort, das der Spieler vorher

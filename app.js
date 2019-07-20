@@ -13,6 +13,7 @@ const
     favicon = require('serve-favicon'),
     path = require('path'),
     socket = require('socket.io'),
+    debug = require('debug')('wb'),
 
     // wB scripts
     wB_Socket_In = require('./scripts/wB_Socket_In'),
@@ -30,5 +31,6 @@ const server = http.createServer(app).listen(app.get('port'), () => {
 
 global.wb.io = socket(server);
 global.wb.io.on('connection', (socket) => {
+    debug(` --- ${socket.id} connected --- `);
     wB_Socket_In.addEvents(socket);
 });
