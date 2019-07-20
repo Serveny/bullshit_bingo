@@ -200,13 +200,13 @@ exports.autofill = async (socket) => {
 
 // Recover game after server-restart or crash
 exports.recoverGame = (socket, roomClt, oldId) => {
-    debug(`Old ID: ${oldId}, New ID: ${socket.id}`);
+    debug(`Old ID: ${oldId}, New ID: ${socket.id}`, roomClt);
     if (roomClt == null || oldId == null) {
         out.emitError(socket, errorText.cantRecoverRoom);
         return;
     }
     if (roomMap.has(roomClt.roomId) === false) {
-        setPlayersInactive(room.playerMap);
+        setPlayersInactive(roomClt.playerMap);
         roomClt.playerMap.keys().get(oldId) = socket.id;
         roomMap.set(room.roomId, roomClt);
     } else {
@@ -311,19 +311,11 @@ const startBingoPhase = (room) => {
     out.emitPhaseChangedBingo(room);
 }
 
-const isBingoPhase = (playerMap) => {
-    for (const player of playerMap.values()) {
-        // Bingophase, if one of players in bingophase
-        if (player.phase === gamePhase.bingo) {
-            return true;
-        }
-    }
-    return false;
-}
-
 const setPlayersInactive = (playerMap) => {
-    for (const player of playerMap.values()) {
-        player.status = playerStatus.inactive;
+    if (playerMap != null && typeof playerMap.values !== 'undefined') {
+        for (const player of playerMap.values()) {
+            player.status = playerStatus.inactive;
+        }
     }
 }
 

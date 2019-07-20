@@ -145,8 +145,8 @@ exports.fillEmptyWordsCardMap = (cardMap, newWordsMap) => {
 exports.generateEmptyCardMap = () => {
     const cardMap = new Map();
     let id = 0;
-    for (let x = 0; x < 5; x++) {
-        for (let y = 0; y < 5; y++) {
+    for (let y = 1; y < 6; y++) {
+        for (let x = 1; x < 6; x++) {
             cardMap.set(++id, new Card(id, null, x, y, false));
         }
     }
@@ -249,7 +249,7 @@ const emptyMatrix = () => {
 const createCardHitMatrix = (cardMap) => {
     const matrixArr = emptyMatrix();
     for(const card of cardMap.values()) {
-        matrixArr[parseInt(card.posY)][parseInt(card.posX)] = card.isHit;
+        matrixArr[parseInt(card.posY) - 1][parseInt(card.posX) - 1] = card.isHit;
     }
     return matrixArr;
 }
