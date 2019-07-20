@@ -14,7 +14,7 @@ const express = require('express'),
   socket = require('socket.io'),
   debug = require('debug')('wb'),
   // wB scripts
-  wB_Socket_In = require('./scripts/wB_Socket_In'),
+  wB_Socket_In = require('./scripts/wb-socket-in'),
   app = express();
 
 app.set('port', /*process.env.PORT || */ 1510);
