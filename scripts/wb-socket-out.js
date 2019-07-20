@@ -1,5 +1,5 @@
 const debug = require('debug')('wb'),
-  helper = require('./wB_Helper');
+  helper = require('./wb-helper');
 
 exports.emitError = (socket, errorStr) => {
   socket.emit('gameError', errorStr);

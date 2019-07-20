@@ -1,5 +1,5 @@
 'use strict';
-const wB_Room = require('./wB_Room'),
+const wB_Room = require('./wb-room'),
   debug = require('debug')('wb');
 
 // Events Input

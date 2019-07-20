@@ -2,10 +2,10 @@
 const
     debug = require('debug')('wb'),
     shortid = require('shortid'),
-    avatars = require('./wB_Avatars'),
-    wB_cards = require('./wB_cards'),
-    out = require('./wB_Socket_Out'),
-    helper = require('./wB_Helper'),
+    avatars = require('./wb-avatars'),
+    wB_cards = require('./wb-cards'),
+    out = require('./wb-socket-out'),
+    helper = require('./wb-helper'),
     roomMap = global.wb.roomMap = new Map();
 
 const gamePhase = {
