@@ -75,8 +75,8 @@ exports.emitCardHit = (socket, thisRoom, cardId, isHit) => {
     console.log('');
 };
 
-exports.emitWin = (socket, thisRoom) => {
-    global.wb.io.in(thisRoom.id).emit('playerWin', socket.id);
-    debug(` --- emitWin in room ${thisRoom.id} for player ${socket.id} --- `);
+exports.emitWin = (socket, thisRoom, winLine) => {
+    global.wb.io.in(thisRoom.id).emit('playerWin', {playerId: socket.id, winLine: winLine});
+    debug(` --- emitWin in room ${thisRoom.id} for player ${socket.id} (${winLine.startX}/${winLine.startY} to ${winLine.endX}/${winLine.endY}) --- `);
     console.log('');
 };

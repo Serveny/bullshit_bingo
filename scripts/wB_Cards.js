@@ -26,6 +26,15 @@ class Word {
     }
 }
 
+class WinLine {
+    constructor(startX, startY, endX, endY) {
+        this.startX = startX; 
+        this.startY = startY; 
+        this.endX = endX; 
+        this.endY = endY;
+    }
+}
+
 //#region public
 exports.Card = Card;
 exports.Word = Word;
@@ -166,7 +175,7 @@ exports.wordCountUp = async (cardMap, type = 'Guessed') => {
 
 exports.checkWin = (cardMap) => {
     const mtx = createCardHitMatrix(cardMap);
-    
+
     // horizontal
     for (let y = 0; y < 5; y++) {
         let countH = 0;
@@ -178,22 +187,22 @@ exports.checkWin = (cardMap) => {
             }
         }
         if (countH >= 5) {
-            return true;
+            return new WinLine(1, y+1, 5, y+1);
         }
     }
 
     // vertical
-    for (let y = 0; y < 5; y++) {
+    for (let x = 0; x < 5; x++) {
         let countV = 0;
-        for (let x = 0; x < 5; x++) {
-            if (mtx[x][y] === true) {
+        for (let y = 0; y < 5; y++) {
+            if (mtx[y][x] === true) {
                 countV++;
             } else {
                 break;
             }
         }
         if (countV >= 5) {
-            return true;
+            return new WinLine(x+1, 1, x+1, 5);
         }
     }
 
@@ -207,7 +216,7 @@ exports.checkWin = (cardMap) => {
         }
     }
     if (countD1 >= 5) {
-        return true;
+        return new WinLine(1, 1, 5, 5);
     }
     
     // diagonal2
@@ -220,9 +229,9 @@ exports.checkWin = (cardMap) => {
         }
     }
     if (countD2 >= 5) {
-        return true;
+        return new WinLine(1, 5, 5, 1);
     }
-    return false;
+    return null;
 }
 //#endregion
 

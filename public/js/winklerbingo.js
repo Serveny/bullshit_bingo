@@ -360,9 +360,10 @@ class WinklerBingo {
 
         _self.socket.on('playerLaterBingoPhase', playerLaterBingoPhase);
 
-        _self.socket.on('playerWin', (winnnerPlayerId) => {
-            console.log('[GAME END] ', winnnerPlayerId, _self.socket.id);
-            if (winnnerPlayerId === _self.socket.id) {
+        _self.socket.on('playerWin', (winData) => {
+            console.log('[GAME END] ', winData.playerId, $('.wB_cardsGrid[data-selected="true"]').attr('data-playerid'));
+            if (winData.playerId === $('.wB_cardsGrid[data-selected="true"]').attr('data-playerid')) {
+                _self.drawWinLine(winData.winLine);
                 _self.playWinAnimation();
                 _self.socket.off('cardHit', cardHitHandler);
             } else {
@@ -640,13 +641,16 @@ class WinklerBingo {
             if (upEl.hasClass('wB_cardHit') === true) {
                 _self.borderNone(el, 'top');
                 _self.borderNone(upEl, 'bottom');
-            } else if (rightEl.hasClass('wB_cardHit') === true) {
+            }
+            if (rightEl.hasClass('wB_cardHit') === true) {
                 _self.borderNone(el, 'right');
                 _self.borderNone(rightEl, 'left');
-            } else if (bottomEl.hasClass('wB_cardHit') === true) {
+            }
+            if (bottomEl.hasClass('wB_cardHit') === true) {
                 _self.borderNone(el, 'bottom');
                 _self.borderNone(bottomEl, 'top');
-            } else if (leftEl.hasClass('wB_cardHit') === true) {
+            }
+            if (leftEl.hasClass('wB_cardHit') === true) {
                 _self.borderNone(el, 'left');
                 _self.borderNone(leftEl, 'right');
             }
@@ -867,6 +871,29 @@ class WinklerBingo {
                     el.css({'border-left': 'none'});
                 break;
         }
+    }
+
+    drawWinLine(winLine) {
+        const cardsContainer = $('#wB_cardsContainer');
+        cardsContainer.append('<canvas id="wB_cardsContainerCanvas" height="' + 
+            cardsContainer.height() + '" width="' + cardsContainer.width() + '"></canvas>');
+        
+        const cardHeightPx = cardsContainer.height() / 5,
+            cardWidthPx = cardsContainer.width() / 5,
+            heightHalfPx = cardHeightPx / 2,
+            widthHalfPx = cardWidthPx / 2,
+            ctx = $('#wB_cardsContainerCanvas').get(0).getContext('2d');
+        console.log(winLine);
+        ctx.moveTo((winLine.startX * cardWidthPx)  - widthHalfPx, (winLine.startY * cardHeightPx) - heightHalfPx);
+        ctx.lineTo((winLine.endX * cardWidthPx) - widthHalfPx, (winLine.endY * cardHeightPx) - heightHalfPx);
+        ctx.strokeStyle = `rgb(70, 137, 102, 0.5)`;
+        ctx.lineWidth = 10;
+        ctx.stroke();
+    }
+
+    getPosPx(x, y, parX, parY) {
+
+
     }
 }
 

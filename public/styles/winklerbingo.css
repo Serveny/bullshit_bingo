@@ -58,7 +58,7 @@ a {
 }
 
 .btn:hover {
-  color: #E88154;
+  color: #e88154;
   transition: color 0.3s ease-in-out;
 }
 
@@ -77,6 +77,13 @@ a {
   font-family: "Oswald", Sans-serif;
   display: none;
   text-transform: uppercase;
+}
+
+#wB_cardsContainerCanvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1001;
 }
 
 .wB_cardsGrid {
@@ -223,7 +230,7 @@ section > h1 {
   text-transform: uppercase;
   font-weight: 400;
   font-size: 5vh;
-  text-shadow: 4px 5px #FFAC69, 6px 7px #D96248;
+  text-shadow: 4px 5px #FFAC69, 6px 7px #d96248;
   margin: -20px;
   overflow: hidden;
   z-index: 500;

@@ -234,8 +234,9 @@ exports.cardHit = (socket, cardId) => {
     card.isHit = true;
     out.emitCardHit(socket, room, cardId, card.isHit);
 
-    if (wB_cards.checkWin(player.cardMap) === true) {
-        out.emitWin(socket, room);
+    const winLine = wB_cards.checkWin(player.cardMap);
+    if (winLine != null) {
+        out.emitWin(socket, room, winLine);
     }
 }
 //#endregion
