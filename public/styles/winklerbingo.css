@@ -1,28 +1,29 @@
 @font-face {
-  font-family: 'Oswald';
+  font-family: "Oswald";
   font-style: normal;
   font-weight: 700;
-  src: local('Oswald'), local('Oswald-Regular'), url(fonts/Oswald-Regular.ttf) format('truetype');
+  src: local("Oswald"), local("Oswald-Regular"),
+    url(fonts/Oswald-Regular.ttf) format("truetype");
 }
 
 @font-face {
-  font-family: 'Material Icons';
+  font-family: "Material Icons";
   font-style: normal;
   font-weight: 400;
   src: url(fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
-  src: local('Material Icons'),
-    local('MaterialIcons-Regular'),
-    url(fonts/MaterialIcons-Regular.woff2) format('woff2'),
-    url(fonts/MaterialIcons-Regular.woff) format('woff'),
-    url(fonts/MaterialIcons-Regular.ttf) format('truetype');
+  src: local("Material Icons"), local("MaterialIcons-Regular"),
+    url(fonts/MaterialIcons-Regular.woff2) format("woff2"),
+    url(fonts/MaterialIcons-Regular.woff) format("woff"),
+    url(fonts/MaterialIcons-Regular.ttf) format("truetype");
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;
   color: #121212;
-  background:#222222;
+  background: #222222;
   overflow: hidden;
   z-index: 5;
   font-family: "Oswald", Sans-serif;
@@ -34,7 +35,7 @@ body {
 }
 
 #bodyOverlay {
-  background: url('../img/noise-texture-overlay_1.png');
+  background: url("../img/noise-texture-overlay_1.png");
   background-size: auto;
   opacity: 0.1;
   top: 0;
@@ -64,7 +65,7 @@ a {
 
 /*  ======================== 
     Bingo Field
-    ======================== */ 
+    ======================== */
 
 #wB_cardsContainer {
   position: absolute;
@@ -73,7 +74,7 @@ a {
   right: 20px;
   top: 17%;
   z-index: 1000;
-  border: dashed #8C4C27 1px;
+  border: dashed #8c4c27 1px;
   font-family: "Oswald", Sans-serif;
   display: none;
   text-transform: uppercase;
@@ -95,9 +96,9 @@ a {
 }
 
 .wB_card {
-  border: dashed #8C4C27 1px;
+  border: dashed #8c4c27 1px;
   transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  background: #F2E2C4 url('../img/cardBG.png');
+  background: #f2e2c4 url("../img/cardBG.png");
   background-size: auto;
   text-align: center;
   display: flex;
@@ -116,7 +117,7 @@ a {
 .wB_card_focus {
   transform: scale(1.2) !important;
   transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+  box-shadow: 0px 0px 20px 11px rgba(217, 174, 95, 0.5);
 }
 
 .wB_card span {
@@ -178,7 +179,7 @@ a {
 
 .wB_cardHit {
   cursor: default;
-  border: solid 5px #E88154;
+  border: solid 5px #e88154;
 }
 
 .wB_cardHit:hover {
@@ -187,7 +188,7 @@ a {
 
 /*  ======================== 
     Head Bar
-    ======================== */ 
+    ======================== */
 
 .headbar {
   position: absolute;
@@ -209,7 +210,7 @@ a {
 
 /*  ======================== 
     Headline
-    ======================== */ 
+    ======================== */
 
 section.text {
   width: 100%;
@@ -221,8 +222,9 @@ section.text {
   opacity: 0.9;
 }
 
-section > h1, section > h3 {
-  transform: matrix(1, -0.10, 0, 1, 0, 0);
+section > h1,
+section > h3 {
+  transform: matrix(1, -0.1, 0, 1, 0, 0);
 }
 
 section > h1 {
@@ -230,7 +232,7 @@ section > h1 {
   text-transform: uppercase;
   font-weight: 400;
   font-size: 5vh;
-  text-shadow: 4px 5px #FFAC69, 6px 7px #d96248;
+  text-shadow: 4px 5px #ffac69, 6px 7px #d96248;
   margin: -20px;
   overflow: hidden;
   z-index: 500;
@@ -251,14 +253,15 @@ section > h3 {
   font-weight: 700;
   font-size: 2vh;
   letter-spacing: 0.1em;
-  margin-bottom: 10px;  
+  margin-bottom: 10px;
   position: relative;
   z-index: 501;
   transition: transform 0.3s ease-in-out;
   width: auto;
 }
 
-section > h3:before, section > h3:after {
+section > h3:before,
+section > h3:after {
   content: " ";
   position: absolute;
   width: 100px;
@@ -281,30 +284,30 @@ section > h3:hover {
 
 /*  ======================== 
     Material Icons
-    ======================== */ 
+    ======================== */
 
 .mi {
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    text-transform: none;
-    letter-spacing: normal;
-    word-wrap: normal;
-    white-space: nowrap;
-    direction: ltr;
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
 
-    /* Support for all WebKit browsers. */
-    -webkit-font-smoothing: antialiased;
-    /* Support for Safari and Chrome. */
-    text-rendering: optimizeLegibility;
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
 
-    /* Support for Firefox. */
-    -moz-osx-font-smoothing: grayscale;
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
 
-    /* Support for IE. */
-    font-feature-settings: 'liga';
+  /* Support for IE. */
+  font-feature-settings: "liga";
 }
 
 /*  ======================== 
@@ -332,26 +335,31 @@ section > h3:hover {
     ======================== */
 
 .shake_short {
-  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   perspective: 1000px;
 }
 
 @keyframes shake {
-  10%, 90% {
+  10%,
+  90% {
     transform: translate3d(-1px, 0, 0);
   }
-  
-  20%, 80% {
+
+  20%,
+  80% {
     transform: translate3d(2px, 0, 0);
   }
 
-  30%, 50%, 70% {
+  30%,
+  50%,
+  70% {
     transform: translate3d(-4px, 0, 0);
   }
 
-  40%, 60% {
+  40%,
+  60% {
     transform: translate3d(4px, 0, 0);
   }
 }
@@ -370,31 +378,31 @@ section > h3:hover {
     Flip Animation
     ======================== */
 
-    .flip {
-      animation: flip 2.5s ease-out 1;
-    }
-    
-    @keyframes flip {
-      from {
-        transform: rotateX(180deg) rotateY(180deg);
-      }
-      to {
-        transform: rotateX(0deg) rotateY(0deg);
-      }
-    }
+.flip {
+  animation: flip 2.5s ease-out 1;
+}
 
-    .mirror {
-      animation: mirror 1s ease-out 1;
-    }
+@keyframes flip {
+  from {
+    transform: rotateX(180deg) rotateY(180deg);
+  }
+  to {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+}
 
-    @keyframes mirror {
-      from {
-        transform: rotateX(180deg);
-      }
-      to {
-        transform: rotateX(0deg);
-      }
-    }
+.mirror {
+  animation: mirror 1s ease-out 1;
+}
+
+@keyframes mirror {
+  from {
+    transform: rotateX(180deg);
+  }
+  to {
+    transform: rotateX(0deg);
+  }
+}
 
 /*  ======================== 
     Info
@@ -410,7 +418,7 @@ section > h3:hover {
   background-color: rgba(242, 226, 196, 0.8);
   overflow: hidden;
   z-index: 1001;
-  border: 1px solid #B64926;
+  border: 1px solid #b64926;
   font-family: "Oswald", Sans-serif;
   padding: 10px;
   overflow-y: auto;
@@ -424,9 +432,9 @@ section > h3:hover {
 }
 
 #wB_infoCloseBtn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
+  position: fixed;
+  top: 10%;
+  right: 12%;
 }
 
 .glass {
@@ -443,104 +451,104 @@ section > h3:hover {
     ======================== */
 
 .wrapper {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    z-index: 999;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  z-index: 999;
 }
 
 #wB_createRoomSvg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .cta {
-    display: flex;
-    padding: 10px 45px;
-    text-decoration: none;
-    font-family: "Oswald", Sans-serif;
-    font-size: calc(14px + 2vw);
-    color: white;
-    background: #D96248;
-    transition: 1s;
-    box-shadow: 6px 6px 0 black;
-    transform: skewX(-15deg);
-    z-index: 1000;
-    text-transform: uppercase;
-    cursor: pointer;
+  display: flex;
+  padding: 10px 45px;
+  text-decoration: none;
+  font-family: "Oswald", Sans-serif;
+  font-size: calc(14px + 2vw);
+  color: white;
+  background: #d96248;
+  transition: 1s;
+  box-shadow: 6px 6px 0 black;
+  transform: skewX(-15deg);
+  z-index: 1000;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .cta:focus {
-   outline: none; 
+  outline: none;
 }
 
 .cta:hover {
-    transition: 0.5s;
-    box-shadow: 10px 10px 0 #8C4C27;
+  transition: 0.5s;
+  box-shadow: 10px 10px 0 #8c4c27;
 }
 
 .wrapper span:nth-child(2) {
-    transition: 0.5s;
-    margin-right: 0px;
+  transition: 0.5s;
+  margin-right: 0px;
 }
 
-.cta:hover  span:nth-child(2) {
-    transition: 0.5s;
-    margin-right: 45px;
+.cta:hover span:nth-child(2) {
+  transition: 0.5s;
+  margin-right: 45px;
 }
 
 .cta span {
-    transform: skewX(15deg) 
-  }
+  transform: skewX(15deg);
+}
 
 .cta span:nth-child(2) {
-    width: 20px;
-    margin-left: 30px;
-    position: relative;
-  }
+  width: 20px;
+  margin-left: 30px;
+  position: relative;
+}
 
 /* **********SVG********** */
 path.one {
-    transition: 0.4s;
-    transform: translateX(-60%);
+  transition: 0.4s;
+  transform: translateX(-60%);
 }
 
 path.two {
-    transition: 0.5s;
-    transform: translateX(-30%);
+  transition: 0.5s;
+  transform: translateX(-30%);
 }
 
 .cta:hover path.three {
-    animation: color_anim 1s infinite 0.2s;
+  animation: color_anim 1s infinite 0.2s;
 }
 
 .cta:hover path.one {
-    transform: translateX(0%);
-    animation: color_anim 1s infinite 0.6s;
+  transform: translateX(0%);
+  animation: color_anim 1s infinite 0.6s;
 }
 
 .cta:hover path.two {
-    transform: translateX(0%);
-    animation: color_anim 1s infinite 0.4s;
+  transform: translateX(0%);
+  animation: color_anim 1s infinite 0.4s;
 }
 
 /* SVG animations */
 
 @keyframes color_anim {
-    0% {
-        fill: white;
-    }
-    50% {
-        fill: #BF8B4B;
-    }
-    100% {
-        fill: white;
-    }
+  0% {
+    fill: white;
+  }
+  50% {
+    fill: #bf8b4b;
+  }
+  100% {
+    fill: white;
+  }
 }
 
 /*  ======================== 
@@ -565,19 +573,56 @@ path.two {
   display: inline-block;
   height: 90%;
   width: inherit;
-  background:
-  radial-gradient(circle farthest-side at 0% 50%,#D9BB96 23.5%,rgba(240,166,17,0) 0)21px 30px,
-  radial-gradient(circle farthest-side at 0% 50%,#B71 24%,rgba(240,166,17,0) 0)19px 30px,
-  linear-gradient(#D9BB96 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,#D9BB96 0)0 0,
-  linear-gradient(150deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
-  linear-gradient(30deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
-  linear-gradient(90deg,#B71 2%,#D9BB96 0,#D9BB96 98%,#B71 0%)0 0 #D9BB96;
+  background: radial-gradient(
+        circle farthest-side at 0% 50%,
+        #d9bb96 23.5%,
+        rgba(240, 166, 17, 0) 0
+      )
+      21px 30px,
+    radial-gradient(
+        circle farthest-side at 0% 50%,
+        #b71 24%,
+        rgba(240, 166, 17, 0) 0
+      )
+      19px 30px,
+    linear-gradient(
+        #d9bb96 14%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 85%,
+        #d9bb96 0
+      )
+      0 0,
+    linear-gradient(
+        150deg,
+        #d9bb96 24%,
+        #b71 0,
+        #b71 26%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 74%,
+        #b71 0,
+        #b71 76%,
+        #d9bb96 0
+      )
+      0 0,
+    linear-gradient(
+        30deg,
+        #d9bb96 24%,
+        #b71 0,
+        #b71 26%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 74%,
+        #b71 0,
+        #b71 76%,
+        #d9bb96 0
+      )
+      0 0,
+    linear-gradient(90deg, #b71 2%, #d9bb96 0, #d9bb96 98%, #b71 0%) 0 0 #d9bb96;
   background-size: 40px 60px;
   font-family: "Oswald", Sans-serif;
-  color: #382F59;
+  color: #382f59;
   position: relative;
   overflow: visible;
-  border: dashed #8C4C27 2px;
+  border: dashed #8c4c27 2px;
   z-index: 499;
   margin-right: 4px;
   transition: transform 0.3s ease-in-out, box-shadow 0.5s ease-in-out;
@@ -598,14 +643,52 @@ path.two {
 }
 
 #wB_thisUserField {
-  border: 2px dashed #D9665B;
-  background:
-  radial-gradient(circle farthest-side at 0% 50%,#F2D5BB 23.5%,rgba(240,166,17,0) 0)21px 30px,
-  radial-gradient(circle farthest-side at 0% 50%,#D9665B 24%,rgba(240,166,17,0) 0)19px 30px,
-  linear-gradient(#F2D5BB 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,#F2D5BB 0)0 0,
-  linear-gradient(150deg,#F2D5BB 24%,#D9665B 0,#D9665B 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#D9665B 0,#D9665B 76%,#F2D5BB 0)0 0,
-  linear-gradient(30deg,#F2D5BB 24%,#D9665B 0,#D9665B 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#D9665B 0,#D9665B 76%,#F2D5BB 0)0 0,
-  linear-gradient(90deg,#D9665B 2%,#F2D5BB 0,#F2D5BB 98%,#D9665B 0%)0 0 #F2D5BB;
+  border: 2px dashed #d9665b;
+  background: radial-gradient(
+        circle farthest-side at 0% 50%,
+        #f2d5bb 23.5%,
+        rgba(240, 166, 17, 0) 0
+      )
+      21px 30px,
+    radial-gradient(
+        circle farthest-side at 0% 50%,
+        #d9665b 24%,
+        rgba(240, 166, 17, 0) 0
+      )
+      19px 30px,
+    linear-gradient(
+        #f2d5bb 14%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 85%,
+        #f2d5bb 0
+      )
+      0 0,
+    linear-gradient(
+        150deg,
+        #f2d5bb 24%,
+        #d9665b 0,
+        #d9665b 26%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 74%,
+        #d9665b 0,
+        #d9665b 76%,
+        #f2d5bb 0
+      )
+      0 0,
+    linear-gradient(
+        30deg,
+        #f2d5bb 24%,
+        #d9665b 0,
+        #d9665b 26%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 74%,
+        #d9665b 0,
+        #d9665b 76%,
+        #f2d5bb 0
+      )
+      0 0,
+    linear-gradient(90deg, #d9665b 2%, #f2d5bb 0, #f2d5bb 98%, #d9665b 0%) 0 0
+      #f2d5bb;
   background-size: 40px 60px;
 }
 
@@ -615,7 +698,7 @@ path.two {
   background: none;
   border: none;
   z-index: 502;
-  color: #382F59;
+  color: #382f59;
   box-sizing: border-box;
 }
 
@@ -623,14 +706,14 @@ path.two {
   height: 65%;
   grid-column: 1;
   grid-row: 1;
-  border: 4px solid #8C4C27; 
+  border: 4px solid #8c4c27;
   float: left;
   z-index: 501;
   margin: 10px;
 }
 
 #wB_thisUserPic {
-  border: 4px solid #D9665B;
+  border: 4px solid #d9665b;
 }
 
 .wB_userName {
@@ -642,7 +725,8 @@ path.two {
   width: 100%;
   box-sizing: border-box;
   text-align: center;
-  text-shadow: -1px -1px 0 #eeeeee, 1px -1px 0 #eeeeee, -1px 1px 0 #eeeeee, 1px 1px 0 #eeeeee;
+  text-shadow: -1px -1px 0 #eeeeee, 1px -1px 0 #eeeeee, -1px 1px 0 #eeeeee,
+    1px 1px 0 #eeeeee;
 }
 
 .wB_userReady {
@@ -662,7 +746,8 @@ path.two {
   color: gray;
 }
 
-#wB_leaveRoomBtn, #wB_autofillBtn {
+#wB_leaveRoomBtn,
+#wB_autofillBtn {
   display: none;
 }
 
@@ -671,17 +756,17 @@ path.two {
   left: 50%;
   bottom: -15px;
   transform: translateX(-50%);
-  width: 0; 
-  height: 0; 
+  width: 0;
+  height: 0;
   border-left: 30px solid transparent;
   border-right: 30px solid transparent;
-  border-top: 15px solid #D96248;
+  border-top: 15px solid #d96248;
   display: none;
 }
 
 .wb_userSelected {
   transition: box-shadow 0.5s ease-in-out;
-  box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+  box-shadow: 0px 0px 20px 11px rgba(217, 174, 95, 0.5);
 }
 
 .wb_userSelected > .wB_userFieldPointer {
@@ -694,24 +779,61 @@ path.two {
 
 #wB_countdownContainer {
   display: none;
-  background:
-  radial-gradient(circle farthest-side at 0% 50%,#D9BB96 23.5%,rgba(240,166,17,0) 0)21px 30px,
-  radial-gradient(circle farthest-side at 0% 50%,#B71 24%,rgba(240,166,17,0) 0)19px 30px,
-  linear-gradient(#D9BB96 14%,rgba(240,166,17,0) 0, rgba(240,166,17,0) 85%,#D9BB96 0)0 0,
-  linear-gradient(150deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
-  linear-gradient(30deg,#D9BB96 24%,#B71 0,#B71 26%,rgba(240,166,17,0) 0,rgba(240,166,17,0) 74%,#B71 0,#B71 76%,#D9BB96 0)0 0,
-  linear-gradient(90deg,#B71 2%,#D9BB96 0,#D9BB96 98%,#B71 0%)0 0 #D9BB96;
+  background: radial-gradient(
+        circle farthest-side at 0% 50%,
+        #d9bb96 23.5%,
+        rgba(240, 166, 17, 0) 0
+      )
+      21px 30px,
+    radial-gradient(
+        circle farthest-side at 0% 50%,
+        #b71 24%,
+        rgba(240, 166, 17, 0) 0
+      )
+      19px 30px,
+    linear-gradient(
+        #d9bb96 14%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 85%,
+        #d9bb96 0
+      )
+      0 0,
+    linear-gradient(
+        150deg,
+        #d9bb96 24%,
+        #b71 0,
+        #b71 26%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 74%,
+        #b71 0,
+        #b71 76%,
+        #d9bb96 0
+      )
+      0 0,
+    linear-gradient(
+        30deg,
+        #d9bb96 24%,
+        #b71 0,
+        #b71 26%,
+        rgba(240, 166, 17, 0) 0,
+        rgba(240, 166, 17, 0) 74%,
+        #b71 0,
+        #b71 76%,
+        #d9bb96 0
+      )
+      0 0,
+    linear-gradient(90deg, #b71 2%, #d9bb96 0, #d9bb96 98%, #b71 0%) 0 0 #d9bb96;
   background-size: 40px 60px;
   font-family: "Oswald", Sans-serif;
-  color: #382F59;
-  border: dashed #8C4C27 2px;
+  color: #382f59;
+  border: dashed #8c4c27 2px;
   z-index: 2000;
   position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  box-shadow: 0px 0px 20px 11px rgba(217,174,95,0.5);
+  box-shadow: 0px 0px 20px 11px rgba(217, 174, 95, 0.5);
   overflow: hidden;
 }
 
@@ -726,8 +848,9 @@ path.two {
   top: 47%;
   transform: translate(-50%, -50%);
   font-size: 16vh;
-  color: #B64926;
-  text-shadow: -1px -1px 0 #eeeeee, 1px -1px 0 #eeeeee, -1px 1px 0 #eeeeee, 1px 1px 0 #eeeeee;
+  color: #b64926;
+  text-shadow: -1px -1px 0 #eeeeee, 1px -1px 0 #eeeeee, -1px 1px 0 #eeeeee,
+    1px 1px 0 #eeeeee;
 }
 
 /*  ======================== 
@@ -755,10 +878,10 @@ path.two {
   min-width: 250px;
   min-width: 50px;
   background-color: rgb(217, 72, 72);
-  color: #fff; 
+  color: #fff;
   text-align: center;
-  border-radius: 2px; 
-  padding: 16px; 
+  border-radius: 2px;
+  padding: 16px;
   position: fixed;
   z-index: 1001;
   left: 50%;
@@ -776,7 +899,7 @@ path.two {
   position: absolute;
   top: 2px;
   opacity: 0.6;
-  background: #FFAC69;
+  background: #ffac69;
   height: 10px;
   border-radius: 10px;
 }
@@ -794,15 +917,14 @@ path.two {
   z-index: 9999;
   font-size: 50vh;
   line-height: 100vh;
-  text-shadow: -1vh -1vh 0 #eeeeee, 1vh -1vh 0 #eeeeee, -1vh 1vh 0 #eeeeee, 1vh 1vh 0 #eeeeee,
-    -10px 10px 0px #D9665B,
-    -20px 20px 0px #B64926,
-    -30px 30px 0px #8C4C27;
+  text-shadow: -1vh -1vh 0 #eeeeee, 1vh -1vh 0 #eeeeee, -1vh 1vh 0 #eeeeee,
+    1vh 1vh 0 #eeeeee, -10px 10px 0px #d9665b, -20px 20px 0px #b64926,
+    -30px 30px 0px #8c4c27;
   overflow: visible;
-  transform: matrix(1, -0.10, 0, 1, 0, 0);
+  transform: matrix(1, -0.1, 0, 1, 0, 0);
   width: 100%;
   height: 100%;
-  color: #FFAC69;
+  color: #ffac69;
   text-transform: uppercase;
   display: none;
 }
@@ -823,10 +945,10 @@ path.two {
 
 @keyframes fadeLeftToRight {
   from {
-    transform: matrix(1, -0.10, 0, 1, 0, 0) translateX(-200%);
+    transform: matrix(1, -0.1, 0, 1, 0, 0) translateX(-200%);
   }
   to {
-    transform: matrix(1, -0.10, 0, 1, 0, 0) translateX(100%);
+    transform: matrix(1, -0.1, 0, 1, 0, 0) translateX(100%);
   }
 }
 
@@ -839,14 +961,16 @@ path.two {
 }
 
 @keyframes implode {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1) translate3d(0, 0, 0) rotate3d(0, 0, 0, 0deg);
   }
   50% {
     transform: scale(0) translate3d(20px, -20px, 50px) rotate3d(3, 2, 2, 90deg);
   }
   75% {
-    transform: scale(0.1) translate3d(30px, -30px, 60px) rotate3d(2, 1, 1, 45deg);
+    transform: scale(0.1) translate3d(30px, -30px, 60px)
+      rotate3d(2, 1, 1, 45deg);
   }
 }
 
@@ -855,12 +979,13 @@ path.two {
 }
 
 @keyframes implodeRev {
-  0%, 100%{
+  0%,
+  100% {
     transform: scale(0) translate3d(20px, -20px, 50px) rotate3d(3, 2, 2, 90deg);
   }
   75% {
     transform: scale(1) translate3d(0, 0, 0) rotate3d(0, 0, 0, 0deg);
-  } 
+  }
 }
 
 /*  ======================== 
@@ -868,7 +993,7 @@ path.two {
     ======================== */
 
 .pulse {
-  box-shadow: 0 0 0 #FFAC69;
+  box-shadow: 0 0 0 #ffac69;
   animation: pulse 1s infinite;
 }
 .pulse:hover {
@@ -877,26 +1002,26 @@ path.two {
 
 @-webkit-keyframes pulse {
   0% {
-    -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
   }
   70% {
-      -webkit-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+    -webkit-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
   }
   100% {
-      -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
   }
 }
 @keyframes pulse {
   0% {
-    -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
-    box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
   }
   70% {
-      -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
-      box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+    -moz-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
   }
   100% {
-      -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
-      box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
   }
 }

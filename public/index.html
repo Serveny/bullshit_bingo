@@ -1,161 +1,199 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
-    <head>
-        <meta charset="utf-8">
-        <meta name="description" content="Drache labert Müll, wir spielen Bingo!">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content="Drache labert Müll, wir spielen Bingo!" />
 
-        <title>Drachenlord Bullshit Bingo</title>
-        <link rel="shortcut icon" href="favicon.ico" />
-        <link rel="stylesheet" href="styles/winklerbingo.css">
+    <title>Drachenlord Bullshit Bingo</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" href="styles/winklerbingo.css" />
 
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="js/vendor/jquery-3.4.1.js"></script>
-        <script src="js/winklerbingo.js"></script>
-    </head>
-    <body>
-        <div id="bodyOverlay"></div>
-        <div id="headbar_left" class="headbar">
-        </div>
-        <div id="headbar_right" class="headbar">
-            <span id="wB_autofillBtn" class="btn" title="Unbefüllte Karten automatisch auffüllen">
-                <i class="mi">view_comfy</i>
-            </span>
-            <span class="btn wB_toggleInfoBtn" title="Info">
-                <i class="mi">info</i>
-            </span>
-            <span id="wB_toggleDarkBtn" class="btn" title="Dark Mode">
-                <i class="mi">brightness_3</i>
-            </span>
-            <span id="wB_leaveRoomBtn" class="btn" title="Raum verlassen">
-                <i class="mi">directions_run</i>
-            </span>
-        </div>
-        <section class="text">
-            <h3>
-                <a href="https://drch.cf/" target="_blank">
-                    Drachenlord
-                </a>
-            </h3>
-            <h1>
-                <span>
-                    <i class="mi">pregnant_woman</i>
-                        Bullshit Bingo
-                    <i class="mi">local_pizza</i>
-                </span>
-            </h1>
-        </section>
-        <div class="wrapper">
-            <a id="wB_createRoomBtn" class="cta">
-              <span>Raum erstellen</span>
-              <span>
-                <svg width="66px" height="33px" viewBox="0 0 66 43" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                  <g id="arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <path class="one" d="M40.1543933,3.89485454 L43.9763149,0.139296592 C44.1708311,-0.0518420739 44.4826329,-0.0518571125 44.6771675,0.139262789 L65.6916134,20.7848311 C66.0855801,21.1718824 66.0911863,21.8050225 65.704135,22.1989893 C65.7000188,22.2031791 65.6958657,22.2073326 65.6916762,22.2114492 L44.677098,42.8607841 C44.4825957,43.0519059 44.1708242,43.0519358 43.9762853,42.8608513 L40.1545186,39.1069479 C39.9575152,38.9134427 39.9546793,38.5968729 40.1481845,38.3998695 C40.1502893,38.3977268 40.1524132,38.395603 40.1545562,38.3934985 L56.9937789,21.8567812 C57.1908028,21.6632968 57.193672,21.3467273 57.0001876,21.1497035 C56.9980647,21.1475418 56.9959223,21.1453995 56.9937605,21.1432767 L40.1545208,4.60825197 C39.9574869,4.41477773 39.9546013,4.09820839 40.1480756,3.90117456 C40.1501626,3.89904911 40.1522686,3.89694235 40.1543933,3.89485454 Z" fill="#FFFFFF"></path>
-                    <path class="two" d="M20.1543933,3.89485454 L23.9763149,0.139296592 C24.1708311,-0.0518420739 24.4826329,-0.0518571125 24.6771675,0.139262789 L45.6916134,20.7848311 C46.0855801,21.1718824 46.0911863,21.8050225 45.704135,22.1989893 C45.7000188,22.2031791 45.6958657,22.2073326 45.6916762,22.2114492 L24.677098,42.8607841 C24.4825957,43.0519059 24.1708242,43.0519358 23.9762853,42.8608513 L20.1545186,39.1069479 C19.9575152,38.9134427 19.9546793,38.5968729 20.1481845,38.3998695 C20.1502893,38.3977268 20.1524132,38.395603 20.1545562,38.3934985 L36.9937789,21.8567812 C37.1908028,21.6632968 37.193672,21.3467273 37.0001876,21.1497035 C36.9980647,21.1475418 36.9959223,21.1453995 36.9937605,21.1432767 L20.1545208,4.60825197 C19.9574869,4.41477773 19.9546013,4.09820839 20.1480756,3.90117456 C20.1501626,3.89904911 20.1522686,3.89694235 20.1543933,3.89485454 Z" fill="#FFFFFF"></path>
-                    <path class="three" d="M0.154393339,3.89485454 L3.97631488,0.139296592 C4.17083111,-0.0518420739 4.48263286,-0.0518571125 4.67716753,0.139262789 L25.6916134,20.7848311 C26.0855801,21.1718824 26.0911863,21.8050225 25.704135,22.1989893 C25.7000188,22.2031791 25.6958657,22.2073326 25.6916762,22.2114492 L4.67709797,42.8607841 C4.48259567,43.0519059 4.17082418,43.0519358 3.97628526,42.8608513 L0.154518591,39.1069479 C-0.0424848215,38.9134427 -0.0453206733,38.5968729 0.148184538,38.3998695 C0.150289256,38.3977268 0.152413239,38.395603 0.154556228,38.3934985 L16.9937789,21.8567812 C17.1908028,21.6632968 17.193672,21.3467273 17.0001876,21.1497035 C16.9980647,21.1475418 16.9959223,21.1453995 16.9937605,21.1432767 L0.15452076,4.60825197 C-0.0425130651,4.41477773 -0.0453986756,4.09820839 0.148075568,3.90117456 C0.150162624,3.89904911 0.152268631,3.89694235 0.154393339,3.89485454 Z" fill="#FFFFFF"></path>
-                  </g>
-                </svg>
-              </span> 
-            </a>
-          </div>
-        <section id="wB_lobbyContainer"></section>
-        <div id="wB_cardsContainer">
-            <div class="wB_cardsGrid" data-selected="true"></div>
-        </div>
-        <div id="wB_countdownContainer">
-            <img src="./img/radl3.gif" class="rotating" />
-            <span id="wB_countdownCounter"></span>
-        </div>
-        <div id="wB_errorToast"></div>
-        <div id="wB_bigText">Bingo</div>
-        <noscript>
-            <p id="noScriptHint">Ohne JavaScript geht's leider nicht, sry :/</p>
-        </noscript>
-        <div id="wB_info">
-            <h1>Info</h1>
-            <span id="wB_infoCloseBtn" class="btn wB_toggleInfoBtn" title="Close Info">
-                <i class="mi">cancel</i>
-            </span>
-            <p>
-                Meddl Loide! Der Wingl-Stream könnte eintöniger nicht sein. Aber weil
-                man dennoch wissen will, was der langweilige Luanlover als nächstes
-                für einen Unsinn anstellt und redet, schaut man immer wieder rein.
-                <br/><br/>
-                Aus diesem Grund gibt es das Drachenlord Bullshit Bingo. 
-                <br/>
-                Hier ist momentan noch alles im Aufbau, Spielregeln und Code können und werden sich noch ändern.
-            </p>
-            <hr>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/vendor/jquery-3.4.1.js"></script>
+    <script src="js/winklerbingo.js"></script>
+  </head>
+  <body>
+    <div id="bodyOverlay"></div>
+    <div id="headbar_left" class="headbar"></div>
+    <div id="headbar_right" class="headbar">
+      <span
+        id="wB_autofillBtn"
+        class="btn"
+        title="Unbefüllte Karten automatisch auffüllen"
+      >
+        <i class="mi">view_comfy</i>
+      </span>
+      <span class="btn wB_toggleInfoBtn" title="Info">
+        <i class="mi">info</i>
+      </span>
+      <span id="wB_toggleDarkBtn" class="btn" title="Dark Mode">
+        <i class="mi">brightness_3</i>
+      </span>
+      <span id="wB_leaveRoomBtn" class="btn" title="Raum verlassen">
+        <i class="mi">directions_run</i>
+      </span>
+    </div>
+    <section class="text">
+      <h3>
+        <a href="https://drch.cf/" target="_blank">
+          Drachenlord
+        </a>
+      </h3>
+      <h1>
+        <span>
+          <i class="mi">pregnant_woman</i>
+          Bullshit Bingo
+          <i class="mi">local_pizza</i>
+        </span>
+      </h1>
+    </section>
+    <div class="wrapper">
+      <a id="wB_createRoomBtn" class="cta">
+        <span>Raum erstellen</span>
+        <span>
+          <svg
+            width="66px"
+            height="33px"
+            viewBox="0 0 66 43"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+          >
+            <g
+              id="arrow"
+              stroke="none"
+              stroke-width="1"
+              fill="none"
+              fill-rule="evenodd"
+            >
+              <path
+                class="one"
+                d="M40.1543933,3.89485454 L43.9763149,0.139296592 C44.1708311,-0.0518420739 44.4826329,-0.0518571125 44.6771675,0.139262789 L65.6916134,20.7848311 C66.0855801,21.1718824 66.0911863,21.8050225 65.704135,22.1989893 C65.7000188,22.2031791 65.6958657,22.2073326 65.6916762,22.2114492 L44.677098,42.8607841 C44.4825957,43.0519059 44.1708242,43.0519358 43.9762853,42.8608513 L40.1545186,39.1069479 C39.9575152,38.9134427 39.9546793,38.5968729 40.1481845,38.3998695 C40.1502893,38.3977268 40.1524132,38.395603 40.1545562,38.3934985 L56.9937789,21.8567812 C57.1908028,21.6632968 57.193672,21.3467273 57.0001876,21.1497035 C56.9980647,21.1475418 56.9959223,21.1453995 56.9937605,21.1432767 L40.1545208,4.60825197 C39.9574869,4.41477773 39.9546013,4.09820839 40.1480756,3.90117456 C40.1501626,3.89904911 40.1522686,3.89694235 40.1543933,3.89485454 Z"
+                fill="#FFFFFF"
+              ></path>
+              <path
+                class="two"
+                d="M20.1543933,3.89485454 L23.9763149,0.139296592 C24.1708311,-0.0518420739 24.4826329,-0.0518571125 24.6771675,0.139262789 L45.6916134,20.7848311 C46.0855801,21.1718824 46.0911863,21.8050225 45.704135,22.1989893 C45.7000188,22.2031791 45.6958657,22.2073326 45.6916762,22.2114492 L24.677098,42.8607841 C24.4825957,43.0519059 24.1708242,43.0519358 23.9762853,42.8608513 L20.1545186,39.1069479 C19.9575152,38.9134427 19.9546793,38.5968729 20.1481845,38.3998695 C20.1502893,38.3977268 20.1524132,38.395603 20.1545562,38.3934985 L36.9937789,21.8567812 C37.1908028,21.6632968 37.193672,21.3467273 37.0001876,21.1497035 C36.9980647,21.1475418 36.9959223,21.1453995 36.9937605,21.1432767 L20.1545208,4.60825197 C19.9574869,4.41477773 19.9546013,4.09820839 20.1480756,3.90117456 C20.1501626,3.89904911 20.1522686,3.89694235 20.1543933,3.89485454 Z"
+                fill="#FFFFFF"
+              ></path>
+              <path
+                class="three"
+                d="M0.154393339,3.89485454 L3.97631488,0.139296592 C4.17083111,-0.0518420739 4.48263286,-0.0518571125 4.67716753,0.139262789 L25.6916134,20.7848311 C26.0855801,21.1718824 26.0911863,21.8050225 25.704135,22.1989893 C25.7000188,22.2031791 25.6958657,22.2073326 25.6916762,22.2114492 L4.67709797,42.8607841 C4.48259567,43.0519059 4.17082418,43.0519358 3.97628526,42.8608513 L0.154518591,39.1069479 C-0.0424848215,38.9134427 -0.0453206733,38.5968729 0.148184538,38.3998695 C0.150289256,38.3977268 0.152413239,38.395603 0.154556228,38.3934985 L16.9937789,21.8567812 C17.1908028,21.6632968 17.193672,21.3467273 17.0001876,21.1497035 C16.9980647,21.1475418 16.9959223,21.1453995 16.9937605,21.1432767 L0.15452076,4.60825197 C-0.0425130651,4.41477773 -0.0453986756,4.09820839 0.148075568,3.90117456 C0.150162624,3.89904911 0.152268631,3.89694235 0.154393339,3.89485454 Z"
+                fill="#FFFFFF"
+              ></path>
+            </g>
+          </svg>
+        </span>
+      </a>
+    </div>
+    <section id="wB_lobbyContainer"></section>
+    <div id="wB_cardsContainer">
+      <div class="wB_cardsGrid" data-selected="true"></div>
+    </div>
+    <div id="wB_countdownContainer">
+      <img src="./img/radl3.gif" class="rotating" />
+      <span id="wB_countdownCounter"></span>
+    </div>
+    <div id="wB_errorToast"></div>
+    <div id="wB_bigText">Bingo</div>
+    <noscript>
+      <p id="noScriptHint">Ohne JavaScript geht's leider nicht, sry :/</p>
+    </noscript>
+    <div id="wB_info">
+      <span
+        id="wB_infoCloseBtn"
+        class="btn wB_toggleInfoBtn"
+        title="Close Info"
+      >
+        <i class="mi">cancel</i>
+      </span>
+      <h1>Info</h1>
+      <p>
+        Meddl Loide! Der Wingl-Stream könnte eintöniger nicht sein. Aber weil
+        man dennoch wissen will, was der langweilige Luanlover als nächstes für
+        einen Unsinn anstellt und redet, schaut man immer wieder rein.
+        <br /><br />
+        Aus diesem Grund gibt es das Drachenlord Bullshit Bingo.
+        <br />
+        Hier ist momentan noch alles im Aufbau, Spielregeln und Code können und
+        werden sich noch ändern.
+      </p>
+      <hr />
 
-            <h3>Spielregeln</h3>
-            <p>Das Spiel ist unterteilt in 3 Phasen:</p>
-            <ul>
-                <li>
-                    <h4><i class="mi">build</i>&nbsp;Werkel-Phase</h4>
-                    <p>
-                        Die Spieler können entweder eigene Wörter in die Felder eintragen, oder welche aus einer Liste 
-                        auswählen. Fallen einem Spieler keine 25 Begriffe ein, kann dieser die restlichen Felder auch
-                        automatisch auffüllen lassen.
-                    </p>
-                </li>
-                <li>
-                    <h4><i class="mi">shuffle</i>&nbsp;Wusel-Phase</h4>
-                    <p>
-                        Nachdem alle Spieler eine Auswahl von 25 begriffen getroffen haben, geht es in die Wusel-Phase
-                        Die Spieler können sich die Spielfelder ihrer Gegner anschauen und diese bis zu 3 mal zufällig 
-                        durchmischen, um so die Chanchen der Gegner auf 5 Worte in einer Reihe zu verschlechtern.
-                    </p>
-                </li>
-                <li>
-                    <h4><i class="mi">games</i>&nbsp;Bingo-Phase</h4>
-                    <p>
-                        Hier beginnt das eigentliche Spiel. Drache streamt und jedes Mal wenn ein Wort, das der Spieler vorher
-                        bei sich eingetragen hat, fällt, klickt der Spieler auf das jeweilige Feld und es wird als gesagt markiert.
-                        <br/><br/>
-                        Wer zuerst 5 in einer Reihe hat, gewinnt.
-                    </p>
-                </li>
-            </ul>
+      <h3>Spielregeln</h3>
+      <p>Das Spiel ist unterteilt in 2 Phasen:</p>
+      <ul>
+        <li>
+          <h4><i class="mi">build</i>&nbsp;Werkel-Phase</h4>
+          <p>
+            Die Spieler können Wörter in die Felder eintragen. Ziel dabei ist es
+            Wörter zu finden, die der Wampenwubi möglichst häufig benutzt. Auch
+            Aktionen, wie bspw. *Schwibb Schwabb trinken* sind erlaubt. Aktionen
+            sollten dabei durch Sternchen (*) gekennzeichnet sein, damit es
+            später nicht zu Verwechslungen kommt. Fallen einem Spieler keine 25
+            Begriffe ein, kann dieser die restlichen Felder auch automatisch
+            auffüllen lassen.
+          </p>
+        </li>
+        <li>
+          <h4><i class="mi">games</i>&nbsp;Bingo-Phase</h4>
+          <p>
+            Hier beginnt das eigentliche Spiel. Drache streamt und jedes Mal
+            wenn ein Wort fällt oder er etwas macht, das der Spieler vorher bei
+            sich eingetragen hat, klickt derjeniche Spieler auf das jeweilige
+            Feld und es wird als gesagt bzw. getan markiert.
+            <br /><br />
+            Wer zuerst 5 in einer Reihe hat, gewinnt.
+          </p>
+        </li>
+      </ul>
 
-            <p>
-                Dabei läuft das Spiel momentan viel auf Vertrauensbasis ab, also sucht euch gude Gumbls zum Zoggne. Solange es noch keine KI 
-                gibt, die den Bullshit, den Rainer jeden Tag verzapft, auch verstehen kann, geht das leider nicht anders. Ich werde nach und 
-                nach weitere Tools schreiben, die einem dabei ein wenig unter die Arme greifen. Muss ich aber etzala erst mal schauen, wie 
-                ich des hinkrich.
-            </p>
-            <hr>
+      <p>
+        Dabei läuft das Spiel momentan viel auf Vertrauensbasis ab, also sucht
+        euch gude Gumbls zum Zoggne. Solange es noch keine KI gibt, die den
+        Bullshit, den Rainer jeden Tag verzapft, auch verstehen kann, geht das
+        leider nicht anders. Ich werde nach und nach weitere Tools schreiben,
+        die einem dabei ein wenig unter die Arme greifen. Muss ich aber etzala
+        erst mal schauen, wie ich des hinkrich.
+      </p>
+      <hr />
 
-            <h3>Steuerung</h3>
-            <table>
-                <tr>
-                    <td class="glass">Klick auf Feld</td>
-                    <td>
-                        Wergel-Phase: Feld bearbeiten <br/> 
-                        Bingo-Phase: Feld markieren
-                    </td>
-                </tr>
-                <tr>
-                    <td class="glass">Enter</td>
-                    <td>Speichern</td>
-                </tr>
-                <tr>
-                    <td class="glass">Tab</td>
-                    <td>Speichern & ein Feld weiter</td>
-                </tr>
-                <tr>
-                    <td class="glass">Shift + Tab</td>
-                    <td>Speichern & ein Feld zurück</td>
-                </tr>
-                <tr>
-                    <td class="glass">Esc</td>
-                    <td>Bearbeitung schließen</td>
-                </tr>
-            </table>
-            <hr>
+      <h3>Steuerung</h3>
+      <table>
+        <tr>
+          <td class="glass">Klick auf Feld</td>
+          <td>
+            Wergel-Phase: Feld bearbeiten <br />
+            Bingo-Phase: Feld markieren
+          </td>
+        </tr>
+        <tr>
+          <td class="glass">Enter</td>
+          <td>Wergel-Phase: Wort Speichern</td>
+        </tr>
+        <tr>
+          <td class="glass">Tab</td>
+          <td>Wergel-Phase: Speichern & ein Feld weiter</td>
+        </tr>
+        <tr>
+          <td class="glass">Shift + Tab</td>
+          <td>Wergel-Phase: Speichern & ein Feld zurück</td>
+        </tr>
+        <tr>
+          <td class="glass">Esc</td>
+          <td>Wergel-Phase: Bearbeitung schließen</td>
+        </tr>
+      </table>
 
-            <p>Falls es Bugmeldungen, Anregungen, Vorschläge, etc. gibt, schreibt mir gerne auf 
-                <a href="https://twitter.com/dj_serveny" target="_blank"><i class="mi">link</i>Twitter</a>.
-            </p>
-        </div>
-    </body>
+      <hr />
+
+      <p>
+        Falls es Bugmeldungen, Anregungen, Vorschläge, etc. gibt, schreibt mir
+        gerne auf
+        <a href="https://twitter.com/dj_serveny" target="_blank"
+          ><i class="mi">link</i>Twitter</a
+        >.
+      </p>
+    </div>
+  </body>
 </html>
