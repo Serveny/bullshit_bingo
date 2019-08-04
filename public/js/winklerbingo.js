@@ -102,7 +102,9 @@ class WinklerBingo {
 
     // Hadde Arbeit
     this.selectedCardsGrid.attr('data-playerid', this.socket.id);
-    this.buildCardsHTML(this.room.playerMap.get(this.socket.id).cardMap);
+    this.selectedCardsGrid.html(
+      this.cardsBuildHTML(this.room.playerMap.get(this.socket.id).cardMap)
+    );
 
     // Dark Mode
     if (this.getDarkModeSetting() === true) {
@@ -152,7 +154,7 @@ class WinklerBingo {
     });
 
     _self.socket.on('gameError', function(errorStr) {
-      console.log('[SERVERERROR] ' + errorStr);
+      console.log('[ERROR] ' + errorStr);
       _self.showErrorToast(errorStr);
     });
 
@@ -183,7 +185,6 @@ class WinklerBingo {
 
     _self.socket.on('playerDisconnected', function(playerId) {
       _self.roomUnreadyPlayer(_self.room.playerMap);
-      console.log('PlayerId', playerId);
       _self.roomRemovePlayerHTML(playerId);
     });
 
@@ -229,7 +230,6 @@ class WinklerBingo {
         _self.roomStartCountdown(timeMS);
       },
       phaseChangedToBingoHandler = function(playRoom) {
-        console.log('phaseChangedToBingoHandler', playRoom);
         removeEventsWerkelPhaseFunc();
 
         // Sogge uffräume
@@ -326,12 +326,23 @@ class WinklerBingo {
     const _self = this,
       documentClickHandler = function(e) {
         let target = $(e.target);
+
+        // Userfield Click Handler
+        target =
+          target.parent().hasClass('wB_userField') === true
+            ? target.parent()
+            : target;
+        if (target.hasClass('wB_userField') === true) {
+          _self.roomShowCardField(target.attr('data-id'));
+          return;
+        }
+
+        // Card Click Handler
         target =
           target.hasClass('wB_card_text') === true ? target.parent() : target;
         if (target.hasClass('wB_cardHit') === true) {
           return;
         }
-
         if (target.hasClass('wB_card') === true) {
           const id = target.attr('data-id');
           if (_self.cardChange != null) {
@@ -384,8 +395,8 @@ class WinklerBingo {
     });
   }
 
-  toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
+  toggleDarkMode(force = null) {
+    this.isDarkMode = force == null ? !this.isDarkMode : force;
 
     if (this.isDarkMode === true) {
       this.setDarkModeSetting(true);
@@ -439,7 +450,7 @@ class WinklerBingo {
        --------------------- */
 
   // HTML-Code positionieren, so a richtig geilen DOM
-  buildCardsHTML(cardMap) {
+  cardsBuildHTML(cardMap) {
     let fieldHTML = '';
     for (const card of cardMap.values()) {
       fieldHTML +=
@@ -457,7 +468,7 @@ class WinklerBingo {
         '<span class="wB_card_text"></span>' +
         '</div>';
     }
-    this.selectedCardsGrid.html(fieldHTML);
+    return fieldHTML;
   }
 
   cardsAddTextArea(element) {
@@ -854,19 +865,23 @@ class WinklerBingo {
     }
   }
 
-  roomStartBingoPhase(room) {
+  roomStartBingoPhase(roomArr) {
     const _self = this;
-    _self.cardsFlipAnimation().then(function() {
+    this.cardsFlipAnimation().then(function() {
       _self.addEventsBingoPhase();
       _self.socketAddEventsBingoPhase();
     });
-    _self.cardChange = null;
-    _self.room = new Room(room);
+    this.barBtns.autofillBtn.hide();
+    this.cardChange = null;
+    this.room = new Room(roomArr);
 
+    $('#wB_cardsContainer').append(
+      this.roomBuildOtherFieldsHTML(this.room.playerMap)
+    );
     $('#wB_countdownContainer').fadeOut(800);
     $('.wB_userReady').hide();
-    this.barBtns.autofillBtn.hide();
     $('.wB_userField').addClass('wB_userField_Clickable');
+    this.toggleDarkMode(this.isDarkMode);
   }
 
   roomIsBingoPhase() {
@@ -876,6 +891,29 @@ class WinklerBingo {
       }
     }
     return false;
+  }
+
+  roomBuildOtherFieldsHTML(playerMap) {
+    let fieldsHtml = '';
+    for (const player of playerMap.values()) {
+      if (player.id !== this.playerId) {
+        fieldsHtml +=
+          '<div class="wB_cardsGrid" data-selected="false" data-playerid="' +
+          player.id +
+          '" style="display: none;">' +
+          this.cardsBuildHTML(player.cardMap) +
+          '</div>';
+      }
+    }
+    return fieldsHtml;
+  }
+
+  roomShowCardField(playerId) {
+    this.selectedCardsGrid.attr('data-selected', 'false').hide();
+    this.selectedCardsGrid = $(
+      '.wB_cardsGrid[data-playerid="' + playerId + '"]'
+    ).attr('data-selected', 'true');
+    this.selectedCardsGrid.show();
   }
 
   /* --------------------- 

@@ -4,7 +4,6 @@ const debug = require('debug')('wb'),
 exports.emitError = (socket, errorStr) => {
   socket.emit('gameError', errorStr);
   debug(` --- emitGameError: ${errorStr} --- `);
-  console.log('');
 };
 
 exports.emitRoomJoined = (socket, thisRoom) => {
@@ -21,13 +20,11 @@ exports.emitRoomJoined = (socket, thisRoom) => {
   } else {
     socket.emit('roomJoined', null);
   }
-  console.log('');
 };
 
 exports.emitPlayerDisconnected = (socket, thisRoom) => {
   socket.to(thisRoom.id).emit('playerDisconnected', socket.id);
   debug(` --- Player ${socket.id} disconnected. --- `);
-  console.log('');
 };
 
 exports.emitNameChange = (socket, thisRoom, newName) => {
@@ -39,7 +36,6 @@ exports.emitNameChange = (socket, thisRoom, newName) => {
       thisRoom.id
     } changed name to ${newName} --- `
   );
-  console.log('');
 };
 
 exports.emitPlayerIsReadyChange = (socket, thisRoom, isReady) => {
@@ -47,7 +43,6 @@ exports.emitPlayerIsReadyChange = (socket, thisRoom, isReady) => {
     .in(thisRoom.id)
     .emit('playerIsReadyChanged', { playerId: socket.id, isReady: isReady });
   debug(` --- Player ${socket.id} toggled isReady to ${isReady} --- `);
-  console.log('');
 };
 
 exports.emitAutofillResult = (socket, changedCardMap) => {
@@ -57,7 +52,6 @@ exports.emitAutofillResult = (socket, changedCardMap) => {
       changedCardMap == null ? 0 : changedCardMap.size
     } --- `
   );
-  console.log('');
 };
 
 exports.emitSetCardResult = (socket, card) => {
@@ -67,13 +61,11 @@ exports.emitSetCardResult = (socket, card) => {
       card.word != null ? card.word.text : ''
     } --- `
   );
-  console.log('');
 };
 
 exports.emitStartCountdown = (thisRoom, countdownMilliSec) => {
   global.wb.io.in(thisRoom.id).emit('startCountdown', countdownMilliSec);
   debug(` --- emitStartCountdown: ${countdownMilliSec} --- `);
-  console.log('');
 };
 
 exports.emitPhaseChangedBingo = thisRoom => {
@@ -81,7 +73,6 @@ exports.emitPhaseChangedBingo = thisRoom => {
     .in(thisRoom.id)
     .emit('phaseChangedBingo', helper.mapEx(thisRoom));
   debug(` --- emitPhaseChangedBingo: ${thisRoom.id} --- `);
-  console.log('');
 };
 
 exports.emitPlayerLaterBingoPhase = (socket, thisRoom) => {
@@ -104,7 +95,6 @@ exports.emitCardHit = (socket, thisRoom, cardId, isHit) => {
       socket.id
     } set ${cardId} to ${isHit} --- `
   );
-  console.log('');
 };
 
 exports.emitWin = (socket, thisRoom, winLine) => {
@@ -116,5 +106,4 @@ exports.emitWin = (socket, thisRoom, winLine) => {
       winLine.startX
     }/${winLine.startY} to ${winLine.endX}/${winLine.endY}) --- `
   );
-  console.log('');
 };

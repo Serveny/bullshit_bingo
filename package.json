@@ -12,7 +12,7 @@
   "scripts": {
     "start": "node app.js",
     "start-dev": "@powershell -Command $env:DEBUG='wb';nodemon app.js",
-    "start-forever": "forever start app.js",
+    "pm2-start": "pm2 start app.js",
     "kill-win": "taskkill /im node.exe",
     "kill-lin": "killall node",
     "restart": "npm run kill-win && npm run start",
