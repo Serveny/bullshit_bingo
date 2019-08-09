@@ -333,7 +333,11 @@ class WinklerBingo {
             ? target.parent()
             : target;
         if (target.hasClass('wB_userField') === true) {
-          _self.roomShowCardField(target.attr('data-id'));
+          if (target.hasClass('wB_userSelected') === false) {
+            $('.wB_userSelected').removeClass('wB_userSelected');
+            target.addClass('wB_userSelected');
+            _self.roomShowCardField(target.attr('data-id'));
+          }
           return;
         }
 
@@ -453,6 +457,7 @@ class WinklerBingo {
   cardsBuildHTML(cardMap) {
     let fieldHTML = '';
     for (const card of cardMap.values()) {
+      const word = card.word != null ? card.word.text : '';
       fieldHTML +=
         '<div class="wB_card" data-id="' +
         card.id +
@@ -465,7 +470,9 @@ class WinklerBingo {
         '; grid-row: ' +
         card.posY +
         ';">' +
-        '<span class="wB_card_text"></span>' +
+        '<span class="wB_card_text">' +
+        word +
+        '</span>' +
         '</div>';
     }
     return fieldHTML;
@@ -747,9 +754,9 @@ class WinklerBingo {
     });
   }
 
-  /* --------------------- 
-       Room Functions
-       --------------------- */
+  // ---------------------
+  // Room Functions
+  // ---------------------
 
   roomAddPlayer(playerMap) {
     const _self = this;
@@ -765,7 +772,7 @@ class WinklerBingo {
 
     if (player.id === _self.socket.id) {
       $('#wB_lobbyContainer').append(
-        '<div id="wB_thisUserField" class="wB_userField wb_userSelected" data-id="' +
+        '<div id="wB_thisUserField" class="wB_userField wB_userSelected" data-id="' +
           player.id +
           '"><img id="wB_thisUserPic" src="' +
           player.avatar.picUrl +
@@ -896,7 +903,7 @@ class WinklerBingo {
   roomBuildOtherFieldsHTML(playerMap) {
     let fieldsHtml = '';
     for (const player of playerMap.values()) {
-      if (player.id !== this.playerId) {
+      if (player.id !== this.thisPlayerId) {
         fieldsHtml +=
           '<div class="wB_cardsGrid" data-selected="false" data-playerid="' +
           player.id +
@@ -909,6 +916,7 @@ class WinklerBingo {
   }
 
   roomShowCardField(playerId) {
+    console.log('Hide old selected: ', this.selectedCardsGrid);
     this.selectedCardsGrid.attr('data-selected', 'false').hide();
     this.selectedCardsGrid = $(
       '.wB_cardsGrid[data-playerid="' + playerId + '"]'
