@@ -16,10 +16,14 @@
     "kill-win": "taskkill /im node.exe",
     "kill-lin": "killall node",
     "restart": "npm run kill-win && npm run start",
-    "createDB": "node ./scripts/bb_create_db.js"
+    "createDB": "node ./scripts/bb_create_db.js",
+    "build-ts": "node app.js"
   },
   "devDependencies": {
-    "var_dump": "^1.0.5"
+    "ts-loader": "^6.1.2",
+    "typescript": "^3.6.3",
+    "var_dump": "^1.0.5",
+    "webpack": "^4.41.0"
   },
   "dependencies": {
     "config": "^3.2.2",
