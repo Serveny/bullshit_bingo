@@ -1,6 +1,6 @@
 'use strict';
 
-// Winklerbingo namespace
+// bullshitbingo namespace
 global.wb = {
   io: null,
   roomMap: null,
@@ -13,8 +13,8 @@ const express = require('express'),
   path = require('path'),
   socket = require('socket.io'),
   debug = require('debug')('wb'),
-  // wB scripts
-  wB_Socket_In = require('./scripts/wb-socket-in'),
+  // bb scripts
+  bb_Socket_In = require('./scripts/bb-socket-in'),
   app = express();
 
 app.set('port', /*process.env.PORT || */ 1510);
@@ -23,11 +23,11 @@ app.use(express.static(__dirname + '/public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 const server = http.createServer(app).listen(app.get('port'), () => {
-  console.log('Meddl Loide! Port: ' + app.get('port'));
+  console.log('Let\'s go! Port: ' + app.get('port'));
 });
 
 global.wb.io = socket(server);
 global.wb.io.on('connection', socket => {
   debug(` --- ${socket.id} connected --- `);
-  wB_Socket_In.addEvents(socket);
+  bb_Socket_In.addEvents(socket);
 });

@@ -2,10 +2,10 @@
 const
     debug = require('debug')('wb'),
     shortid = require('shortid'),
-    avatars = require('./wb-avatars'),
-    wB_cards = require('./wb-cards'),
-    out = require('./wb-socket-out'),
-    helper = require('./wb-helper'),
+    avatars = require('./bb-avatars'),
+    bb_cards = require('./bb-cards'),
+    out = require('./bb-socket-out'),
+    helper = require('./bb-helper'),
     roomMap = global.wb.roomMap = new Map();
 
 const gamePhase = {
@@ -117,7 +117,7 @@ exports.togglePlayerIsReady = (socket) => {
     return;
   }
 
-  if ((player.isReady === true) || (player.isReady === false && wB_cards.areCardsFilledAndValid(player.cardMap) === true)) {
+  if ((player.isReady === true) || (player.isReady === false && bb_cards.areCardsFilledAndValid(player.cardMap) === true)) {
     player.isReady = !player.isReady;
   }
 
@@ -164,12 +164,12 @@ exports.setCardAsync = async (socket, cardId, newText) => {
   }
 
   // Check if valid
-  if (wB_cards.isValidCard(cardMap, newText) === false) {
+  if (bb_cards.isValidCard(cardMap, newText) === false) {
     out.emitSetCardResult(socket, card);
     return;
   }
 
-  const newWord = await wB_cards.getWordAsync(newText);
+  const newWord = await bb_cards.getWordAsync(newText);
   if (newWord != null) {
     card.word = newWord;
   }
@@ -190,11 +190,11 @@ exports.autofill = async (socket) => {
   }
 
   const cardMap = player.cardMap;
-  const newWordsMap = await wB_cards.getUntakenWordsMap(wB_cards.getTakenWordsMap(cardMap));
+  const newWordsMap = await bb_cards.getUntakenWordsMap(bb_cards.getTakenWordsMap(cardMap));
   let changedMap = null;
 
   if (newWordsMap.size > 0) {
-    changedMap = wB_cards.fillEmptyWordsCardMap(cardMap, newWordsMap);
+    changedMap = bb_cards.fillEmptyWordsCardMap(cardMap, newWordsMap);
   }
 
   out.emitAutofillResult(socket, changedMap);
@@ -236,7 +236,7 @@ exports.cardHit = (socket, cardId) => {
   card.isHit = true;
   out.emitCardHit(socket, room, cardId, card.isHit);
 
-  const winLine = wB_cards.checkWin(player.cardMap);
+  const winLine = bb_cards.checkWin(player.cardMap);
   if (winLine != null) {
     out.emitWin(socket, room, winLine);
   }
@@ -258,7 +258,7 @@ const createRoom = (socket) => {
 
 const createPlayer = (playerMap, socket) => {
   const avatar = avatars.getRandomAvatar(playerMap);
-  return new Player(socket.id, avatar, false, wB_cards.generateEmptyCardMap(), gamePhase.werkel, playerStatus.active);
+  return new Player(socket.id, avatar, false, bb_cards.generateEmptyCardMap(), gamePhase.werkel, playerStatus.active);
 };
 
 const getRoomByPlayerId = (id) => {
@@ -327,7 +327,7 @@ const setPlayersInactive = (playerMap) => {
 const startPlayerBingoPhase = (player) => {
   if (player.isReady === true && player.phase === gamePhase.werkel) {
     player.phase = gamePhase.bingo;
-    wB_cards.wordCountUp(player.cardMap, 'Guessed');
+    bb_cards.wordCountUp(player.cardMap, 'Guessed');
   }
 }
 

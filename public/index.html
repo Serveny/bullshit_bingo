@@ -2,41 +2,41 @@
 <html lang="de">
   <head>
     <meta charset="utf-8" />
-    <meta name="description" content="Drache labert Müll, wir spielen Bingo!" />
+    <meta name="description" content="We play Bullshit Bingo!" />
 
-    <title>Drachenlord Bullshit Bingo</title>
+    <title>Serveny's Bullshit Bingo</title>
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="styles/winklerbingo.css" />
+    <link rel="stylesheet" href="styles/bullshitbingo.css" />
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/vendor/jquery-3.4.1.js"></script>
-    <script src="js/winklerbingo.js"></script>
+    <script src="js/bullshitbingo.js"></script>
   </head>
   <body>
     <div id="bodyOverlay"></div>
     <div id="headbar_left" class="headbar"></div>
     <div id="headbar_right" class="headbar">
       <span
-        id="wB_autofillBtn"
+        id="bb_autofillBtn"
         class="btn"
         title="Unbefüllte Karten automatisch auffüllen"
       >
         <i class="mi">view_comfy</i>
       </span>
-      <span class="btn wB_toggleInfoBtn" title="Info">
+      <span class="btn bb_toggleInfoBtn" title="Info">
         <i class="mi">info</i>
       </span>
-      <span id="wB_toggleDarkBtn" class="btn" title="Dark Mode">
+      <span id="bb_toggleDarkBtn" class="btn" title="Dark Mode">
         <i class="mi">brightness_3</i>
       </span>
-      <span id="wB_leaveRoomBtn" class="btn" title="Raum verlassen">
+      <span id="bb_leaveRoomBtn" class="btn" title="Raum verlassen">
         <i class="mi">directions_run</i>
       </span>
     </div>
     <section class="text">
       <h3>
-        <a href="https://drch.cf/" target="_blank">
-          Drachenlord
+        <a href="#" target="_blank">
+          Serveny's
         </a>
       </h3>
       <h1>
@@ -48,7 +48,7 @@
       </h1>
     </section>
     <div class="wrapper">
-      <a id="wB_createRoomBtn" class="cta">
+      <a id="bb_createRoomBtn" class="cta">
         <span>Raum erstellen</span>
         <span>
           <svg
@@ -86,23 +86,23 @@
         </span>
       </a>
     </div>
-    <section id="wB_lobbyContainer"></section>
-    <div id="wB_cardsContainer">
-      <div class="wB_cardsGrid" data-selected="true"></div>
+    <section id="bb_lobbyContainer"></section>
+    <div id="bb_cardsContainer">
+      <div class="bb_cardsGrid" data-selected="true"></div>
     </div>
-    <div id="wB_countdownContainer">
+    <div id="bb_countdownContainer">
       <img src="./img/radl3.gif" class="rotating" />
-      <span id="wB_countdownCounter"></span>
+      <span id="bb_countdownCounter"></span>
     </div>
-    <div id="wB_errorToast"></div>
-    <div id="wB_bigText">Bingo</div>
+    <div id="bb_errorToast"></div>
+    <div id="bb_bigText">Bingo</div>
     <noscript>
       <p id="noScriptHint">Ohne JavaScript geht's leider nicht, sry :/</p>
     </noscript>
-    <div id="wB_info">
+    <div id="bb_info">
       <span
-        id="wB_infoCloseBtn"
-        class="btn wB_toggleInfoBtn"
+        id="bb_infoCloseBtn"
+        class="btn bb_toggleInfoBtn"
         title="Close Info"
       >
         <i class="mi">cancel</i>

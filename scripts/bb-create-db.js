@@ -26,7 +26,7 @@ conDB.connect(err => {
 
 event.on('dbConnected', () => {
   conDB.query(
-    'CREATE DATABASE IF NOT EXISTS `winklerbingo_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci',
+    'CREATE DATABASE IF NOT EXISTS `bullshitbingo_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci',
     function(err, result) {
       if (err) {
         throw err;
@@ -50,10 +50,10 @@ event.on('dbCreated', () => {
   const stamps =
     '`createdAt` datetime DEFAULT CURRENT_TIMESTAMP, `changedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
   const stmt = // Testing if main game works stable without db
-    // 'CREATE TABLE IF NOT EXISTS `winklerbingo_db`.`room`(`roomId` INT NOT NULL AUTO_INCREMENT, `roomName` VARCHAR(16) NOT NULL, PRIMARY KEY (`roomId`) VISIBLE,  UNIQUE INDEX `roomName_UNIQUE` (`roomName` ASC) VISIBLE);' +
-    // 'CREATE TABLE IF NOT EXISTS `winklerbingo_db`.`player` (`playerId` INT NOT NULL AUTO_INCREMENT, `playerRoomId` INT NOT NULL, `playerAvatarId` INT NULL, `playerName` VARCHAR(45) NOT NULL, `playerCustomName` VARCHAR(45) NULL, `playerIsReady` TINYINT NULL DEFAULT 0, PRIMARY KEY (`playerId`) VISIBLE);' +
-    // 'CREATE TABLE IF NOT EXISTS `winklerbingo_db`.`card` (`cardId` INT NOT NULL AUTO_INCREMENT, `cardPlayerId` INT NOT NULL, `cardRoomId` INT NOT NULL, `cardText` VARCHAR(45) NULL, `cardPosX` INT NOT NULL, `cardPosY` INT NOT NULL, PRIMARY KEY (`cardId`), UNIQUE INDEX `cardId_UNIQUE` (`cardId` ASC) VISIBLE);',
-    'CREATE TABLE IF NOT EXISTS `winklerbingo_db`.`word` (`wordId` INT NOT NULL AUTO_INCREMENT, `wordText` VARCHAR(32) NOT NULL, `wordCountGuessed` INT NOT NULL DEFAULT 0, `wordCountUsed` INT NOT NULL DEFAULT 0, `wordFlagUseForAutofill` TINYINT(1) NOT NULL DEFAULT 0,' +
+    // 'CREATE TABLE IF NOT EXISTS `bullshitbingo_db`.`room`(`roomId` INT NOT NULL AUTO_INCREMENT, `roomName` VARCHAR(16) NOT NULL, PRIMARY KEY (`roomId`) VISIBLE,  UNIQUE INDEX `roomName_UNIQUE` (`roomName` ASC) VISIBLE);' +
+    // 'CREATE TABLE IF NOT EXISTS `bullshitbingo_db`.`player` (`playerId` INT NOT NULL AUTO_INCREMENT, `playerRoomId` INT NOT NULL, `playerAvatarId` INT NULL, `playerName` VARCHAR(45) NOT NULL, `playerCustomName` VARCHAR(45) NULL, `playerIsReady` TINYINT NULL DEFAULT 0, PRIMARY KEY (`playerId`) VISIBLE);' +
+    // 'CREATE TABLE IF NOT EXISTS `bullshitbingo_db`.`card` (`cardId` INT NOT NULL AUTO_INCREMENT, `cardPlayerId` INT NOT NULL, `cardRoomId` INT NOT NULL, `cardText` VARCHAR(45) NULL, `cardPosX` INT NOT NULL, `cardPosY` INT NOT NULL, PRIMARY KEY (`cardId`), UNIQUE INDEX `cardId_UNIQUE` (`cardId` ASC) VISIBLE);',
+    'CREATE TABLE IF NOT EXISTS `bullshitbingo_db`.`word` (`wordId` INT NOT NULL AUTO_INCREMENT, `wordText` VARCHAR(32) NOT NULL, `wordCountGuessed` INT NOT NULL DEFAULT 0, `wordCountUsed` INT NOT NULL DEFAULT 0, `wordFlagUseForAutofill` TINYINT(1) NOT NULL DEFAULT 0,' +
     stamps +
     ', PRIMARY KEY (`wordId`), UNIQUE INDEX `wordText_UNIQUE` (`wordText` ASC));';
   // console.log(stmt);
@@ -69,7 +69,7 @@ event.on('dbCreated', () => {
 event.on('tablesCreated', () => {
   let stmt = ``;
   for (let i = 0; i < startWords.length; i++) {
-    stmt += `INSERT INTO winklerbingo_db.word(wordText, wordCountGuessed, wordCountUsed, wordFlagUseForAutofill) VALUES('${startWords[
+    stmt += `INSERT INTO bullshitbingo_db.word(wordText, wordCountGuessed, wordCountUsed, wordFlagUseForAutofill) VALUES('${startWords[
       i
     ].toLowerCase()}',0,0,1);`;
   }

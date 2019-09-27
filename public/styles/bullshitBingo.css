@@ -67,7 +67,7 @@ a {
     Bingo Field
     ======================== */
 
-#wB_cardsContainer {
+#bb_cardsContainer {
   position: absolute;
   bottom: 60px;
   left: 20px;
@@ -80,14 +80,14 @@ a {
   text-transform: uppercase;
 }
 
-#wB_cardsContainerCanvas {
+#bb_cardsContainerCanvas {
   position: absolute;
   left: 0;
   top: 0;
   z-index: 100;
 }
 
-.wB_cardsGrid {
+.bb_cardsGrid {
   height: 100%;
   width: 100%;
   display: grid;
@@ -95,7 +95,7 @@ a {
   grid-template-rows: repeat(5, 20%);
 }
 
-.wB_card {
+.bb_card {
   border: dashed #8c4c27 1px;
   transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
   background: #f2e2c4 url('../img/cardBG.png');
@@ -109,18 +109,18 @@ a {
   hyphens: auto;
 }
 
-.wB_card:hover {
+.bb_card:hover {
   transform: scale(1.1);
   transition: transform 0.3s ease-in-out;
 }
 
-.wB_card_focus {
+.bb_card_focus {
   transform: scale(1.2) !important;
   transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
   box-shadow: 0px 0px 20px 11px rgba(217, 174, 95, 0.5);
 }
 
-.wB_card span {
+.bb_card span {
   margin: auto;
   padding: 5px;
   max-width: 100%;
@@ -130,7 +130,7 @@ a {
   transition: margin 0.3s ease-in-out;
 }
 
-#wB_cardTextArea {
+#bb_cardTextArea {
   width: 90%;
   resize: none;
   background: none;
@@ -144,7 +144,7 @@ a {
   text-transform: uppercase;
 }
 
-.wB_cardConfirmBox {
+.bb_cardConfirmBox {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -153,7 +153,7 @@ a {
   text-align: center;
 }
 
-.wB_cardBtn {
+.bb_cardBtn {
   height: 4vh;
   width: 4vh;
   font-size: 2vh;
@@ -167,22 +167,22 @@ a {
   transition: transform 0.5s ease-in-out, color 0.3s ease-in-out;
 }
 
-.wB_cardBtn:hover {
+.bb_cardBtn:hover {
   transform: scale(1.1);
   transition: transform 0.3s ease-in-out;
 }
 
-#wB_cardSubmit:hover {
+#bb_cardSubmit:hover {
   color: green;
   transition: color 0.3s ease-in-out;
 }
 
-.wB_cardHit {
+.bb_cardHit {
   cursor: default;
   border: solid 5px #e88154;
 }
 
-.wB_cardHit:hover {
+.bb_cardHit:hover {
   transform: none !important;
 }
 
@@ -408,7 +408,7 @@ section > h3:hover {
     Info
     ======================== */
 
-#wB_info {
+#bb_info {
   display: none;
   position: absolute;
   top: 10%;
@@ -425,13 +425,13 @@ section > h3:hover {
   overflow-x: hidden;
 }
 
-#wB_info > div {
+#bb_info > div {
   position: relative;
   height: 100%;
   width: 100%;
 }
 
-#wB_infoCloseBtn {
+#bb_infoCloseBtn {
   position: fixed;
   top: 10%;
   right: 12%;
@@ -441,7 +441,7 @@ section > h3:hover {
   opacity: 0.8;
 }
 
-#wB_info table tr td {
+#bb_info table tr td {
   padding-right: 5px;
   border: solid 1px #468966;
 }
@@ -460,7 +460,7 @@ section > h3:hover {
   z-index: 53;
 }
 
-#wB_createRoomSvg {
+#bb_createRoomSvg {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -555,7 +555,7 @@ path.two {
     Lobby
     ======================== */
 
-#wB_lobbyContainer {
+#bb_lobbyContainer {
   display: none;
   margin: 0 auto;
   position: absolute;
@@ -569,7 +569,7 @@ path.two {
   white-space: nowrap;
 }
 
-.wB_userField {
+.bb_userField {
   display: inline-block;
   height: 90%;
   width: inherit;
@@ -616,7 +616,14 @@ path.two {
         #d9bb96 0
       )
       0 0,
-    linear-gradient(90deg, #b71 2%, #d9bb96 0, #d9bb96 98%, #b71 0%) 0 0 #d9bb96;
+    linear-gradient(
+      90deg, 
+      #b71 2%, 
+      #d9bb96 0,
+      #d9bb96 98%,
+      #b71 0%
+    ) 
+    0 0 #d9bb96;
   background-size: 40px 60px;
   font-family: 'Oswald', Sans-serif;
   color: #382f59;
@@ -629,20 +636,20 @@ path.two {
   min-width: 12vh;
 }
 
-.wB_userField_Clickable {
+.bb_userField_Clickable {
   cursor: pointer;
 }
 
-.wB_userField_Clickable:hover {
+.bb_userField_Clickable:hover {
   transform: scale(1.04);
   transition: transform 0.3s ease-in-out;
 }
 
-.wB_userField_Clickable:active {
+.bb_userField_Clickable:active {
   transform: scale(0.96);
 }
 
-#wB_thisUserField {
+#bb_thisUserField {
   border: 2px dashed #d9665b;
   background: radial-gradient(
         circle farthest-side at 0% 50%,
@@ -692,7 +699,7 @@ path.two {
   background-size: 40px 60px;
 }
 
-.wB_userField input {
+.bb_userField input {
   font-family: 'Oswald', Sans-serif;
   font-size: 2vh;
   background: none;
@@ -702,7 +709,7 @@ path.two {
   box-sizing: border-box;
 }
 
-.wB_userPic {
+.bb_userPic {
   height: 65%;
   grid-column: 1;
   grid-row: 1;
@@ -712,11 +719,11 @@ path.two {
   margin: 10px;
 }
 
-#wB_thisUserPic {
+#bb_thisUserPic {
   border: 4px solid #d9665b;
 }
 
-.wB_userName {
+.bb_userName {
   position: absolute;
   padding: 2px 0px;
   font-size: 2vh;
@@ -729,7 +736,7 @@ path.two {
     1px 1px 0 #eeeeee;
 }
 
-.wB_userReady {
+.bb_userReady {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -742,16 +749,16 @@ path.two {
   display: none;
 }
 
-#wB_thisUserReady {
+#bb_thisUserReady {
   color: gray;
 }
 
-#wB_leaveRoomBtn,
-#wB_autofillBtn {
+#bb_leaveRoomBtn,
+#bb_autofillBtn {
   display: none;
 }
 
-.wB_userFieldPointer {
+.bb_userFieldPointer {
   position: absolute;
   left: 50%;
   bottom: -15px;
@@ -769,7 +776,7 @@ path.two {
   box-shadow: 0px 0px 20px 11px rgba(217, 174, 95, 0.5);
 }
 
-.wb_userSelected > .wB_userFieldPointer {
+.wb_userSelected > .bb_userFieldPointer {
   display: block;
 }
 
@@ -777,7 +784,7 @@ path.two {
     Countdown
     ======================== */
 
-#wB_countdownContainer {
+#bb_countdownContainer {
   display: none;
   background: radial-gradient(
         circle farthest-side at 0% 50%,
@@ -837,12 +844,12 @@ path.two {
   overflow: hidden;
 }
 
-#wB_countdownContainer img {
+#bb_countdownContainer img {
   width: 30vh;
   margin-bottom: -4%;
 }
 
-#wB_countdownCounter {
+#bb_countdownCounter {
   position: absolute;
   left: 50%;
   top: 47%;
@@ -874,7 +881,7 @@ path.two {
     Error Toast
     ======================== */
 
-#wB_errorToast {
+#bb_errorToast {
   min-width: 250px;
   min-width: 50px;
   background-color: rgb(217, 72, 72);
@@ -895,7 +902,7 @@ path.two {
     Scroll Bar
     ======================== */
 
-.wB_scrollbar {
+.bb_scrollbar {
   position: absolute;
   top: 2px;
   opacity: 0.6;
@@ -908,7 +915,7 @@ path.two {
     Big Text
     ======================== */
 
-#wB_bigText {
+#bb_bigText {
   position: fixed;
   top: 0;
   right: 0;
@@ -927,9 +934,10 @@ path.two {
   color: #ffac69;
   text-transform: uppercase;
   display: none;
+  user-select: none;
 }
 
-.wB_bigTextCenter {
+.bb_bigTextCenter {
   text-align: center;
   font-size: 20vw !important;
   transform: none;
@@ -1058,4 +1066,22 @@ path.two {
 
 .cyan {
   background-color: #00ada9;
+}
+
+/*  ======================== 
+    Swing Bottom Animation
+    ======================== */
+
+.flip-horizontal-bottom {
+  animation: flip-horizontal-bottom 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955)
+    both;
+}
+
+@keyframes flip-horizontal-bottom {
+  0% {
+    transform: rotateX(0);
+  }
+  100% {
+    transform: rotateX(-180deg);
+  }
 }

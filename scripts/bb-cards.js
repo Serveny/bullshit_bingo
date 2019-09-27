@@ -1,7 +1,7 @@
 'use strict';
 const debug = require('debug')('wb'),
-  db = require('./wb-db'),
-  helper = require('./wb-helper');
+  db = require('./bb-db'),
+  helper = require('./bb-helper');
 
 class Card {
   constructor(id, word, posX, posY, isHit) {
