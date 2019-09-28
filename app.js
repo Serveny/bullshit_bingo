@@ -13,9 +13,23 @@ const express = require('express'),
   path = require('path'),
   socket = require('socket.io'),
   debug = require('debug')('wb'),
+  webpack = require('webpack'),
+  webpackCfg = require('./webpack.config'),
   // bb scripts
   bb_Socket_In = require('./scripts/bb-socket-in'),
   app = express();
+
+  console.log(webpackCfg);
+  const compiler = webpack(webpackCfg);
+
+  compiler.run((err, stats) => {
+    if(err == null) {
+      console.log('Webpack: Build successfull.');
+    } else {
+      console.log('Webpack: Build failed.', err);
+    }
+    
+  });
 
 app.set('port', /*process.env.PORT || */ 1510);
 
