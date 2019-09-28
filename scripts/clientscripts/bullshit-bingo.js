@@ -54,11 +54,13 @@ class BullshitBingo {
     // Hadde Arbeit
     this.selectedCardsGrid.attr('data-playerid', this.socket.id);
     this.selectedCardsGrid.html(
-      this.cardsBuildHTML(this.room.playerMap.get(this.socket.id).cardMap)
+      Card.cardsBuildHTML(this.room.playerMap.get(this.socket.id).cardMap)
     );
 
     const removeEventsWerkelPhase = this.addEventsWerkelPhase();
     this.socketAddEventsWerkelPhase(removeEventsWerkelPhase);
+    
+    this.DarkMode.repaint();
 
     $('#bb_cardsContainer').fadeIn(800);
     this.barBtns.leaveRoomBtn.fadeIn(800);
@@ -344,31 +346,6 @@ class BullshitBingo {
   /* --------------------- 
        Cards Functions
        --------------------- */
-
-  // HTML-Code positionieren, so a richtig geilen DOM
-  cardsBuildHTML(cardMap) {
-    let fieldHTML = '';
-    for (const card of cardMap.values()) {
-      const word = card.word != null ? card.word.text : '';
-      fieldHTML +=
-        '<div class="bb_card" data-id="' +
-        card.id +
-        '" data-x="' +
-        card.posX +
-        '" data-y="' +
-        card.posY +
-        '" style="grid-column: ' +
-        card.posX +
-        '; grid-row: ' +
-        card.posY +
-        ';">' +
-        '<span class="bb_card_text">' +
-        word +
-        '</span>' +
-        '</div>';
-    }
-    return fieldHTML;
-  }
 
   cardsAddTextArea(element) {
     this.cardChange = element;
@@ -780,7 +757,7 @@ class BullshitBingo {
     $('#bb_countdownContainer').fadeOut(800);
     $('.bb_userReady').hide();
     $('.bb_userField').addClass('bb_userField_Clickable');
-    this.DarkMode.toggleDarkMode(this.DarkMode.isDarkMode);
+    this.DarkMode.repaint();
   }
 
   roomIsBingoPhase() {
@@ -800,7 +777,7 @@ class BullshitBingo {
           '<div class="bb_cardsGrid" data-selected="false" data-playerid="' +
           player.id +
           '" style="display: none;">' +
-          this.cardsBuildHTML(player.cardMap) +
+          Card.cardsBuildHTML(player.cardMap) +
           '</div>';
       }
     }

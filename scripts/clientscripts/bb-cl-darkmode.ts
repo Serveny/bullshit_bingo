@@ -1,6 +1,7 @@
 export class DarkMode {
   private _isDarkMode: boolean;
   get isDarkMode(): boolean {
+    console.log('isDarkMode: ', this._isDarkMode);
     return this._isDarkMode;
   }
 
@@ -11,17 +12,17 @@ export class DarkMode {
 
     this.ToggleDarkBtn = $('#bb_toggleDarkBtn'),
     this.ToggleDarkBtn.click(() => {
-      _self.toggleDarkMode();
+      _self.toggle();
     });
 
     if (this.getDarkModeSetting() === true) {
-      this.toggleDarkMode();
+      this.toggle();
     } else {
       $('body').css({ background: '#F2E2C4' });
     }
   }
   
-  public toggleDarkMode(force: boolean = null) {
+  public toggle(force: boolean = null) {
     this._isDarkMode = force == null ? !this._isDarkMode : force;
 
     if (this._isDarkMode === true) {
@@ -55,6 +56,10 @@ export class DarkMode {
           ')'
       });
     });
+  }
+
+  public repaint() {
+    this.toggle(this._isDarkMode);
   }
 
   private getDarkModeSetting() {

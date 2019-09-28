@@ -12,4 +12,29 @@ export class Card {
     this.posX = card.posX;
     this.posY = card.posY;
   }
+
+  // HTML-Code positionieren, so a richtig geilen DOM
+  public static cardsBuildHTML(cardMap: Map<string, Card>) {
+    let fieldHTML = '';
+    for (const card of cardMap.values()) {
+      const word = card.word != null ? card.word.text : '';
+      fieldHTML +=
+        '<div class="bb_card" data-id="' +
+        card.id +
+        '" data-x="' +
+        card.posX +
+        '" data-y="' +
+        card.posY +
+        '" style="grid-column: ' +
+        card.posX +
+        '; grid-row: ' +
+        card.posY +
+        ';">' +
+        '<span class="bb_card_text">' +
+        word +
+        '</span>' +
+        '</div>';
+    }
+    return fieldHTML;
+  }
 }
