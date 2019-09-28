@@ -19,10 +19,9 @@ const express = require('express'),
   bb_Socket_In = require('./scripts/bb-socket-in'),
   app = express();
 
-  console.log(webpackCfg);
   const compiler = webpack(webpackCfg);
 
-  compiler.run((err, stats) => {
+  compiler.run((err) => {
     if(err == null) {
       console.log('Webpack: Build successfull.');
     } else {

@@ -1,14 +1,15 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
+    "allowJs": true,
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "target": "es2018",
     "typeRoots": [
       "node_modules/@types"
     ],

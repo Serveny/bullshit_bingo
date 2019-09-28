@@ -1,52 +1,10 @@
+import { Room } from './bb-cl-room';
+import { Player } from './bb-cl-player';
+import { Card } from './bb-cl-card';
+import { Word } from './bb-cl-word';
+import { DarkMode } from './bb-cl-darkmode';
+
 // Author: Serveny
-
-class Room {
-  constructor(room) {
-    this.id = room.id;
-    this.playerMap = new Map();
-
-    const _self = this;
-    room.playerMap.forEach(function(player) {
-      _self.playerMap.set(player[0], new Player(player[1]));
-    });
-  }
-}
-
-class Player {
-  constructor(player) {
-    this.id = player.id;
-    this.avatar = player.avatar;
-    this.isReady = player.isReady;
-    this.cardMap = new Map();
-    this.phase = player.phase;
-
-    const _self = this;
-    player.cardMap.forEach(function(card) {
-      _self.cardMap.set(card[0], new Card(card[1]));
-    });
-  }
-}
-
-class Card {
-  constructor(card) {
-    this.id = card.id;
-    this.word = card.word == null ? null : new Word(card.word);
-    this.posX = card.posX;
-    this.posY = card.posY;
-  }
-}
-
-class Word {
-  constructor(word) {
-    this.id = word.id;
-    this.text = word.text;
-    this.countGuessed = word.countGuessed;
-    this.countUsed = word.countUsed;
-    this.createdAt = word.createdAt;
-    this.changedAt = word.changedAt;
-  }
-}
-
 class BullshitBingo {
   // A bisl wergeln & rumwuseln
   constructor() {
@@ -58,18 +16,13 @@ class BullshitBingo {
     this.barBtns = {
       autofillBtn: $('#bb_autofillBtn'),
       toggleInfoBtn: $('.bb_toggleInfoBtn'),
-      toggleDarkBtn: $('#bb_toggleDarkBtn'),
       leaveRoomBtn: $('#bb_leaveRoomBtn')
     };
     this.selectedCardsGrid = $('.bb_cardsGrid[data-selected=true]');
     this.socketAddEvents();
 
     // Dark Mode
-    if (this.getDarkModeSetting() === true) {
-      this.toggleDarkMode();
-    } else {
-      $('body').css({ background: '#F2E2C4' });
-    }
+    this.DarkMode = new DarkMode();
 
     this.addEvents();
 
@@ -86,7 +39,6 @@ class BullshitBingo {
     const urlWithoutParams = location.protocol + '//' + location.host;
     this.cardChange = null;
     this.nextFocusCardId = null;
-    this.isDarkMode = false;
     this.isInfoOpen = false;
     this.cards = [];
     this.phase = 0;
@@ -105,11 +57,6 @@ class BullshitBingo {
       this.cardsBuildHTML(this.room.playerMap.get(this.socket.id).cardMap)
     );
 
-    // Dark Mode
-    if (this.getDarkModeSetting() === true) {
-      this.toggleDarkMode();
-    }
-
     const removeEventsWerkelPhase = this.addEventsWerkelPhase();
     this.socketAddEventsWerkelPhase(removeEventsWerkelPhase);
 
@@ -124,10 +71,6 @@ class BullshitBingo {
 
     $('#bb_createRoomBtn').click(function() {
       _self.socket.emit('joinRoom', null);
-    });
-
-    _self.barBtns.toggleDarkBtn.click(function() {
-      _self.toggleDarkMode();
     });
 
     _self.barBtns.toggleInfoBtn.click(function() {
@@ -398,56 +341,6 @@ class BullshitBingo {
     });
   }
 
-  toggleDarkMode(force = null) {
-    this.isDarkMode = force == null ? !this.isDarkMode : force;
-
-    if (this.isDarkMode === true) {
-      this.setDarkModeSetting(true);
-      $('body').addClass('darkI');
-      $('.bb_card').addClass('dark');
-      $('#bb_info').addClass('darkI');
-      $('#bodyOverlay').css('opacity', 0.6);
-      $('.bb_cardBtn').addClass('cardBtnDark');
-    } else {
-      this.setDarkModeSetting(false);
-      $('body')
-        .css({ background: '#F2E2C4' })
-        .removeClass('darkI');
-      $('.bb_card').removeClass('dark');
-      $('#bb_info').removeClass('darkI');
-      $('#bodyOverlay').css('opacity', 0.1);
-      $('.bb_cardBtn').removeClass('cardBtnDark');
-    }
-
-    // Hitted Cards
-    const bgColor =
-      this.isDarkMode === true
-        ? 'rgb(34, 34, 34, 0.8)'
-        : 'rgb(242, 226, 196, 0.8)';
-    $('.bb_cardHit').each(function() {
-      $(this).css({
-        background:
-          "url('../img/cardBG.png'), radial-gradient(rgb(152, 166, 123, 1), " +
-          bgColor +
-          ')'
-      });
-    });
-  }
-
-  getDarkModeSetting() {
-    let isDark = localStorage.getItem('isDarkMode');
-
-    if (isDark == 'true') {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  setDarkModeSetting(value) {
-    localStorage.setItem('isDarkMode', value);
-  }
-
   /* --------------------- 
        Cards Functions
        --------------------- */
@@ -480,7 +373,7 @@ class BullshitBingo {
   cardsAddTextArea(element) {
     this.cardChange = element;
     let text = element.find('span').text();
-    let dark = this.isDarkMode === true ? 'dark' : '';
+    let dark = this.DarkMode.isDarkMode === true ? 'dark' : '';
 
     element
       .addClass('bb_card_focus')
@@ -659,7 +552,7 @@ class BullshitBingo {
 
   cardsAddConfirmBox(cardEl) {
     const _self = this;
-    const dark = _self.isDarkMode === true ? ' cardBtnDark' : '';
+    const dark = this.DarkMode.isDarkMode === true ? ' cardBtnDark' : '';
 
     cardEl.find('.bb_card_text').css({ margin: '0 auto' });
     cardEl
@@ -702,7 +595,7 @@ class BullshitBingo {
     if (playerId === this.selectedCardsGrid.attr('data-playerid')) {
       const cardEl = this.selectedCardsGrid.find('[data-id=' + cardId + ']');
       const bgColor =
-        this.isDarkMode === true
+        this.DarkMode.isDarkMode === true
           ? 'rgb(34, 34, 34, 0.8)'
           : 'rgb(242, 226, 196, 0.8)';
       if (isHit === true) {
@@ -887,7 +780,7 @@ class BullshitBingo {
     $('#bb_countdownContainer').fadeOut(800);
     $('.bb_userReady').hide();
     $('.bb_userField').addClass('bb_userField_Clickable');
-    this.toggleDarkMode(this.isDarkMode);
+    this.DarkMode.toggleDarkMode(this.DarkMode.isDarkMode);
   }
 
   roomIsBingoPhase() {
@@ -1140,6 +1033,6 @@ class Confetti {
 }
 
 $(document).ready(function() {
-  bullshitBingo = new BullshitBingo();
+  var bullshitBingo = new BullshitBingo();
   $('body').fadeIn(1600);
 });

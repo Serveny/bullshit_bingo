@@ -12,7 +12,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
-    "start-dev": "@powershell -Command $env:DEBUG='wb'; nodemon app.js",
+    "start-dev": "@powershell -Command $env:DEBUG='wb'; nodemon app.js --ignore 'public/js/*.js'",
     "pm2-start": "pm2 start app.js",
     "kill-win": "taskkill /im node.exe",
     "kill-lin": "killall node",
@@ -21,10 +21,15 @@
     "build-ts": "node app.js"
   },
   "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "@types/jquery": "^3.3.31",
+    "babel-loader": "^8.0.6",
     "ts-loader": "^6.1.2",
     "typescript": "^3.6.3",
     "var_dump": "^1.0.5",
-    "webpack": "^4.41.0"
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9"
   },
   "dependencies": {
     "config": "^3.2.2",
