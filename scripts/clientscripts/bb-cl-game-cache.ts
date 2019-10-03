@@ -7,39 +7,19 @@ import { Matchfield } from './bb-cl-matchfield';
 import { BarButtons } from './bb-cl-bar-buttons';
 
 export class GameCache {
-  public socket: Socket;
-  public darkMode: DarkMode;
-  public thisPlayerId: string;
+  public static socket: Socket;
+  public static darkMode: DarkMode;
+  public static thisPlayerId: string;
 
-  public roomId: string;
-  public room: Room;
-  public matchfield: Matchfield;
+  public static roomId: string;
+  public static room: Room;
+  public static matchfield: Matchfield;
 
-  public selectedCardsGrid: JQuery<HTMLElement>;
-  public nextFocusCardId: number;
+  public static selectedCardsGrid: JQuery<HTMLElement>;
+  public static nextFocusCardId: number;
 
-  public collectPhase: CollectPhase;
-  public bingoPhase: BingoPhase;
+  public static collectPhase: CollectPhase;
+  public static bingoPhase: BingoPhase;
 
-  public barButtons: BarButtons;
-
-  constructor(
-    socket: Socket,
-    darkMode: DarkMode,
-    matchfield: Matchfield,
-    collectPhase: CollectPhase,
-    bingoPhase: BingoPhase,
-    barButtons: BarButtons,
-    roomId: string,
-    selectedCardsGrid: JQuery<HTMLElement>
-  ) {
-    this.socket = socket;
-    this.darkMode = darkMode;
-    this.roomId = roomId;
-    this.matchfield = matchfield;
-    this.selectedCardsGrid = selectedCardsGrid;
-    this.collectPhase = collectPhase;
-    this.bingoPhase = bingoPhase;
-    this.barButtons = barButtons;
-  }
+  public static barButtons: BarButtons;
 }

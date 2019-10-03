@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './scripts/clientscripts/bullshit-bingo.js',
+  entry: './scripts/clientscripts/bullshit-bingo.ts',
   module: {
     rules: [
       {
@@ -20,6 +20,7 @@ module.exports = {
     path: path.resolve(__dirname, 'public/js/'),
   },
   mode: 'development',
+  externals: {'socket.io': 'io'},
 };
 
 // const path = require('path');

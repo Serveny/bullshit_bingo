@@ -1,15 +1,9 @@
 import { GameCache } from './bb-cl-game-cache';
 import { Player } from './bb-cl-player';
-import { Socket } from "socket.io";
 
 export class Room {
   public id: string;
   public playerMap: Map<string, Player>;
-
-  private _gameCache: GameCache;
-  set gameCache(gameCache: GameCache) {
-    this._gameCache = gameCache;
-  }
 
   private _countdownId: any;
   
@@ -35,7 +29,7 @@ export class Room {
     const isReadyStyle =
       player.isReady === true ? 'style="display: block;"' : '';
 
-    if (player.id === _self._gameCache.socket.id) {
+    if (player.id === GameCache.socket.id) {
       $('#bb_lobbyContainer').append(
         '<div id="bb_thisUserField" class="bb_userField bb_userSelected" data-id="' +
           player.id +
@@ -49,11 +43,11 @@ export class Room {
       );
 
       $('#bb_thisUserInput').change(() => {
-        _self._gameCache.socket.emit('changeName', $(this).val());
+        GameCache.socket.emit('changeName', $(this).val());
       });
 
       $('#bb_thisUserReady').click(() => {
-        _self._gameCache.socket.emit('toggleReady');
+        GameCache.socket.emit('toggleReady');
       });
     } else {
       $('#bb_lobbyContainer').append(
@@ -83,7 +77,7 @@ export class Room {
   }
 
   roomSetPlayerReadyHTML(playerId: string, isReady: boolean) {
-    if (playerId === this._gameCache.socket.id) {
+    if (playerId === GameCache.socket.id) {
       if (isReady === true) {
         $('#bb_thisUserReady').css({ color: 'green' });
       } else {
@@ -149,12 +143,12 @@ export class Room {
   roomBuildOtherFieldsHTML() {
     let fieldsHtml = '';
     for (const player of this.playerMap.values()) {
-      if (player.id !== this._gameCache.thisPlayerId) {
+      if (player.id !== GameCache.thisPlayerId) {
         fieldsHtml +=
           '<div class="bb_cardsGrid" data-selected="false" data-playerid="' +
           player.id +
           '" style="display: none;">' +
-          this._gameCache.matchfield.matchfieldBuildHTML(player.cardMap) +
+          GameCache.matchfield.matchfieldBuildHTML(player.cardMap) +
           '</div>';
       }
     }
@@ -162,16 +156,16 @@ export class Room {
   }
 
   roomShowCardField(playerId: string) {
-    console.log('Hide old selected: ', this._gameCache.selectedCardsGrid);
-    this._gameCache.selectedCardsGrid.attr('data-selected', 'false');
+    console.log('Hide old selected: ', GameCache.selectedCardsGrid);
+    GameCache.selectedCardsGrid.attr('data-selected', 'false');
     const newSelected = $(
       '.bb_cardsGrid[data-playerid="' + playerId + '"]'
     ).attr('data-selected', 'true');
-    this._gameCache.matchfield.showFieldSwitchAnimation(this._gameCache.selectedCardsGrid, newSelected);
-    this._gameCache.selectedCardsGrid = newSelected;
+    GameCache.matchfield.showFieldSwitchAnimation(GameCache.selectedCardsGrid, newSelected);
+    GameCache.selectedCardsGrid = newSelected;
   }
 
   getThisPlayer() {
-    return this.playerMap.get(this.gameCache.socket.id);
+    return this.playerMap.get(GameCache.socket.id);
   }
 }

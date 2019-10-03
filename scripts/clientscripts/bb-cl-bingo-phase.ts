@@ -2,28 +2,26 @@ import { GameCache } from './bb-cl-game-cache';
 import { Room } from './bb-cl-room';
 
 export class BingoPhase {
-  private _gameCache: GameCache;
 
-  constructor(gameCache: GameCache) {
-    this._gameCache = gameCache;
+  constructor() {
   }
 
   startBingoPhase(roomArr: any) {
     const _self = this;
-    this._gameCache.matchfield.cardsFlipAnimation().then(function() {
+    GameCache.matchfield.cardsFlipAnimation().then(function() {
       _self.addEventsBingoPhase();
       _self.socketAddEventsBingoPhase();
     });
-    this._gameCache.barButtons.autofillBtn.hide();
-    this._gameCache.room = new Room(roomArr);
+    GameCache.barButtons.autofillBtn.hide();
+    GameCache.room = new Room(roomArr);
 
     $('#bb_cardsContainer').append(
-      this._gameCache.room.roomBuildOtherFieldsHTML()
+      GameCache.room.roomBuildOtherFieldsHTML()
     );
     $('#bb_countdownContainer').fadeOut(800);
     $('.bb_userReady').hide();
     $('.bb_userField').addClass('bb_userField_Clickable');
-    this._gameCache.darkMode.repaint();
+    GameCache.darkMode.repaint();
   }
   
   addEventsBingoPhase() {
@@ -40,7 +38,7 @@ export class BingoPhase {
           if (target.hasClass('bb_userSelected') === false) {
             $('.bb_userSelected').removeClass('bb_userSelected');
             target.addClass('bb_userSelected');
-            _self._gameCache.room.roomShowCardField(target.attr('data-id'));
+            GameCache.room.roomShowCardField(target.attr('data-id'));
           }
           return;
         }
@@ -53,17 +51,17 @@ export class BingoPhase {
         }
         if (target.hasClass('bb_card') === true) {
           const id = target.attr('data-id');
-          if (_self._gameCache.matchfield.cardChangeEl != null) {
-            if (id !== _self._gameCache.matchfield.cardChangeEl.attr('data-id')) {
-              _self._gameCache.matchfield.cardsRemoveConfirmBox(_self._gameCache.matchfield.cardChangeEl);
-              _self._gameCache.matchfield.cardsAddConfirmBox(target);
+          if (GameCache.matchfield.cardChangeEl != null) {
+            if (id !== GameCache.matchfield.cardChangeEl.attr('data-id')) {
+              GameCache.matchfield.cardsRemoveConfirmBox(GameCache.matchfield.cardChangeEl);
+              GameCache.matchfield.cardsAddConfirmBox(target);
             }
           } else {
-            _self._gameCache.matchfield.cardsAddConfirmBox(target);
+            GameCache.matchfield.cardsAddConfirmBox(target);
           }
         } else {
-          if (_self._gameCache.matchfield.cardChangeEl != null) {
-            _self._gameCache.matchfield.cardsRemoveConfirmBox(_self._gameCache.matchfield.cardChangeEl);
+          if (GameCache.matchfield.cardChangeEl != null) {
+            GameCache.matchfield.cardsRemoveConfirmBox(GameCache.matchfield.cardChangeEl);
           }
         }
       };
@@ -74,17 +72,17 @@ export class BingoPhase {
   socketAddEventsBingoPhase() {
     const _self = this,
       cardHitHandler = function(data: any) {
-        _self._gameCache.matchfield.cardsSetHit(data.playerId, data.cardId, data.isHit);
+        GameCache.matchfield.cardsSetHit(data.playerId, data.cardId, data.isHit);
       },
       playerLaterBingoPhase = function(data: any) {
         // TODO
       };
 
-    _self._gameCache.socket.on('cardHit', cardHitHandler);
+    GameCache.socket.on('cardHit', cardHitHandler);
 
-    _self._gameCache.socket.on('playerLaterBingoPhase', playerLaterBingoPhase);
+    GameCache.socket.on('playerLaterBingoPhase', playerLaterBingoPhase);
 
-    _self._gameCache.socket.on('playerWin', winData => {
+    GameCache.socket.on('playerWin', winData => {
       console.log(
         '[GAME END] ',
         winData.playerId,
@@ -94,9 +92,9 @@ export class BingoPhase {
         winData.playerId ===
         $('.bb_cardsGrid[data-selected="true"]').attr('data-playerid')
       ) {
-        _self._gameCache.matchfield.drawWinLine(winData.winLine);
-        _self._gameCache.matchfield.playWinAnimation();
-        _self._gameCache.socket.off('cardHit', cardHitHandler);
+        GameCache.matchfield.drawWinLine(winData.winLine);
+        GameCache.matchfield.playWinAnimation();
+        GameCache.socket.off('cardHit', cardHitHandler);
       } else {
         console.log('Other player won');
       }

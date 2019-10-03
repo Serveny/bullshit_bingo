@@ -4,8 +4,6 @@ import { Card } from './bb-cl-card';
 import { Confetti } from './bb-cl-confetti';
 
 export class Matchfield {
-  private _gameCache: GameCache;
-
   private _cardChangeEl: JQuery<HTMLElement>;
   get cardChangeEl(): JQuery<HTMLElement> {
     return this._cardChangeEl;
@@ -18,8 +16,7 @@ export class Matchfield {
 
   private _confetti: Confetti;
 
-  constructor(gameCache: GameCache) {
-    this._gameCache = gameCache;
+  constructor() {
   }
 
   matchfieldBuildHTML(cardMap: Map<number, Card>) {
@@ -48,9 +45,9 @@ export class Matchfield {
 
   // Should only triggered after server validation
   matchfieldSetCard(card: Card) {
-    this._gameCache.room.getThisPlayer().cardMap.set(parseInt(card.id), card);
-    this._gameCache.matchfield.matchfieldSetCardTextHTML(
-      this._gameCache.selectedCardsGrid.find('[data-id=' + card.id + ']'),
+    GameCache.room.getThisPlayer().cardMap.set(parseInt(card.id), card);
+    GameCache.matchfield.matchfieldSetCardTextHTML(
+      GameCache.selectedCardsGrid.find('[data-id=' + card.id + ']'),
       card.word != null ? card.word.text : ''
     );
   }
@@ -66,13 +63,13 @@ export class Matchfield {
   }
 
   matchfieldFocusNextCard() {
-    if (this._gameCache.nextFocusCardId != null) {
+    if (GameCache.nextFocusCardId != null) {
       this.matchfieldAddTextAreaToCard(
-        this._gameCache.selectedCardsGrid.find(
-          '[data-id=' + +this._gameCache.nextFocusCardId + ']'
+        GameCache.selectedCardsGrid.find(
+          '[data-id=' + +GameCache.nextFocusCardId + ']'
         )
       );
-      this._gameCache.nextFocusCardId = null;
+      GameCache.nextFocusCardId = null;
     }
   }
 
@@ -81,8 +78,8 @@ export class Matchfield {
       return false;
     }
 
-    for (let card of this._gameCache.room.playerMap
-      .get(this._gameCache.socket.id)
+    for (let card of GameCache.room.playerMap
+      .get(GameCache.socket.id)
       .cardMap.values()) {
       if (card.word != null && card.word.text === text) {
         return true;
@@ -93,8 +90,8 @@ export class Matchfield {
 
   matchfieldCheckAllCardsFilled() {
     let areAllCardsFilled = true;
-    const cardMap = this._gameCache.room.playerMap.get(
-      this._gameCache.socket.id
+    const cardMap = GameCache.room.playerMap.get(
+      GameCache.socket.id
     ).cardMap;
 
     for (let card of cardMap.values()) {
@@ -110,7 +107,7 @@ export class Matchfield {
 
   // matchfieldGetTextArr() {
   //   let words = [];
-  //   for (let i = 0; i < this._gameCache.room.length; i++) {
+  //   for (let i = 0; i < GameCache.room.length; i++) {
   //     if (this.cards[i] != null && this.cards[i].text != '') {
   //       words.push(this.cards[i].text);
   //     }
@@ -121,7 +118,7 @@ export class Matchfield {
   matchfieldAddTextAreaToCard(element: JQuery<HTMLElement>) {
     this._cardChangeEl = element;
     let text = element.find('span').text();
-    let dark = this._gameCache.darkMode.isDarkMode === true ? 'dark' : '';
+    let dark = GameCache.darkMode.isDarkMode === true ? 'dark' : '';
 
     element
       .addClass('bb_card_focus')
@@ -145,7 +142,7 @@ export class Matchfield {
   }
 
   matchfieldRevertCard(element: JQuery<HTMLElement>) {
-    const word = this._gameCache.room
+    const word = GameCache.room
       .getThisPlayer()
       .cardMap.get(parseInt(element.attr('data-id'))).word;
     return this.matchfieldValidateCard(element, word != null ? word.text : '');
@@ -153,7 +150,7 @@ export class Matchfield {
 
   matchfieldValidateCard(element: JQuery<HTMLElement>, text: string) {
     text = text.trim();
-    const card = this._gameCache.room
+    const card = GameCache.room
       .getThisPlayer()
       .cardMap.get(parseInt(element.attr('data-id')));
 
@@ -168,7 +165,7 @@ export class Matchfield {
 
     // Check if valid
     if (this.matchfieldDoesCardTextExist(text) === false) {
-      this._gameCache.socket.emit('setCard', {
+      GameCache.socket.emit('setCard', {
         cardId: element.attr('data-id'),
         cardText: text
       });
@@ -180,11 +177,11 @@ export class Matchfield {
   }
 
   revertReady() {
-    if (this._gameCache.room.getThisPlayer().isReady === true) {
-      this._gameCache.socket.emit('toggleReady');
+    if (GameCache.room.getThisPlayer().isReady === true) {
+      GameCache.socket.emit('toggleReady');
       $('bb_thisUserReady').hide();
     }
-    this._gameCache.room.getThisPlayer().isReady = false;
+    GameCache.room.getThisPlayer().isReady = false;
   }
 
   shakeAndStay(element: JQuery<HTMLElement>) {
@@ -197,11 +194,11 @@ export class Matchfield {
   }
 
   cardsAutofill(changedCardMap: Map<number, Card>) {
-    const cardMap = this._gameCache.room.getThisPlayer().cardMap;
+    const cardMap = GameCache.room.getThisPlayer().cardMap;
     let time = 0;
     for (const cardItem of changedCardMap.values()) {
       cardMap.set(parseInt(cardItem.id), cardItem);
-      const cardEl = this._gameCache.selectedCardsGrid.find(
+      const cardEl = GameCache.selectedCardsGrid.find(
         '[data-id=' + cardItem.id + ']'
       );
       this.matchfieldSetCardTextHTML(cardEl, cardItem.word.text);
@@ -236,7 +233,7 @@ export class Matchfield {
 
   cardsAddConfirmBox(cardEl: JQuery<HTMLElement>) {
     const _self = this;
-    const dark = this._gameCache.darkMode.isDarkMode === true ? ' cardBtnDark' : '';
+    const dark = GameCache.darkMode.isDarkMode === true ? ' cardBtnDark' : '';
 
     cardEl.find('.bb_card_text').css({ margin: '0 auto' });
     cardEl
@@ -251,8 +248,8 @@ export class Matchfield {
       .addClass('bb_card_focus');
 
     $('#bb_cardSubmit').on('click', () => {
-      _self._gameCache.socket.emit('cardWordSaid', _self._cardChangeEl.attr('data-id'));
-      _self._gameCache.socket.emit('cardHit', _self._cardChangeEl.attr('data-id'));
+      GameCache.socket.emit('cardWordSaid', _self._cardChangeEl.attr('data-id'));
+      GameCache.socket.emit('cardHit', _self._cardChangeEl.attr('data-id'));
     });
     $('#bb_cardCancel').on('click', () => {
       _self.cardsRemoveConfirmBox(_self.cardChangeEl);
@@ -272,14 +269,14 @@ export class Matchfield {
 
   cardsSetHit(playerId: string, cardId: string, isHit: boolean) {
     console.log(playerId, cardId, isHit);
-    this._gameCache.room.playerMap
+    GameCache.room.playerMap
       .get(playerId)
       .cardMap.get(parseInt(cardId)).isHit = isHit;
 
-    if (playerId === this._gameCache.selectedCardsGrid.attr('data-playerid')) {
-      const cardEl = this._gameCache.selectedCardsGrid.find('[data-id=' + cardId + ']');
+    if (playerId === GameCache.selectedCardsGrid.attr('data-playerid')) {
+      const cardEl = GameCache.selectedCardsGrid.find('[data-id=' + cardId + ']');
       const bgColor =
-        this._gameCache.darkMode.isDarkMode === true
+        GameCache.darkMode.isDarkMode === true
           ? 'rgb(34, 34, 34, 0.8)'
           : 'rgb(242, 226, 196, 0.8)';
       if (isHit === true) {
