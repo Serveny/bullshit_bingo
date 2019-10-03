@@ -47,8 +47,8 @@ export class DarkMode {
       this._isDarkMode === true
         ? 'rgb(34, 34, 34, 0.8)'
         : 'rgb(242, 226, 196, 0.8)';
-    $('.bb_cardHit').each(function() {
-      $(this).css({
+    $('.bb_cardHit').each((i: number, element: HTMLElement) => {
+      $(element).css({
         background:
           "url('../img/cardBG.png'), radial-gradient(rgb(152, 166, 123, 1), " +
           bgColor +

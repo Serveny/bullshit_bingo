@@ -296,9 +296,10 @@ export class Matchfield {
   }
 
   cardsHittedCutBorder() {
+    console.log('cardsHittedCutBorder');
     const _self = this;
-    $('.bb_cardHit').each(() => {
-      const el = $(this) as any,
+    $('.bb_cardHit').each((i: number, element: HTMLElement) => {
+      const el = $(element),
         x = parseInt(el.attr('data-x')),
         y = parseInt(el.attr('data-y')),
         upEl = el.siblings('[data-x="' + x + '"][data-y="' + (y - 1) + '"]'),

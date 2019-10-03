@@ -42,8 +42,8 @@ export class Room {
           '<i class="mi">done</i></button><div class="bb_userFieldPointer"></div></div>'
       );
 
-      $('#bb_thisUserInput').change(() => {
-        GameCache.socket.emit('changeName', $(this).val());
+      $('#bb_thisUserInput').change((el: any) => {
+        GameCache.socket.emit('changeName', $(el.target).val());
       });
 
       $('#bb_thisUserReady').click(() => {
