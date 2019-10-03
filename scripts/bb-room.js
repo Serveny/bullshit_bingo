@@ -9,7 +9,7 @@ const
     roomMap = global.wb.roomMap = new Map();
 
 const gamePhase = {
-  werkel: 0,
+  collect: 0,
   bingo: 2
 },
   playerStatus = {
@@ -39,7 +39,7 @@ class Player {
     this.isReady = isReady;
     this.cardMap = cardMap;
 
-    // 0 = Werkelphase, 2 = Bingophase
+    // 0 = Collectphase, 2 = Bingophase
     this.phase = phase;
     this.status = status;
   }
@@ -112,7 +112,7 @@ exports.togglePlayerIsReady = (socket) => {
   }
 
   const player = room.playerMap.get(socket.id);
-  if (player.phase !== gamePhase.werkel) {
+  if (player.phase !== gamePhase.collect) {
     out.emitError(socket, errorText.wrongPhase);
     return;
   }
@@ -149,7 +149,7 @@ exports.setCardAsync = async (socket, cardId, newText) => {
     return;
   }
   const player = room.playerMap.get(socket.id);
-  if (player.phase !== gamePhase.werkel) {
+  if (player.phase !== gamePhase.collect) {
     out.emitError(socket, errorText.wrongPhase);
     return;
   }
@@ -184,7 +184,7 @@ exports.autofill = async (socket) => {
     return;
   }
   const player = room.playerMap.get(socket.id);
-  if (player.phase !== gamePhase.werkel) {
+  if (player.phase !== gamePhase.collect) {
     out.emitError(socket, errorText.wrongPhase);
     return;
   }
@@ -258,7 +258,7 @@ const createRoom = (socket) => {
 
 const createPlayer = (playerMap, socket) => {
   const avatar = avatars.getRandomAvatar(playerMap);
-  return new Player(socket.id, avatar, false, bb_cards.generateEmptyCardMap(), gamePhase.werkel, playerStatus.active);
+  return new Player(socket.id, avatar, false, bb_cards.generateEmptyCardMap(), gamePhase.collect, playerStatus.active);
 };
 
 const getRoomByPlayerId = (id) => {
@@ -325,7 +325,7 @@ const setPlayersInactive = (playerMap) => {
 }
 
 const startPlayerBingoPhase = (player) => {
-  if (player.isReady === true && player.phase === gamePhase.werkel) {
+  if (player.isReady === true && player.phase === gamePhase.collect) {
     player.phase = gamePhase.bingo;
     bb_cards.wordCountUp(player.cardMap, 'Guessed');
   }

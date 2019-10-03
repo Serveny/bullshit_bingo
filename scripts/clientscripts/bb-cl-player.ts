@@ -2,9 +2,9 @@ import { Card } from './bb-cl-card';
 
 export class Player {
   public id: string;
-  public avatar: string;
+  public avatar: any;
   public isReady: boolean;
-  public cardMap: Map<string, Card>;
+  public cardMap: Map<number, Card>;
   public phase: number;
   public status: number;
 
@@ -12,7 +12,7 @@ export class Player {
     this.id = player.id;
     this.avatar = player.avatar;
     this.isReady = player.isReady;
-    this.cardMap = new Map<string, Card>();
+    this.cardMap = new Map<number, Card>();
     this.phase = player.phase;
     this.status = player.status;
 

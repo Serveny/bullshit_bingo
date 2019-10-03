@@ -1,7 +1,7 @@
+import { GameCache } from './bb-cl-game-cache';
 export class DarkMode {
   private _isDarkMode: boolean;
   get isDarkMode(): boolean {
-    console.log('isDarkMode: ', this._isDarkMode);
     return this._isDarkMode;
   }
 
@@ -9,7 +9,6 @@ export class DarkMode {
 
   constructor() {
     const _self = this;
-
     this.ToggleDarkBtn = $('#bb_toggleDarkBtn'),
     this.ToggleDarkBtn.click(() => {
       _self.toggle();

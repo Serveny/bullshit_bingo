@@ -9,7 +9,7 @@ Aus diesem Grund wird hier das Drachenlord Bullshit Bingo entwickelt.
 # Spielregeln
 Das Spiel ist unterteilt in 2 Phasen:
 
- - Werkel-Phase:
+ - Collect-Phase:
     Die Spieler können entweder eigene Wörter in die Felder eintragen, oder welche aus einer Liste 
     auswählen. Fallen einem Spieler keine 25 Begriffe ein, kann dieser die restlichen Felder auch
     automatisch auffüllen lassen.
