@@ -17,7 +17,7 @@
     "kill-win": "taskkill /im node.exe",
     "kill-lin": "killall node",
     "restart": "npm run kill-win && npm run start",
-    "createDB": "node ./scripts/bb_create_db.js",
+    "createDB": "node ./scripts/bb-create-db.js",
     "build-ts": "node app.js"
   },
   "devDependencies": {
@@ -34,7 +34,7 @@
     "config": "^3.2.2",
     "debug": "^4.1.1",
     "express": "^4.17.1",
-    "mysql2": "^1.7.0",
+    "pg": "^7.12.1",
     "serve-favicon": "^2.5.0",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0"

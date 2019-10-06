@@ -7,7 +7,8 @@ global.wb = {
   wordMap: null
 };
 
-const express = require('express'),
+const appCfg = require('config').app,
+  express = require('express'),
   http = require('http'),
   favicon = require('serve-favicon'),
   path = require('path'),
@@ -30,7 +31,7 @@ const express = require('express'),
     
   });
 
-app.set('port', /*process.env.PORT || */ 1510);
+app.set('port', /*process.env.PORT || */ appCfg.port);
 
 app.use(express.static(__dirname + '/public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

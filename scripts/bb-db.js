@@ -1,26 +1,35 @@
 'use strict';
 const debug = require('debug')('wb'),
+  { Client } = require('pg'),
   dbCfg = require('config').db,
-  mysql = require('mysql2'),
-  conDB = mysql.createConnection({
-    host: dbCfg.host,
+  client = new Client({
     user: dbCfg.username,
-    password: dbCfg.password,
+    host: dbCfg.host,
     database: dbCfg.database,
-    multipleStatements: false
+    password: dbCfg.password,
+    port: dbCfg.port,
   });
+
+client.connect(err => {
+  if (err) {
+    console.error('connection error (1)', err.stack);
+    throw err;
+  }
+  console.log('Connected to Database');
+});
 
 class dbTable {
   constructor(tableName, columnNames, idField) {
     this.tableName = tableName;
     this.columnNames = columnNames;
     this.idField = idField;
-    this.fullName = `${dbCfg.database}.${this.tableName}`;
+    this.fullName = `"${dbCfg.schemata}"."${this.tableName}"`;
   }
 
   createFilterStmt(filter) {
     let stmt = '';
     let data = [];
+    let paramCount = 0;
     for (let i = 0; i < filter.length; i++) {
       if (Array.isArray(filter[i])) {
         // Check if column exists in model
@@ -30,7 +39,7 @@ class dbTable {
           }) != null
         ) {
           debug(filter[i], Array.isArray(filter[i]));
-          const stmtVal = dbFormat(filter[i]);
+          const stmtVal = dbFormat(filter[i], this.tableName, ++paramCount);
           stmt += stmtVal[0];
           data.push(stmtVal[1]);
         } else {
@@ -45,16 +54,16 @@ class dbTable {
 
   getRowById(rowId) {
     let _self = this;
-    return new Promise(function(resolve) {
+    return new Promise((resolve) => {
       const stmt = `SELECT * FROM ${_self.fullName} WHERE ${
         _self.idField
       } = ? LIMIT 1`;
       debug(`[getRowById] ${stmt}`);
-      conDB.query(stmt, rowId, (err, results) => {
+      client.query(stmt, rowId, (err, res) => {
         if (err) {
           error(err);
         }
-        resolve(results);
+        resolve(res);
       });
     });
   }
@@ -62,16 +71,16 @@ class dbTable {
   // filter = [[ valueName, operator, value], ...]
   getRowsByValue(filter) {
     let _self = this;
-    return new Promise(function(resolve) {
+    return new Promise((resolve) => {
       const filterData = _self.createFilterStmt(filter);
       let stmt = `SELECT * FROM ${_self.fullName} WHERE ${filterData.stmt};`;
       debug(`[getRowsByValue] ${stmt}`, filterData.data);
-      conDB.query(stmt, filterData.data, (err, results) => {
+      client.query(stmt, filterData.data, (err, res) => {
         if (err) {
           error(err);
           resolve([]);
         }
-        resolve(results);
+        resolve(res);
       });
     });
   }
@@ -79,48 +88,36 @@ class dbTable {
   // filter = [[ valueName, operator, value], ...]
   countRowsByValue(filter) {
     let _self = this;
-    return new Promise(function(resolve) {
+    return new Promise((resolve) => {
       const filterData = _self.createFilterStmt(filter);
       let stmt = `SELECT COUNT(*) FROM ${_self.fullName} WHERE ${
         filterData.stmt
       };`;
       debug(`[countRowsByValue] ${stmt}`, filterData.data);
-      conDB.query(stmt, filterData.data, (err, results) => {
+      client.query(stmt, filterData.data, (err, res) => {
         if (err) {
           error(err);
           resolve([]);
         }
-        resolve(results[0]['COUNT(*)']);
+        resolve(res[0]['COUNT(*)']);
       });
     });
   }
 
   getRandomRowsByValue(filterArr, limitNum) {
     let _self = this;
-    return new Promise(function(resolve) {
+    return new Promise((resolve) => {
       const filterData = _self.createFilterStmt(filterArr);
-      let stmt =
-        limitNum === 1
-          ? // more efficient
-            `SELECT * FROM ${
-              _self.fullName
-            } AS r1 JOIN (SELECT CEIL(RAND() * (SELECT MAX(${
-              _self.idField
-            }) FROM ${_self.fullName})) AS id) AS r2 WHERE r1.${
-              _self.idField
-            } >= r2.id AND ${filterData.stmt} ORDER BY r1.${
-              _self.idField
-            } ASC LIMIT 1;`
-          : `SELECT * FROM ${_self.fullName} WHERE ${
-              filterData.stmt
-            } ORDER BY RAND() LIMIT ${limitNum};`;
+      let stmt = `SELECT * FROM ${_self.fullName} `;
+      stmt += filterData != null ? `WHERE ${filterData.stmt} ` : '';
+      stmt += `ORDER BY random() LIMIT ${limitNum};`;
       debug(`[getRandomRowByValue] ${stmt}`, filterData.data);
-      conDB.query(stmt, filterData.data, (err, results) => {
+      client.query(stmt, filterData.data, (err, res) => {
         if (err) {
           debug('[Error]', err);
           resolve([]);
         }
-        resolve(results);
+        resolve(res);
       });
     });
   }
@@ -128,7 +125,7 @@ class dbTable {
   // values = { valueName: value, ... }
   updateRow(id, values) {
     let _self = this;
-    return new Promise(function(resolve) {
+    return new Promise((resolve) => {
       let stmt = `UPDATE ${_self.fullName} SET `;
       let data = [];
       for (const valName in values) {
@@ -148,12 +145,12 @@ class dbTable {
 
       data.push(id);
       debug(`[updateRow] ${stmt}`);
-      conDB.query(stmt, data, (err, results) => {
+      client.query(stmt, data, (err, res) => {
         if (err) {
           debug('[Error]', err);
           resolve([]);
         }
-        resolve(results);
+        resolve(res);
       });
     });
   }
@@ -161,7 +158,7 @@ class dbTable {
   // values = { columnName: value, ... }
   createRow(valuesObj) {
     let _self = this;
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let colNames = '';
       let questionMarks = '';
       let dataArr = [];
@@ -178,12 +175,12 @@ class dbTable {
         _self.fullName
       }(${colNames}) VALUES(${questionMarks});`;
       debug(`[createRow] ${stmt}`, dataArr);
-      conDB.query(stmt, dataArr, (err, results) => {
+      client.query(stmt, dataArr, (err, res) => {
         if (err) {
           debug('[Error]', err);
           resolve([]);
         }
-        resolve(results);
+        resolve(res);
       });
     });
   }
@@ -194,12 +191,12 @@ class dbTable {
       let stmt = `DELETE FROM ${_self.fullName} WHERE id = '?'`;
 
       debug(`[deleteRow] ${stmt}`);
-      conDB.query(stmt, [rowId], (err, results) => {
+      client.query(stmt, [rowId], (err, res) => {
         if (err) {
           debug('[Error]', err);
           resolve([]);
         }
-        resolve(results);
+        resolve(res);
       });
     });
   }
@@ -207,12 +204,12 @@ class dbTable {
   query(stmt) {
     return new Promise(resolve => {
       debug(`[query] ${stmt}`);
-      conDB.query(stmt, (err, results) => {
+      client.query(stmt, (err, res) => {
         if (err) {
           debug('[Error]', err);
           resolve([]);
         }
-        resolve(results);
+        resolve(res);
       });
     });
   }
@@ -234,33 +231,37 @@ exports.word = new dbTable(
 // #endregion
 
 // #region Format-Converter
-const dbFormat = filterI => {
+const dbFormat = (filterI, tableName, paramCount) => {
   let stmt = '';
   let val = '';
 
   if (filterI[2] instanceof Date) {
     // Date
-    stmt = `DATE(${filterI[0]}) ${filterI[1]} ?`;
+    stmt = `DATE(${tableName}."${filterI[0]}") ${filterI[1]} $${paramCount}`;
     val = dateToMysql(filterI[2]);
+  } else if (typeof filterI[2] === 'boolean') {
+    // Boolean
+    stmt = `${tableName}."${filterI[0]}" ${filterI[1]} $${paramCount}`;
+    val = filterI[2];
   } else if (typeof filterI[2] === 'string') {
     // String
-    stmt = `${filterI[0]} ${filterI[1]} BINARY ?`;
+    stmt = `${tableName}."${filterI[0]}" ${filterI[1]} BINARY $${paramCount}`;
     val = filterI[2];
   } else {
     // Normal
-    stmt = `${filterI[0]} ${filterI[1]} ?`;
+    stmt = `${tableName}."${filterI[0]}" ${filterI[1]} $${paramCount}`;
     val = filterI[2];
   }
   return [stmt, val];
 };
 
-const twoDigits = d => {
+const twoDigits = (d) => {
   if (0 <= d && d < 10) return '0' + d.toString();
   if (-10 < d && d < 0) return '-0' + (-1 * d).toString();
   return d.toString();
 };
 
-const dateToMysql = date => {
+const dateToMysql = (date) => {
   return (
     date.getUTCFullYear() +
     '-' +

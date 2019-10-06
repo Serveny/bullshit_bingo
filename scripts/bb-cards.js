@@ -114,7 +114,7 @@ exports.getTakenWordsMap = cardMap => {
 exports.getUntakenWordsMap = async takenMap => {
   const needCount = 25 - takenMap.size;
   const wordsMap = new Map();
-  let filterArr = [['wordFlagUseForAutofill', '=', 1]];
+  let filterArr = [['wordFlagUseForAutofill', '=', true]];
 
   if (takenMap.size > 0) {
     for (const takenWord of takenMap.values()) {
@@ -123,7 +123,9 @@ exports.getUntakenWordsMap = async takenMap => {
     }
   }
 
-  const res = await db.word.getRandomRowsByValue(filterArr, needCount);
+  const resRaw = await db.word.getRandomRowsByValue(filterArr, needCount);
+  let res = resRaw.rows;
+  
   if (res.length > 0) {
     for (let i = 0; i < res.length; i++) {
       wordsMap.set(
