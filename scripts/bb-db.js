@@ -54,14 +54,14 @@ class dbTable {
 
   getRowById(rowId) {
     let _self = this;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const stmt = `SELECT * FROM ${_self.fullName} WHERE ${
         _self.idField
       } = ? LIMIT 1`;
       debug(`[getRowById] ${stmt}`);
       client.query(stmt, rowId, (err, res) => {
         if (err) {
-          error(err);
+          reject(err);
         }
         resolve(res);
       });
@@ -71,16 +71,15 @@ class dbTable {
   // filter = [[ valueName, operator, value], ...]
   getRowsByValue(filter) {
     let _self = this;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const filterData = _self.createFilterStmt(filter);
       let stmt = `SELECT * FROM ${_self.fullName} WHERE ${filterData.stmt};`;
       debug(`[getRowsByValue] ${stmt}`, filterData.data);
       client.query(stmt, filterData.data, (err, res) => {
         if (err) {
-          error(err);
-          resolve([]);
+          reject(err);
         }
-        resolve(res);
+        resolve(res.rows);
       });
     });
   }
@@ -88,7 +87,7 @@ class dbTable {
   // filter = [[ valueName, operator, value], ...]
   countRowsByValue(filter) {
     let _self = this;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const filterData = _self.createFilterStmt(filter);
       let stmt = `SELECT COUNT(*) FROM ${_self.fullName} WHERE ${
         filterData.stmt
@@ -96,8 +95,7 @@ class dbTable {
       debug(`[countRowsByValue] ${stmt}`, filterData.data);
       client.query(stmt, filterData.data, (err, res) => {
         if (err) {
-          error(err);
-          resolve([]);
+          reject(err);
         }
         resolve(res[0]['COUNT(*)']);
       });
@@ -106,7 +104,7 @@ class dbTable {
 
   getRandomRowsByValue(filterArr, limitNum) {
     let _self = this;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const filterData = _self.createFilterStmt(filterArr);
       let stmt = `SELECT * FROM ${_self.fullName} `;
       stmt += filterData != null ? `WHERE ${filterData.stmt} ` : '';
@@ -114,8 +112,7 @@ class dbTable {
       debug(`[getRandomRowByValue] ${stmt}`, filterData.data);
       client.query(stmt, filterData.data, (err, res) => {
         if (err) {
-          debug('[Error]', err);
-          resolve([]);
+          reject(err);
         }
         resolve(res);
       });
@@ -125,7 +122,7 @@ class dbTable {
   // values = { valueName: value, ... }
   updateRow(id, values) {
     let _self = this;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       let stmt = `UPDATE ${_self.fullName} SET `;
       let data = [];
       for (const valName in values) {
@@ -137,7 +134,7 @@ class dbTable {
           stmt += `${valName} = '?',`;
           data.push(values[valName]);
         } else {
-          throw new Error(`Field ${valName} not in database`);
+          reject(`Field ${valName} not in database`);
         }
       }
       stmt = stmt.slice(0, -1);
@@ -147,8 +144,7 @@ class dbTable {
       debug(`[updateRow] ${stmt}`);
       client.query(stmt, data, (err, res) => {
         if (err) {
-          debug('[Error]', err);
-          resolve([]);
+          reject('[Error]', err);
         }
         resolve(res);
       });
@@ -157,19 +153,20 @@ class dbTable {
 
   // values = { columnName: value, ... }
   createRow(valuesObj) {
+    debug('valuesObj', valuesObj);
     let _self = this;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       let colNames = '';
       let questionMarks = '';
       let dataArr = [];
       for (const colName in valuesObj) {
-        colNames += '`' + colName + '`,';
-        questionMarks += `?,`;
+        colNames += colName + ', ';
+        questionMarks += `?, `;
         dataArr.push(valuesObj[colName]);
       }
 
-      colNames = colNames.slice(0, -1);
-      questionMarks = questionMarks.slice(0, -1);
+      colNames = colNames.slice(0, -2);
+      questionMarks = questionMarks.slice(0, -2);
 
       let stmt = `INSERT INTO ${
         _self.fullName
@@ -177,8 +174,7 @@ class dbTable {
       debug(`[createRow] ${stmt}`, dataArr);
       client.query(stmt, dataArr, (err, res) => {
         if (err) {
-          debug('[Error]', err);
-          resolve([]);
+          reject(err);
         }
         resolve(res);
       });
@@ -187,14 +183,13 @@ class dbTable {
 
   deleteRow(rowId) {
     const _self = this;
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       let stmt = `DELETE FROM ${_self.fullName} WHERE id = '?'`;
 
       debug(`[deleteRow] ${stmt}`);
       client.query(stmt, [rowId], (err, res) => {
         if (err) {
-          debug('[Error]', err);
-          resolve([]);
+          reject(err);
         }
         resolve(res);
       });
@@ -202,12 +197,11 @@ class dbTable {
   }
 
   query(stmt) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       debug(`[query] ${stmt}`);
       client.query(stmt, (err, res) => {
         if (err) {
-          debug('[Error]', err);
-          resolve([]);
+          reject(err);
         }
         resolve(res);
       });
@@ -245,7 +239,7 @@ const dbFormat = (filterI, tableName, paramCount) => {
     val = filterI[2];
   } else if (typeof filterI[2] === 'string') {
     // String
-    stmt = `${tableName}."${filterI[0]}" ${filterI[1]} BINARY $${paramCount}`;
+    stmt = `${tableName}."${filterI[0]}" ${filterI[1]} $${paramCount}`;
     val = filterI[2];
   } else {
     // Normal

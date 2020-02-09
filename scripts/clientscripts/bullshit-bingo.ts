@@ -14,8 +14,6 @@ declare var io : {
 // Author: Serveny
 class BullshitBingo {
 
-
-  // A bisl wergeln & rumwuseln
   constructor() {
     GameCache.socket = io.connect(window.location.host);
     GameCache.darkMode = new DarkMode();
@@ -26,7 +24,7 @@ class BullshitBingo {
         $('#bb_leaveRoomBtn'),
         $('#bb_autofillBtn'),
         $('#bb_createRoomBtn'),
-        $('#bb_toggleInfoBtn')
+        $('.bb_toggleInfoBtn')
       );
     GameCache.selectedCardsGrid = $('.bb_cardsGrid[data-selected=true]');
     GameCache.roomId = GameCache.matchfield.getUrlParam('r');
@@ -68,9 +66,9 @@ class BullshitBingo {
       GameCache.thisPlayerId = GameCache.socket.id;
     });
 
-    GameCache.socket.on('gameError', function(errorStr) {
-      console.log('[ERROR] ' + errorStr);
-      GameCache.matchfield.showErrorToast(errorStr);
+    GameCache.socket.on('gameError', function(error) {
+      console.log('[ERROR] ', error);
+      GameCache.matchfield.showErrorToast(typeof(error) === 'object' ? JSON.stringify(error) : error);
     });
 
     GameCache.socket.on('disconnect', () => {
@@ -78,7 +76,7 @@ class BullshitBingo {
       console.log(GameCache.socket + ' disconnected');
     });
 
-    GameCache.socket.on('roomJoined', function(roomData) {
+    GameCache.socket.on('roomJoined', (roomData) => {
       if (roomData == null) {
         history.pushState(null, '', location.protocol + '//' + location.host);
         $('#bb_createRoomBtn').show();

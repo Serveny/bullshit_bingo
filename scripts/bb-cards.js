@@ -125,7 +125,7 @@ exports.getUntakenWordsMap = async takenMap => {
 
   const resRaw = await db.word.getRandomRowsByValue(filterArr, needCount);
   let res = resRaw.rows;
-  
+
   if (res.length > 0) {
     for (let i = 0; i < res.length; i++) {
       wordsMap.set(
@@ -175,17 +175,26 @@ exports.generateEmptyCardMap = () => {
   return cardMap;
 };
 
-exports.wordCountUp = async (cardMap, type = 'Guessed') => {
-  let stmt = `UPDATE ${
-    db.word.fullName
-  } SET wordCount${type} = wordCount${type} + 1 WHERE `;
-  for (const card of cardMap.values()) {
-    stmt += `wordId = ${card.word.id} OR `;
-  }
-  stmt = stmt.slice(0, -3);
-  stmt += ';';
+exports.wordCountUp = async (cardMapOrCard, type = 'Guessed') => {
+  try {
+    const wordCountColName = type === 'Used' ? 'wordCountUsed' : 'wordCountGuessed';
+    let stmt = `UPDATE ${db.word.fullName} SET "${wordCountColName}" = "${wordCountColName}" + 1 WHERE `;
 
-  db.word.query(stmt);
+    if (typeof(cardMapOrCard.word) !== 'undefined') {
+      stmt += `"wordId" = ${cardMapOrCard.word.id} OR `;
+    } else {
+      for (const card of cardMapOrCard.values()) {
+        stmt += `"wordId" = ${card.word.id} OR `;
+      }
+    }
+    
+    stmt = stmt.slice(0, -3);
+    stmt += ';';
+
+    db.word.query(stmt);
+  } catch (error) {
+    debug(error);
+  }
 };
 
 exports.checkWin = cardMap => {

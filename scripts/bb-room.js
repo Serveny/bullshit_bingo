@@ -1,17 +1,16 @@
-"use strict";
-const
-    debug = require('debug')('wb'),
-    shortid = require('shortid'),
-    avatars = require('./bb-avatars'),
-    bb_cards = require('./bb-cards'),
-    out = require('./bb-socket-out'),
-    helper = require('./bb-helper'),
-    roomMap = global.wb.roomMap = new Map();
+'use strict';
+const debug = require('debug')('wb'),
+  shortid = require('shortid'),
+  avatars = require('./bb-avatars'),
+  bb_cards = require('./bb-cards'),
+  out = require('./bb-socket-out'),
+  helper = require('./bb-helper'),
+  roomMap = (global.wb.roomMap = new Map());
 
 const gamePhase = {
-  collect: 0,
-  bingo: 2
-},
+    collect: 0,
+    bingo: 2
+  },
   playerStatus = {
     inactive: 0,
     active: 1
@@ -19,10 +18,11 @@ const gamePhase = {
 
 const errorText = {
   roomNotExist: 'Aktion nicht möglich, Raum existiert nicht mehr.',
-  alreadyStarted: 'Aktion nicht möglich, Beitritt nach Spielbeginn nicht möglich.',
+  alreadyStarted:
+    'Aktion nicht möglich, Beitritt nach Spielbeginn nicht möglich.',
   wrongPhase: 'Aktion nicht möglich, Spieler ist in falscher Spiel-Phase.',
-  cardNotExist: 'Aktion nicht möglich, Karte existiert nicht.',
-}
+  cardNotExist: 'Aktion nicht möglich, Karte existiert nicht.'
+};
 
 class Room {
   constructor(id, playerMap, countdown) {
@@ -79,11 +79,11 @@ exports.joinRoom = (socket, roomId) => {
   return;
 };
 
-exports.removePlayerAndCloseRoomIfEmpty = (socket) => {
+exports.removePlayerAndCloseRoomIfEmpty = socket => {
   let room = getRoomByPlayerId(socket.id);
 
   if (room == null) {
-      return;
+    return;
   }
 
   if (isBingoPhase(room.playerMap) === false) {
@@ -104,7 +104,7 @@ exports.removePlayerAndCloseRoomIfEmpty = (socket) => {
   }
 };
 
-exports.togglePlayerIsReady = (socket) => {
+exports.togglePlayerIsReady = socket => {
   const room = getRoomByPlayerId(socket.id);
   if (room == null) {
     out.emitError(socket, errorText.roomNotExist);
@@ -117,7 +117,11 @@ exports.togglePlayerIsReady = (socket) => {
     return;
   }
 
-  if ((player.isReady === true) || (player.isReady === false && bb_cards.areCardsFilledAndValid(player.cardMap) === true)) {
+  if (
+    player.isReady === true ||
+    (player.isReady === false &&
+      bb_cards.areCardsFilledAndValid(player.cardMap) === true)
+  ) {
     player.isReady = !player.isReady;
   }
 
@@ -141,63 +145,77 @@ exports.setCustomName = (socket, newName) => {
 };
 
 exports.setCardAsync = async (socket, cardId, newText) => {
-  newText = helper.defuseUserInput(newText).toLowerCase();
+  try {
+    newText = helper.defuseUserInput(newText).toLowerCase();
 
-  const room = getRoomByPlayerId(socket.id);
-  if (room == null) {
-    out.emitError(socket, errorText.roomNotExist);
-    return;
-  }
-  const player = room.playerMap.get(socket.id);
-  if (player.phase !== gamePhase.collect) {
-    out.emitError(socket, errorText.wrongPhase);
-    return;
-  }
+    const room = getRoomByPlayerId(socket.id);
+    if (room == null) {
+      out.emitError(socket, errorText.roomNotExist);
+      return;
+    }
+    const player = room.playerMap.get(socket.id);
+    if (player.phase !== gamePhase.collect) {
+      out.emitError(socket, errorText.wrongPhase);
+      return;
+    }
 
-  const cardMap = player.cardMap;
-  const card = cardMap.get(parseInt(cardId));
+    const cardMap = player.cardMap;
+    const card = cardMap.get(parseInt(cardId));
 
-  // Check if no change
-  if (card.word != null && card.word.text === newText) {
+    // Check if no change
+    if (card.word != null && card.word.text === newText) {
+      out.emitSetCardResult(socket, card);
+      return;
+    }
+
+    // Check if valid
+    if (bb_cards.isValidCard(cardMap, newText) === false) {
+      out.emitSetCardResult(socket, card);
+      return;
+    }
+
+    const newWord = await bb_cards.getWordAsync(newText);
+    if (newWord != null) {
+      card.word = newWord;
+    }
+
     out.emitSetCardResult(socket, card);
+  } catch (error) {
+    debug(error);
+    out.emitError(socket, error);
     return;
   }
-
-  // Check if valid
-  if (bb_cards.isValidCard(cardMap, newText) === false) {
-    out.emitSetCardResult(socket, card);
-    return;
-  }
-
-  const newWord = await bb_cards.getWordAsync(newText);
-  if (newWord != null) {
-    card.word = newWord;
-  }
-
-  out.emitSetCardResult(socket, card);
 };
 
-exports.autofill = async (socket) => {
-  const room = getRoomByPlayerId(socket.id);
-  if (room == null) {
-    out.emitError(socket, errorText.roomNotExist);
+exports.autofill = async socket => {
+  try {
+    const room = getRoomByPlayerId(socket.id);
+    if (room == null) {
+      out.emitError(socket, errorText.roomNotExist);
+      return;
+    }
+    const player = room.playerMap.get(socket.id);
+    if (player.phase !== gamePhase.collect) {
+      out.emitError(socket, errorText.wrongPhase);
+      return;
+    }
+
+    const cardMap = player.cardMap;
+    const newWordsMap = await bb_cards.getUntakenWordsMap(
+      bb_cards.getTakenWordsMap(cardMap)
+    );
+    let changedMap = null;
+
+    if (newWordsMap.size > 0) {
+      changedMap = bb_cards.fillEmptyWordsCardMap(cardMap, newWordsMap);
+    }
+
+    out.emitAutofillResult(socket, changedMap);
+  } catch (error) {
+    debug(error);
+    out.emitError(socket, error);
     return;
   }
-  const player = room.playerMap.get(socket.id);
-  if (player.phase !== gamePhase.collect) {
-    out.emitError(socket, errorText.wrongPhase);
-    return;
-  }
-
-  const cardMap = player.cardMap;
-  const newWordsMap = await bb_cards.getUntakenWordsMap(bb_cards.getTakenWordsMap(cardMap));
-  let changedMap = null;
-
-  if (newWordsMap.size > 0) {
-    changedMap = bb_cards.fillEmptyWordsCardMap(cardMap, newWordsMap);
-  }
-
-  out.emitAutofillResult(socket, changedMap);
 };
 
 // Recover game after server-restart or crash
@@ -216,40 +234,45 @@ exports.recoverGame = (socket, roomClt, oldId) => {
     roomSvr.playerMap.delete(oldId);
     roomSvr.playerMap.set(socket.id, roomClt.playerMap.get(oldId));
   }
-}
+};
 exports.cardHit = (socket, cardId) => {
-  const room = getRoomByPlayerId(socket.id);
-  if (room == null) {
-    out.emitError(socket, errorText.roomNotExist);
-    return;
-  }
-  const player = room.playerMap.get(socket.id);
-  if (player.phase !== gamePhase.bingo) {
-    out.emitError(socket, errorText.wrongPhase);
-    return;
-  }
-  const card = player.cardMap.get(parseInt(cardId));
-  if (card == null) {
-    out.emitError(socket, errorText.cardNotExist);
-    return;
-  }
-  card.isHit = true;
-  out.emitCardHit(socket, room, cardId, card.isHit);
+  try {
+    const room = getRoomByPlayerId(socket.id);
+    if (room == null) {
+      out.emitError(socket, errorText.roomNotExist);
+      return;
+    }
+    const player = room.playerMap.get(socket.id);
+    if (player.phase !== gamePhase.bingo) {
+      out.emitError(socket, errorText.wrongPhase);
+      return;
+    }
+    const card = player.cardMap.get(parseInt(cardId));
+    if (card == null) {
+      out.emitError(socket, errorText.cardNotExist);
+      return;
+    }
+    card.isHit = true;
+    bb_cards.wordCountUp(card, 'Used');
+    out.emitCardHit(socket, room, cardId, card.isHit);
 
-  const winLine = bb_cards.checkWin(player.cardMap);
-  if (winLine != null) {
-    out.emitWin(socket, room, winLine);
+    const winLine = bb_cards.checkWin(player.cardMap);
+    if (winLine != null) {
+      out.emitWin(socket, room, winLine);
+    }
+  } catch (error) {
+    debug(error);
+    out.emitError(socket, error);
+    return;
   }
-}
+};
 //#endregion
 
 //#region private
-const createRoom = (socket) => {
+const createRoom = socket => {
   const newPlayer = createPlayer(null, socket);
   const roomId = shortid.generate();
-  const room = new Room(roomId, new Map([
-    [newPlayer.id, newPlayer]
-  ]), null);
+  const room = new Room(roomId, new Map([[newPlayer.id, newPlayer]]), null);
 
   socket.join(roomId);
   roomMap.set(roomId, room);
@@ -258,33 +281,42 @@ const createRoom = (socket) => {
 
 const createPlayer = (playerMap, socket) => {
   const avatar = avatars.getRandomAvatar(playerMap);
-  return new Player(socket.id, avatar, false, bb_cards.generateEmptyCardMap(), gamePhase.collect, playerStatus.active);
+  return new Player(
+    socket.id,
+    avatar,
+    false,
+    bb_cards.generateEmptyCardMap(),
+    gamePhase.collect,
+    playerStatus.active
+  );
 };
 
-const getRoomByPlayerId = (id) => {
+const getRoomByPlayerId = id => {
   for (const room of roomMap.values()) {
     if (room.playerMap.has(id) === true) {
-        return room;
+      return room;
     }
   }
   return null;
 };
 
-const startStopCountdown = (room) => {
+const startStopCountdown = room => {
   const allReady = areAllPlayerReady(room.playerMap);
 
   // Start countdown
   if (allReady === true && room.countdown == null) {
     const countdownTime = 3000;
 
-    room.countdown = setTimeout(() => {
-      debug('start', room.countdown);
-      if (areAllPlayerReady(room.playerMap) === true) {
+    room.countdown = setTimeout(
+      () => {
+        debug('start', room.countdown);
+        if (areAllPlayerReady(room.playerMap) === true) {
           startBingoPhase(room);
-      }
-    },
-    // 100ms tolerance
-    (countdownTime + 100));
+        }
+      },
+      // 100ms tolerance
+      countdownTime + 100
+    );
     out.emitStartCountdown(room, countdownTime);
   }
   // Stop countdown
@@ -294,49 +326,49 @@ const startStopCountdown = (room) => {
   }
 };
 
-const areAllPlayerReady = (playerMap) => {
+const areAllPlayerReady = playerMap => {
   for (const player of playerMap.values()) {
     if (player.isReady === false) {
-        return false;
+      return false;
     }
   }
   return true;
 };
 
-const unreadyPlayer = (playerMap) => {
+const unreadyPlayer = playerMap => {
   for (const player of playerMap.values()) {
     player.isReady = false;
   }
 };
 
-const startBingoPhase = (room) => {
+const startBingoPhase = room => {
   for (const player of room.playerMap.values()) {
     startPlayerBingoPhase(player);
   }
   out.emitPhaseChangedBingo(room);
-}
+};
 
-const setPlayersInactive = (playerMap) => {
+const setPlayersInactive = playerMap => {
   if (playerMap != null && typeof playerMap.values !== 'undefined') {
     for (const player of playerMap.values()) {
       player.status = playerStatus.inactive;
     }
   }
-}
+};
 
-const startPlayerBingoPhase = (player) => {
+const startPlayerBingoPhase = player => {
   if (player.isReady === true && player.phase === gamePhase.collect) {
     player.phase = gamePhase.bingo;
     bb_cards.wordCountUp(player.cardMap, 'Guessed');
   }
-}
+};
 
-const isBingoPhase = (playerMap) => {
+const isBingoPhase = playerMap => {
   for (const player of playerMap.values()) {
     if (player.phase === gamePhase.bingo) {
       return true;
     }
   }
   return false;
-}
+};
 //#endregion
