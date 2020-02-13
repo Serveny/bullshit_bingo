@@ -1,5 +1,5 @@
 'use strict';
-const debug = require('debug')('wb'),
+const debug = require('debug')('bb'),
   db = require('./bb-db'),
   helper = require('./bb-helper');
 
@@ -52,17 +52,17 @@ exports.getWordAsync = async text => {
   }
 
   let res = await db.word.getRowsByValue([['wordText', '=', text]]);
-  debug('Res: ', res);
 
   if (res.length <= 0) {
     res = await db.word.createRow({ wordText: text });
-    res = await db.word.getRowById(res.insertId);
+    res = await db.word.getRowsByValue([['wordText', '=', text]]);
 
     if (res.length <= 0) {
       debug(`[ERROR] getWordAsync: Can not find/create word in database.`);
       return null;
     }
   }
+  debug('ResCreate: ', res);
   res = res[0];
 
   return new Word(

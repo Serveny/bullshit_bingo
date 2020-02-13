@@ -16,9 +16,7 @@ export class CollectPhase {
   startCollectPhase(room: any) {
     console.debug('RoomJoinedCache: ', GameCache);
     GameCache.room = new Room(room);
-    
 
-    // Brobbaties
     const urlWithoutParams = location.protocol + '//' + location.host;
     GameCache.nextFocusCardId = null;
 
@@ -30,7 +28,6 @@ export class CollectPhase {
 
     GameCache.room.roomAddPlayer(GameCache.room.playerMap);
 
-    // Hadde Arbeit
     GameCache.selectedCardsGrid.attr('data-playerid', GameCache.socket.id);
     GameCache.selectedCardsGrid.html(
       GameCache.matchfield.matchfieldBuildHTML(GameCache.room.playerMap.get(GameCache.socket.id).cardMap)

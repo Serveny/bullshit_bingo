@@ -1,5 +1,5 @@
 'use strict';
-const debug = require('debug')('wb'),
+const debug = require('debug')('bb'),
   shortid = require('shortid'),
   avatars = require('./bb-avatars'),
   bb_cards = require('./bb-cards'),

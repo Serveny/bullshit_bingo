@@ -1,6 +1,5 @@
-import { GameCache } from './bb-cl-game-cache';
 export class DarkMode {
-  private _isDarkMode: boolean;
+  private _isDarkMode: boolean = false;
   get isDarkMode(): boolean {
     return this._isDarkMode;
   }
@@ -22,7 +21,7 @@ export class DarkMode {
   }
   
   public toggle(force: boolean = null) {
-    this._isDarkMode = force == null ? !this._isDarkMode : force;
+    this._isDarkMode = force == null ? this._isDarkMode === false : force;
 
     if (this._isDarkMode === true) {
       this.setDarkModeSetting(true);

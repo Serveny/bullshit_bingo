@@ -10,15 +10,21 @@
     "url": "https://github.com/Serveny/drachenlord_bullshit_bingo"
   },
   "license": "MIT",
+  "nodemonConfig": {
+    "watch": ["app.js", "scripts/"],
+    "ext": "ts",
+    "ignore": [
+      "public/js/*.js"
+    ]
+  },
   "scripts": {
     "start": "node app.js",
-    "start-dev": "@powershell -Command $env:DEBUG='wb'; nodemon app.js --ignore 'public/js/*.js'",
+    "start-dev": "@powershell -Command $env:DEBUG='bb'; nodemon app.js",
     "pm2-start": "pm2 start app.js",
     "kill-win": "taskkill /im node.exe",
     "kill-lin": "killall node",
     "restart": "npm run kill-win && npm run start",
-    "createDB": "node ./scripts/bb-create-db.js",
-    "build-ts": "node app.js"
+    "createDB": "node ./scripts/bb-create-db.js"
   },
   "devDependencies": {
     "@types/jquery": "^3.3.32",
