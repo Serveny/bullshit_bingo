@@ -28,7 +28,7 @@ export class CollectPhase {
 
     GameCache.room.roomAddPlayer(GameCache.room.playerMap);
 
-    GameCache.selectedCardsGrid.attr('data-playerid', GameCache.socket.id);
+    GameCache.selectedCardsGrid.attr('data-player-id', GameCache.socket.id);
     GameCache.selectedCardsGrid.html(
       GameCache.matchfield.matchfieldBuildHTML(GameCache.room.playerMap.get(GameCache.socket.id).cardMap)
     );
@@ -53,7 +53,7 @@ export class CollectPhase {
         if (keyCode == 9) {
           if (GameCache.matchfield.cardChangeEl != null) {
             e.preventDefault();
-            let number = parseInt(GameCache.matchfield.cardChangeEl.attr('data-id'));
+            let number = parseInt(GameCache.matchfield.cardChangeEl.attr('data-card-id'));
 
             if (e.shiftKey) {
               number--;
@@ -91,9 +91,9 @@ export class CollectPhase {
           target.hasClass('bb_card_text') === true ? target.parent() : target;
 
         if (target.hasClass('bb_card') === true) {
-          const id = parseInt(target.attr('data-id'));
+          const id = parseInt(target.attr('data-card-id'));
           if (GameCache.matchfield.cardChangeEl != null) {
-            if (id !== parseInt(GameCache.matchfield.cardChangeEl.attr('data-id'))) {
+            if (id !== parseInt(GameCache.matchfield.cardChangeEl.attr('data-card-id'))) {
               GameCache.nextFocusCardId = id;
               GameCache.matchfield.matchfieldSetNewTextToCard(GameCache.matchfield.cardChangeEl);
             }

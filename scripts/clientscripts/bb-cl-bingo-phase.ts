@@ -36,28 +36,27 @@ export class BingoPhase {
             : target;
         if (target.hasClass('bb_userField') === true) {
           if (target.hasClass('bb_userSelected') === false) {
-            $('.bb_userSelected').removeClass('bb_userSelected');
-            target.addClass('bb_userSelected');
-            GameCache.room.roomShowCardField(target.attr('data-id'));
+            GameCache.room.roomSelectCardField(target.attr('data-player-id'));
           }
           return;
         }
 
         // Card Click Handler
-        target =
-          target.hasClass('bb_card_text') === true ? target.parent() : target;
+        target = target.hasClass('bb_card_text') === true ? target.parent() : target;
         if (target.hasClass('bb_cardHit') === true) {
           return;
         }
         if (target.hasClass('bb_card') === true) {
-          const id = target.attr('data-id');
-          if (GameCache.matchfield.cardChangeEl != null) {
-            if (id !== GameCache.matchfield.cardChangeEl.attr('data-id')) {
-              GameCache.matchfield.cardsRemoveConfirmBox(GameCache.matchfield.cardChangeEl);
+          if (GameCache.selectedCardsGrid.attr('data-player-id') === GameCache.thisPlayerId) {
+            if (GameCache.matchfield.cardChangeEl != null) {
+              const id = target.attr('data-card-id');
+              if (id !== GameCache.matchfield.cardChangeEl.attr('data-card-id')) {
+                GameCache.matchfield.cardsRemoveConfirmBox(GameCache.matchfield.cardChangeEl);
+                GameCache.matchfield.cardsAddConfirmBox(target);
+              }
+            } else {
               GameCache.matchfield.cardsAddConfirmBox(target);
             }
-          } else {
-            GameCache.matchfield.cardsAddConfirmBox(target);
           }
         } else {
           if (GameCache.matchfield.cardChangeEl != null) {
@@ -86,16 +85,17 @@ export class BingoPhase {
       console.log(
         '[GAME END] ',
         winData.playerId,
-        $('.bb_cardsGrid[data-selected="true"]').attr('data-playerid')
+        $('.bb_cardsGrid[data-selected="true"]').attr('data-player-id')
       );
       if (
         winData.playerId ===
-        $('.bb_cardsGrid[data-selected="true"]').attr('data-playerid')
+        $('.bb_cardsGrid[data-selected="true"]').attr('data-player-id')
       ) {
         GameCache.matchfield.drawWinLine(winData.winLine);
         GameCache.matchfield.playWinAnimation();
         GameCache.socket.off('cardHit', cardHitHandler);
       } else {
+        GameCache.matchfield.playOtherPlayerWinAnimation(winData.playerId);
         console.log('Other player won');
       }
     });

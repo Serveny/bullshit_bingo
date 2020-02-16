@@ -25,13 +25,12 @@ export class Room {
   }
 
   roomAddPlayerHTML(player: Player) {
-    const _self = this;
     const isReadyStyle =
       player.isReady === true ? 'style="display: block;"' : '';
 
     if (player.id === GameCache.socket.id) {
       $('#bb_lobbyContainer').append(
-        '<div id="bb_thisUserField" class="bb_userField bb_userSelected" data-id="' +
+        '<div id="bb_thisUserField" class="bb_userField bb_userSelected" data-player-id="' +
           player.id +
           '"><img id="bb_thisUserPic" src="' +
           player.avatar.picUrl +
@@ -51,7 +50,7 @@ export class Room {
       });
     } else {
       $('#bb_lobbyContainer').append(
-        '<div class="bb_userField" data-id="' +
+        '<div class="bb_userField" data-player-id="' +
           player.id +
           '"><i class="mi bb_userReady" ' +
           isReadyStyle +
@@ -67,11 +66,11 @@ export class Room {
   }
 
   roomRemovePlayerHTML(playerId: string) {
-    $('.bb_userField[data-id=' + playerId + ']').remove();
+    $('.bb_userField[data-player-id=' + playerId + ']').remove();
   }
 
   roomPlayerChangeName(playerId: string, name: string) {
-    $('.bb_userField[data-id=' + playerId + ']')
+    $('.bb_userField[data-player-id=' + playerId + ']')
       .find('.bb_userName')
       .text(name);
   }
@@ -79,12 +78,14 @@ export class Room {
   roomSetPlayerReadyHTML(playerId: string, isReady: boolean) {
     if (playerId === GameCache.socket.id) {
       if (isReady === true) {
+        $('#bb_thisUserField').removeClass('pulse');
         $('#bb_thisUserReady').css({ color: 'green' });
       } else {
+        $('#bb_thisUserField').addClass('pulse');
         $('#bb_thisUserReady').css({ color: 'gray' });
       }
     } else {
-      let player = $('.bb_userField[data-id=' + playerId + ']');
+      let player = $('.bb_userField[data-player-id=' + playerId + ']');
       if (player != null) {
         if (isReady === true) {
           player.find('.bb_userReady').show();
@@ -145,7 +146,7 @@ export class Room {
     for (const player of this.playerMap.values()) {
       if (player.id !== GameCache.thisPlayerId) {
         fieldsHtml +=
-          '<div class="bb_cardsGrid" data-selected="false" data-playerid="' +
+          '<div class="bb_cardsGrid" data-selected="false" data-player-id="' +
           player.id +
           '" style="display: none;">' +
           GameCache.matchfield.matchfieldBuildHTML(player.cardMap) +
@@ -155,12 +156,20 @@ export class Room {
     return fieldsHtml;
   }
 
+  roomSelectCardField(playerId: string) {
+    $('.bb_userSelected').removeClass('bb_userSelected');
+    const userField = $(`.bb_userField[data-player-id=${playerId}]`);
+    userField.addClass('bb_userSelected');
+    this.roomShowCardField(userField.attr('data-player-id'));
+  }
+
   roomShowCardField(playerId: string) {
     console.log('Hide old selected: ', GameCache.selectedCardsGrid);
     GameCache.selectedCardsGrid.attr('data-selected', 'false');
     const newSelected = $(
-      '.bb_cardsGrid[data-playerid="' + playerId + '"]'
+      '.bb_cardsGrid[data-player-id="' + playerId + '"]'
     ).attr('data-selected', 'true');
+    console.log('new selected: ', playerId, newSelected);
     GameCache.matchfield.showFieldSwitchAnimation(GameCache.selectedCardsGrid, newSelected);
     GameCache.selectedCardsGrid = newSelected;
   }

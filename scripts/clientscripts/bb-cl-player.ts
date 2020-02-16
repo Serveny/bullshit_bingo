@@ -1,8 +1,9 @@
 import { Card } from './bb-cl-card';
+import { IAvatar } from './bb-cl-i-avatar';
 
 export class Player {
   public id: string;
-  public avatar: any;
+  public avatar: IAvatar;
   public isReady: boolean;
   public cardMap: Map<number, Card>;
   public phase: number;
