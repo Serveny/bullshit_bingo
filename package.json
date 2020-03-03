@@ -11,7 +11,10 @@
   },
   "license": "MIT",
   "nodemonConfig": {
-    "watch": ["app.js", "scripts/"],
+    "watch": [
+      "app.js",
+      "scripts/"
+    ],
     "ext": "ts",
     "ignore": [
       "public/js/*.js"
@@ -27,20 +30,20 @@
     "createDB": "node ./scripts/bb-create-db.js"
   },
   "devDependencies": {
-    "@types/jquery": "^3.3.32",
-    "@types/node": "^12.12.26",
+    "@types/jquery": "^3.3.33",
+    "@types/node": "^12.12.29",
     "@types/socket.io": "^2.1.4",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.5",
+    "typescript": "^3.8.3",
     "var_dump": "^1.0.5",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "config": "^3.2.5",
+    "config": "^3.3.0",
     "debug": "^4.1.1",
     "express": "^4.17.1",
-    "pg": "^7.18.1",
+    "pg": "^7.18.2",
     "serve-favicon": "^2.5.0",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0"

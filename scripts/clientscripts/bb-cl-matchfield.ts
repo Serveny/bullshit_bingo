@@ -16,8 +16,7 @@ export class Matchfield {
 
   private _confetti: Confetti;
 
-  constructor() {
-  }
+  constructor() {}
 
   matchfieldBuildHTML(cardMap: Map<number, Card>) {
     let fieldHTML = '';
@@ -90,9 +89,7 @@ export class Matchfield {
 
   matchfieldCheckAllCardsFilled() {
     let areAllCardsFilled = true;
-    const cardMap = GameCache.room.playerMap.get(
-      GameCache.socket.id
-    ).cardMap;
+    const cardMap = GameCache.room.playerMap.get(GameCache.socket.id).cardMap;
 
     for (let card of cardMap.values()) {
       if (card.word == null || card.word.text === '') {
@@ -248,8 +245,14 @@ export class Matchfield {
       .addClass('bb_card_focus');
 
     $('#bb_cardSubmit').on('click', () => {
-      GameCache.socket.emit('cardWordSaid', _self._cardChangeEl.attr('data-card-id'));
-      GameCache.socket.emit('cardHit', _self._cardChangeEl.attr('data-card-id'));
+      GameCache.socket.emit(
+        'cardWordSaid',
+        _self._cardChangeEl.attr('data-card-id')
+      );
+      GameCache.socket.emit(
+        'cardHit',
+        _self._cardChangeEl.attr('data-card-id')
+      );
     });
     $('#bb_cardCancel').on('click', () => {
       _self.cardsRemoveConfirmBox(_self.cardChangeEl);
@@ -267,39 +270,40 @@ export class Matchfield {
     this._cardChangeEl = null;
   }
 
-  cardsSetHit(playerId: string, cardId: string, isHit: boolean) {
+  cardsSetHit(playerId: string, cardId: string, isHit: boolean): void {
     console.log(playerId, cardId, isHit);
     const card = GameCache.room.playerMap
       .get(playerId)
       .cardMap.get(parseInt(cardId));
     card.isHit = isHit;
     this.cardsHittedShowUserFieldToast(playerId, card);
-
-    if (playerId === GameCache.selectedCardsGrid.attr('data-player-id')) {
-      const cardEl = GameCache.selectedCardsGrid.find('[data-card-id=' + cardId + ']');
-      const bgColor =
-        GameCache.darkMode.isDarkMode === true
-          ? 'rgb(34, 34, 34, 0.8)'
-          : 'rgb(242, 226, 196, 0.8)';
-      if (isHit === true) {
-        cardEl.addClass('bb_cardHit');
-        cardEl.css({
-          background:
-            "url('../img/cardBG.png'), radial-gradient(rgb(152, 166, 123, 1), " +
-            bgColor +
-            ')'
-        });
-      } else {
-        cardEl.removeClass('bb_cardHit');
-        cardEl.attr('style', '');
-      }
-      this.cardsHittedCutBorder();
+    const cardEl = $('.bb_cardsGrid[data-player-id="' + playerId + '"]').find(
+      '[data-card-id=' + cardId + ']'
+    );
+    const bgColor =
+      GameCache.darkMode.isDarkMode === true
+        ? 'rgb(34, 34, 34, 0.8)'
+        : 'rgb(242, 226, 196, 0.8)';
+    if (isHit === true) {
+      cardEl.addClass('bb_cardHit');
+      cardEl.css({
+        background:
+          "url('../img/cardBG.png'), radial-gradient(rgb(152, 166, 123, 1), " +
+          bgColor +
+          ')'
+      });
+    } else {
+      cardEl.removeClass('bb_cardHit');
+      cardEl.attr('style', '');
     }
+    this.cardsHittedCutBorder();
   }
 
   cardsHittedShowUserFieldToast(playerId: string, card: Card) {
     const userField = $('.bb_userField[data-player-id=' + playerId + ']');
-    const $toast = $(`<span class="bb_userFieldToast fadeUp">${card.word.text}</span>`);
+    const $toast = $(
+      `<span class="bb_userFieldToast fadeUp">${card.word.text}</span>`
+    );
     userField.append($toast);
     setTimeout(() => {
       $toast.fadeOut(900);
@@ -312,7 +316,7 @@ export class Matchfield {
   cardsHittedCutBorder() {
     console.log('cardsHittedCutBorder');
     const _self = this;
-    $('.bb_cardHit').each((i: number, element: HTMLElement) => {
+    $('.bb_cardHit').each((_i: number, element: HTMLElement) => {
       const el = $(element),
         x = parseInt(el.attr('data-x')),
         y = parseInt(el.attr('data-y')),
@@ -346,7 +350,10 @@ export class Matchfield {
        Other Functions
        --------------------- */
 
-  showFieldSwitchAnimation(fieldHide: JQuery<HTMLElement>, fieldShow: JQuery<HTMLElement>) {
+  showFieldSwitchAnimation(
+    fieldHide: JQuery<HTMLElement>,
+    fieldShow: JQuery<HTMLElement>
+  ) {
     fieldHide.fadeOut(400);
     fieldShow.fadeIn(200);
   }
