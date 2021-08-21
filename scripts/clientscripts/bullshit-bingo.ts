@@ -117,7 +117,7 @@ class BullshitBingo {
   }
 }
 
-$(document).on('ready', () => {
+$(() => {
   new BullshitBingo();
   $('body').fadeIn(1600);
 });
