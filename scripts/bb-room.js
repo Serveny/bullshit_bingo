@@ -118,9 +118,9 @@ exports.togglePlayerIsReady = socket => {
   }
 
   if (
-    player.isReady === true ||
-    (player.isReady === false &&
-      bb_cards.areCardsFilledAndValid(player.cardMap) === true)
+    player.isReady === true 
+    || (player.isReady === false 
+      && bb_cards.areCardsFilledAndValid(player.cardMap) === true)
   ) {
     player.isReady = !player.isReady;
   }

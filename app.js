@@ -1,10 +1,12 @@
 'use strict';
+const dbCfg = require('config').db;
 
 // bullshitbingo namespace
 global.wb = {
   io: null,
   roomMap: null,
-  wordMap: null
+  wordMap: null,
+  isUseDb: dbCfg != null && dbCfg !== false,
 };
 
 const appCfg = require('config').app,
