@@ -211,7 +211,7 @@ export class Matchfield {
   }
 
   cardsFlipAnimation() {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       const bigText = $('#bb_bigText')
         .text('bingo')
         .addClass('fadeLeftToRight')

@@ -2,9 +2,8 @@ import { GameCache } from './bb-cl-game-cache';
 import { Card } from './bb-cl-card';
 import { Room } from './bb-cl-room';
 export class CollectPhase {
-
-
   private _countdownId: string;
+  
   get countdownId() {
     return this._countdownId;
   }
@@ -45,8 +44,7 @@ export class CollectPhase {
 
   // Returns function to remove in function setted eventhandler
   addEventsCollectPhase() {
-    const _self = this,
-      keydownHandler = function(e: any) {
+    const keydownHandler = function(e: any) {
         let keyCode = e.keyCode || e.which;
 
         // Key: Tab
@@ -117,8 +115,7 @@ export class CollectPhase {
   }
 
   socketAddEventsCollectPhase(removeEventsCollectPhaseFunc: any) {
-    const _self = this,
-      playerIsReadyChangedHandler = (data: any) => {
+    const playerIsReadyChangedHandler = (data: any) => {
         GameCache.room.roomSetPlayerReadyHTML(data.playerId, data.isReady);
 
         if (data.isReady === false) {

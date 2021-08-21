@@ -6,7 +6,6 @@ global.wb = {
   io: null,
   roomMap: null,
   wordMap: null,
-  isUseDb: dbCfg != null && dbCfg !== false,
 };
 
 const appCfg = require('config').app,

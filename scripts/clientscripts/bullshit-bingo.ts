@@ -38,30 +38,26 @@ class BullshitBingo {
   }
 
   addEvents() {
-    const _self = this;
-
-    $('#bb_createRoomBtn').click(() => {
+    $('#bb_createRoomBtn').on('click', () => {
       GameCache.socket.emit('joinRoom', null);
     });
 
-    GameCache.barButtons.toggleInfoBtn.click(() => {
+    GameCache.barButtons.toggleInfoBtn.on('click', () => {
       GameCache.matchfield.toggleInfo();
     });
 
-    GameCache.barButtons.leaveRoomBtn.click(() => {
+    GameCache.barButtons.leaveRoomBtn.on('click', () => {
       GameCache.socket.disconnect();
       history.pushState(null, '', location.protocol + '//' + location.host);
       location.reload();
     });
 
-    GameCache.barButtons.autofillBtn.click(() => {
+    GameCache.barButtons.autofillBtn.on('click', () => {
       GameCache.socket.emit('needAutofill');
     });
   }
 
   socketAddEvents() {
-    const _self = this;
-
     GameCache.socket.on('connect', () => {
       GameCache.thisPlayerId = GameCache.socket.id;
     });
@@ -121,7 +117,7 @@ class BullshitBingo {
   }
 }
 
-$(document).ready(() => {
-  const bullshitBingo = new BullshitBingo();
+$(document).on('ready', () => {
+  new BullshitBingo();
   $('body').fadeIn(1600);
 });
