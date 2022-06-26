@@ -3,6 +3,9 @@
 Hey guys. Some people on the Internet talk far too much bullshit when the day is long and like to repeat this constantly and as often as possible. So it would be great if you could make a funny game out of it with your friends.
 
 For this reason the Bullshit Bingo is developed here.
+
+![bb_screenshot](https://user-images.githubusercontent.com/4029092/175833699-c6b0da50-7be3-4961-a39f-7c61aa9ab6ff.jpg)
+
 Rules
 
 The game is divided into 2 phases:
