@@ -46,34 +46,35 @@ class WinLine {
 exports.Card = Card;
 exports.Word = Word;
 
-exports.getWordAsync = async text => {
+exports.getWordAsync = async (text) => {
   if (text == null || text === '') {
     return null;
   }
 
-  let res = await db.word.getRowsByValue([['wordText', '=', text]]);
+  //  let res = await db.word.getRowsByValue([['wordText', '=', text]]);
 
-  if (res.length <= 0) {
-    res = await db.word.createRow({ wordText: text });
-    res = await db.word.getRowsByValue([['wordText', '=', text]]);
+  //if (res.length <= 0) {
+  //res = await db.word.createRow({ wordText: text });
+  //res = await db.word.getRowsByValue([['wordText', '=', text]]);
 
-    if (res.length <= 0) {
-      debug(`[ERROR] getWordAsync: Can not find/create word in database.`);
-      return null;
-    }
-  }
-  debug('ResCreate: ', res);
-  res = res[0];
+  //if (res.length <= 0) {
+  //debug(`[ERROR] getWordAsync: Can not find/create word in database.`);
+  //return null;
+  //}
+  //}
+  //debug('ResCreate: ', res);
+  //res = res[0];
 
-  return new Word(
-    res.wordId,
-    res.wordText,
-    res.wordCountGuessed,
-    res.wordCountUsed,
-    res.wordFlagUseForAutofill,
-    res.createdAt,
-    res.changedAt
-  );
+  //return new Word(
+  //res.wordId,
+  //res.wordText,
+  //res.wordCountGuessed,
+  //res.wordCountUsed,
+  //res.wordFlagUseForAutofill,
+  //res.createdAt,
+  //res.changedAt
+  //);
+  return new Word(Math.random(), text, 0, 0, false, new Date(), new Date());
 };
 
 exports.isValidCard = (cardMap, cardText) => {
@@ -90,7 +91,7 @@ exports.isValidCard = (cardMap, cardText) => {
   return true;
 };
 
-exports.areCardsFilledAndValid = cardMap => {
+exports.areCardsFilledAndValid = (cardMap) => {
   if (
     areCardsFilled(cardMap) === true &&
     helper.hasDoubleValuesMap(cardMap, ['text']) === false
@@ -101,7 +102,7 @@ exports.areCardsFilledAndValid = cardMap => {
   }
 };
 
-exports.getTakenWordsMap = cardMap => {
+exports.getTakenWordsMap = (cardMap) => {
   let takenMap = new Map();
   for (const card of cardMap.values()) {
     if (card.word != null) {
@@ -111,7 +112,7 @@ exports.getTakenWordsMap = cardMap => {
   return takenMap;
 };
 
-exports.getUntakenWordsMap = async takenMap => {
+exports.getUntakenWordsMap = async (takenMap) => {
   const needCount = 25 - takenMap.size;
   const wordsMap = new Map();
   let filterArr = [['wordFlagUseForAutofill', '=', true]];
@@ -177,17 +178,18 @@ exports.generateEmptyCardMap = () => {
 
 exports.wordCountUp = async (cardMapOrCard, type = 'Guessed') => {
   try {
-    const wordCountColName = type === 'Used' ? 'wordCountUsed' : 'wordCountGuessed';
+    const wordCountColName =
+      type === 'Used' ? 'wordCountUsed' : 'wordCountGuessed';
     let stmt = `UPDATE ${db.word.fullName} SET "${wordCountColName}" = "${wordCountColName}" + 1 WHERE `;
 
-    if (typeof(cardMapOrCard.word) !== 'undefined') {
+    if (typeof cardMapOrCard.word !== 'undefined') {
       stmt += `"wordId" = ${cardMapOrCard.word.id} OR `;
     } else {
       for (const card of cardMapOrCard.values()) {
         stmt += `"wordId" = ${card.word.id} OR `;
       }
     }
-    
+
     stmt = stmt.slice(0, -3);
     stmt += ';';
 
@@ -197,7 +199,7 @@ exports.wordCountUp = async (cardMapOrCard, type = 'Guessed') => {
   }
 };
 
-exports.checkWin = cardMap => {
+exports.checkWin = (cardMap) => {
   const mtx = createCardHitMatrix(cardMap);
 
   // horizontal
@@ -260,7 +262,7 @@ exports.checkWin = cardMap => {
 //#endregion
 
 //#region private
-const areCardsFilled = cardMap => {
+const areCardsFilled = (cardMap) => {
   for (const card of cardMap.values()) {
     if (card.word == null || card.word.text == null || card.word.text === '') {
       return false;
@@ -275,11 +277,11 @@ const emptyMatrix = () => {
     [false, false, false, false, false],
     [false, false, false, false, false],
     [false, false, false, false, false],
-    [false, false, false, false, false]
+    [false, false, false, false, false],
   ];
 };
 
-const createCardHitMatrix = cardMap => {
+const createCardHitMatrix = (cardMap) => {
   const matrixArr = emptyMatrix();
   for (const card of cardMap.values()) {
     matrixArr[parseInt(card.posY) - 1][parseInt(card.posX) - 1] = card.isHit;

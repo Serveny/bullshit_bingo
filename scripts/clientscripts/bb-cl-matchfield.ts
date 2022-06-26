@@ -16,7 +16,7 @@ export class Matchfield {
 
   private _confetti: Confetti;
 
-  constructor() {}
+  constructor() { }
 
   matchfieldBuildHTML(cardMap: Map<number, Card>) {
     let fieldHTML = '';
@@ -121,8 +121,8 @@ export class Matchfield {
       .addClass('bb_card_focus')
       .html(
         '<textarea id="bb_cardTextArea" class="bb_card_text ' +
-          dark +
-          '" maxlength="32"></textarea>'
+        dark +
+        '" maxlength="32"></textarea>'
       );
 
     $('#bb_cardTextArea')
@@ -185,7 +185,7 @@ export class Matchfield {
     element.find('textarea').focus();
     element.removeClass('bb_card_focus').addClass('shake_short');
 
-    setTimeout(function() {
+    setTimeout(function () {
       element.removeClass('shake_short').addClass('bb_card_focus');
     }, 820);
   }
@@ -203,7 +203,7 @@ export class Matchfield {
       // Animation
       const cardSpan = cardEl.find('span');
       cardSpan.hide();
-      setTimeout(function() {
+      setTimeout(function () {
         cardSpan.fadeIn(800);
       }, time);
       time += 50;
@@ -219,7 +219,7 @@ export class Matchfield {
       const cardsText = $('.bb_card_text').addClass('mirror');
       const cardsContainer = $('#bb_cardsContainer').addClass('flip');
 
-      setTimeout(function() {
+      setTimeout(function () {
         bigText.hide().removeClass('fadeLeftToRight');
         cardsText.removeClass('mirror');
         cardsContainer.removeClass('flip');
@@ -236,11 +236,11 @@ export class Matchfield {
     cardEl
       .append(
         '<div class="bb_cardConfirmBox"><button id="bb_cardSubmit" class="bb_cardBtn' +
-          dark +
-          '"><i class="mi">done</i>' +
-          '</button><button id="bb_cardCancel" class="bb_cardBtn' +
-          dark +
-          '"><i class="mi">close</i></button></div>'
+        dark +
+        '"><i class="mi">done</i>' +
+        '</button><button id="bb_cardCancel" class="bb_cardBtn' +
+        dark +
+        '"><i class="mi">close</i></button></div>'
       )
       .addClass('bb_card_focus');
 
@@ -428,7 +428,7 @@ export class Matchfield {
     const cardsContainer = $('#bb_cardsContainer').addClass('implode'),
       bigText = $('#bb_bigText')
         .addClass('bb_bigTextCenter')
-        .text('Elitehäider')
+        .text('Winner')
         .addClass('implodeRev')
         .show();
 
@@ -480,10 +480,10 @@ export class Matchfield {
     const cardsContainer = $('#bb_cardsContainer');
     cardsContainer.append(
       '<canvas id="bb_cardsContainerCanvas" height="' +
-        cardsContainer.height() +
-        '" width="' +
-        cardsContainer.width() +
-        '"></canvas>'
+      cardsContainer.height() +
+      '" width="' +
+      cardsContainer.width() +
+      '"></canvas>'
     );
 
     const cardHeightPx = cardsContainer.height() / 5,

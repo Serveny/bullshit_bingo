@@ -12,7 +12,10 @@ const debug = require('debug')('bb'),
 
 client.connect((err) => {
   if (err) {
-    console.error('connection error (1)', err.stack);
+    console.error(
+      'No connection to database. But no problem, you can play without one :)',
+      err.stack
+    );
     // throw err;
   }
   console.log('Connected to Database');
