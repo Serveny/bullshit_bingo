@@ -10,10 +10,10 @@ const debug = require('debug')('bb'),
     port: dbCfg.port,
   });
 
-client.connect(err => {
+client.connect((err) => {
   if (err) {
     console.error('connection error (1)', err.stack);
-    throw err;
+    // throw err;
   }
   console.log('Connected to Database');
 });
@@ -34,7 +34,7 @@ class dbTable {
       if (Array.isArray(filter[i])) {
         // Check if column exists in model
         if (
-          this.columnNames.find(columnName => {
+          this.columnNames.find((columnName) => {
             return columnName === filter[i][0];
           }) != null
         ) {
@@ -55,8 +55,7 @@ class dbTable {
   getRowById(rowId) {
     const _self = this;
     return new Promise((resolve, reject) => {
-      const stmt = `SELECT * FROM ${_self.fullName} WHERE "${
-        _self.tableName}"."${_self.idField}" = $1 LIMIT 1`;
+      const stmt = `SELECT * FROM ${_self.fullName} WHERE "${_self.tableName}"."${_self.idField}" = $1 LIMIT 1`;
       debug(`[getRowById] ${stmt}`, rowId);
       client.query(stmt, rowId, (err, res) => {
         if (err) {
@@ -88,9 +87,7 @@ class dbTable {
     const _self = this;
     return new Promise((resolve, reject) => {
       const filterData = _self.createFilterStmt(filter);
-      let stmt = `SELECT COUNT(*) FROM ${_self.fullName} WHERE ${
-        filterData.stmt
-      };`;
+      let stmt = `SELECT COUNT(*) FROM ${_self.fullName} WHERE ${filterData.stmt};`;
       debug(`[countRowsByValue] ${stmt}`, filterData.data);
       client.query(stmt, filterData.data, (err, res) => {
         if (err) {
@@ -127,7 +124,7 @@ class dbTable {
       let counter = 0;
       for (const valName in values) {
         if (
-          _self.columnNames.find(columnName => {
+          _self.columnNames.find((columnName) => {
             return columnName === valName;
           }) !== -1
         ) {
@@ -169,9 +166,7 @@ class dbTable {
       colNames = colNames.slice(0, -2);
       questionMarks = questionMarks.slice(0, -2);
 
-      let stmt = `INSERT INTO ${
-        _self.fullName
-      }(${colNames}) VALUES(${questionMarks});`;
+      let stmt = `INSERT INTO ${_self.fullName}(${colNames}) VALUES(${questionMarks});`;
       debug(`[createRow] ${stmt}`, dataArr);
       client.query(stmt, dataArr, (err, res) => {
         if (err) {
@@ -219,7 +214,7 @@ exports.word = new dbTable(
     'wordCountUsed',
     'createdAt',
     'changedAt',
-    'wordFlagUseForAutofill'
+    'wordFlagUseForAutofill',
   ],
   'wordId'
 );

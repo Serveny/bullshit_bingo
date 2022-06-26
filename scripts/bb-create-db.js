@@ -11,9 +11,7 @@ const events = require('events'),
   }),
   event = new events.EventEmitter();
 
-;
-
-client.connect(err => {
+client.connect((err) => {
   if (err) {
     console.error('connection error (1)', err.stack);
     throw err;
@@ -25,7 +23,7 @@ client.connect(err => {
 // event.on('dbConnected', () => {
 //   client.query(`
 //     CREATE DATABASE bullshitbingo_db
-//     WITH 
+//     WITH
 //     OWNER = bullshitbingo
 //     ENCODING = 'UTF8'
 //     CONNECTION LIMIT = -1;`,
@@ -42,23 +40,25 @@ client.connect(err => {
 // });
 
 event.on('dbConnected', () => {
-  client.query(`
+  client.query(
+    `
   CREATE SCHEMA bb
     AUTHORIZATION bullshitbingo;`,
-  function(err, result) {
-    if (err) {
-      throw err;
+    function (err, result) {
+      if (err) {
+        throw err;
+      }
+      console.log('Schema created');
+      event.emit('schemaCreated');
     }
-    console.log('Schema created');
-    event.emit('schemaCreated');
-  }
-);
+  );
 });
 
 event.on('schemaCreated', () => {
   // const stamps =
   //   '`createdAt` datetime DEFAULT CURRENT_TIMESTAMP, `changedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
-  const stmt = // Testing if main game works stable without db
+  const stmt =
+    // Testing if main game works stable without db
     // 'CREATE TABLE IF NOT EXISTS `bullshitbingo_db`.`room`(`roomId` INT NOT NULL AUTO_INCREMENT, `roomName` VARCHAR(16) NOT NULL, PRIMARY KEY (`roomId`) VISIBLE,  UNIQUE INDEX `roomName_UNIQUE` (`roomName` ASC) VISIBLE);' +
     // 'CREATE TABLE IF NOT EXISTS `bullshitbingo_db`.`player` (`playerId` INT NOT NULL AUTO_INCREMENT, `playerRoomId` INT NOT NULL, `playerAvatarId` INT NULL, `playerName` VARCHAR(45) NOT NULL, `playerCustomName` VARCHAR(45) NULL, `playerIsReady` TINYINT NULL DEFAULT 0, PRIMARY KEY (`playerId`) VISIBLE);' +
     // 'CREATE TABLE IF NOT EXISTS `bullshitbingo_db`.`card` (`cardId` INT NOT NULL AUTO_INCREMENT, `cardPlayerId` INT NOT NULL, `cardRoomId` INT NOT NULL, `cardText` VARCHAR(45) NULL, `cardPosX` INT NOT NULL, `cardPosY` INT NOT NULL, PRIMARY KEY (`cardId`), UNIQUE INDEX `cardId_UNIQUE` (`cardId` ASC) VISIBLE);',
@@ -83,7 +83,7 @@ event.on('schemaCreated', () => {
     ALTER TABLE bb.word
       ADD CONSTRAINT "wordTextUnique" UNIQUE ("wordText");`;
   // console.log(stmt);
-  client.query(stmt, err => {
+  client.query(stmt, (err) => {
     if (err) {
       throw err;
     }
@@ -97,12 +97,10 @@ event.on('tablesCreated', () => {
   for (let i = 0; i < startWords.length; i++) {
     stmt += `INSERT INTO bb.word(
       "wordText", "wordCountGuessed", "wordCountUsed", "wordFlagUseForAutofill")
-      VALUES ('${startWords[
-      i
-    ].toLowerCase()}',0,0,true);`;
+      VALUES ('${startWords[i].toLowerCase()}',0,0,true);`;
   }
 
-  client.query(stmt, err => {
+  client.query(stmt, (err) => {
     if (err) {
       throw err;
     }
@@ -111,69 +109,4 @@ event.on('tablesCreated', () => {
   });
 });
 
-const startWords = [
-  'Hä?',
-  'Meddl',
-  'Ich bin nicht derjeniche',
-  'Was?',
-  'Häider',
-  'Du Wahnsinnicher',
-  'Haut der wieder voll raus',
-  'assi',
-  'Ledsblay',
-  'ey',
-  'Ich bin ein Mensch, der..',
-  'Juhtub',
-  'Junau',
-  'Stream',
-  'schneiden',
-  'rendern',
-  'hochladen',
-  'Barren',
-  'Likes',
-  'Abonnentne',
-  'Willkommen bei den Drachis',
-  'Deutschland',
-  'Scheiße bauen',
-  'BLM',
-  'Nadsi',
-  'alder',
-  'dumm',
-  'Ich mach nur mei Zeuch',
-  'Mobbing',
-  'Wichser',
-  'So',
-  'Arsch aufreißne',
-  'Wadd de Hell',
-  'Ohne Scheiß',
-  'Glasfaser',
-  'Und des Geilste is..',
-  'Schanze',
-  'Ihr seid die Assis hier',
-  'Abo-Tschädd',
-  'Erdbeerchen',
-  'ferddich machne',
-  'Vollidiodne',
-  'Hass',
-  'Emotion',
-  'Mett',
-  'Zelad',
-  'meine Gehirnzellen schmelzne',
-  'Opfer',
-  'Grundstück',
-  'Radeln',
-  '4 Drachne und der Meddl',
-  'Brovogation',
-  'Allegser',
-  'Zeig mir die Einfahrt',
-  'fotzn',
-  'Brügel',
-  'geblockt',
-  'müde',
-  '*gähnt*',
-  'Arschloch',
-  'im Gegensatz zu dir..',
-  '*Song gegen Mobbing*',
-  '*Lesbenschlager*',
-  'Gesichtskrappfne'
-];
+const startWords = ['hello', 'bye', '*cough*', 'wtf', 'wow', 'stonks'];

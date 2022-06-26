@@ -8,26 +8,9 @@ class Avatar {
   }
 }
 
-const avatarList = [
-  'Baby Chrizzy',
-  'Biancer',
-  'Der böse Wolf',
-  'Drachenbruder',
-  'Drachenlady',
-  'Erdbeerchen',
-  'Ey Malla',
-  'Gummibeerchen',
-  'Leiffelsbursche',
-  'Nachber',
-  'Reiner',
-  'Ramoner',
-  'Riter',
-  'Rudi',
-  'Marion',
-  'Zoomulle'
-];
+const avatarList = ['avatar_1', 'avatar_2', 'avatar_3', 'avatar_4', 'avatar_5'];
 
-const getRandomAvatar = playerMap => {
+const getRandomAvatar = (playerMap) => {
   let id = 0;
   let usedIds = [];
 
